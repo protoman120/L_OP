@@ -1,0 +1,215 @@
+#!/bin/bash
+
+##################################################################
+#IMPORTANT: SCRIPT DIRS SETUP
+source ./utility_scripts/script_directories.sh
+##################################################################
+
+STORAGE_ROOT_PARTITION_FOUND="false"
+
+if [ -e "$SAVED_STORAGE_DATA_FOLDER" ]; then
+    rm -d -r $SAVED_STORAGE_DATA_FOLDER
+    mkdir -p "$SAVED_STORAGE_DATA_FOLDER"
+fi
+
+for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); do
+    
+    STORAGE_DEVICE_PATH="/dev/$STORAGE_DEVICE"
+
+    SAVED_STORAGE_DEVICE_DATA_FOLDER=$SAVED_STORAGE_DATA_FOLDER/$STORAGE_DEVICE
+    SAVED_STORAGE_PARTITIONS_DATA_FOLDER=$SAVED_STORAGE_DEVICE_DATA_FOLDER/partitions
+    
+    SAVED_STORAGE_DEVICE_DATA_FILE=$SAVED_STORAGE_DEVICE_DATA_FOLDER/$SAVED_STORAGE_DEVICE_DATA_FILE_NAME
+    SAVED_STORAGE_PARTITION_DATA_FILE=$SAVED_STORAGE_PARTITIONS_DATA_FOLDER/$SAVED_STORAGE_PARTITION_DATA_FILE_NAME
+
+    mkdir -p "$SAVED_STORAGE_DEVICE_DATA_FOLDER"
+    mkdir -p "$SAVED_STORAGE_PARTITIONS_DATA_FOLDER"
+
+    STORAGE_DEVICE_MODEL=$(cat /sys/block/$STORAGE_DEVICE/device/model 2>/dev/null)
+    STORAGE_DEVICE_VENDOR=$(cat /sys/block/$STORAGE_DEVICE/device/vendor 2>/dev/null)
+    STORAGE_DEVICE_SIZE=$(lsblk -d -n -o SIZE "$STORAGE_DEVICE_PATH")
+    STORAGE_DEVICE_ID_BUS=$(udevadm info --query=property --name="$STORAGE_DEVICE_PATH" | grep '^ID_BUS=' | tr -d 'ID_BUS=')
+    STORAGE_DEVICE_ROTATIONAL=$(cat /sys/block/$STORAGE_DEVICE/queue/rotational 2>/dev/null)
+
+    STORAGE_DEVICE_SCHEDULER=$(cat /sys/block/$STORAGE_DEVICE/queue/scheduler | grep -o '\[.*\]' | tr -d '[]')
+    STORAGE_DEVICE_DISCARD_MAX_BYTES=$(cat /sys/block/$STORAGE_DEVICE/queue/discard_max_bytes)
+    STORAGE_DEVICE_READ_AHEAD_KB=$(cat /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb)
+    STORAGE_DEVICE_QUEUE_DEPTH=$(cat /sys/block/$STORAGE_DEVICE/device/queue_depth)
+
+    STORAGE_DEVICE_IO_STATS=$(cat /sys/block/$STORAGE_DEVICE/queue/iostats)
+    STORAGE_DEVICE_NOMERGES=$(cat /sys/block/$STORAGE_DEVICE/queue/nomerges)
+    STORAGE_DEVICE_FRONT_MERGES=$(cat /sys/block/$STORAGE_DEVICE/queue/front_merges)
+    STORAGE_DEVICE_RQ_AFFINITY=$(cat /sys/block/$STORAGE_DEVICE/queue/rq_affinity)
+    STORAGE_DEVICE_ASYNC_DEPTH=$(cat /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth)
+    STORAGE_DEVICE_FIFO_BATCH=$(cat /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch)
+    STORAGE_DEVICE_READ_EXPIRE=$(cat /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire)
+    STORAGE_DEVICE_WRITES_STARVED=$(cat /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved)
+    STORAGE_DEVICE_NR_REQUESTS=$(cat /sys/block/$STORAGE_DEVICE/queue/nr_requests)
+    STORAGE_DEVICE_IO_POLL=$(cat /sys/block/$STORAGE_DEVICE/queue/io_poll)
+    STORAGE_DEVICE_IO_POLL_DELAY=$(cat /sys/block/$STORAGE_DEVICE/queue/io_poll_delay)
+
+    if [[ "$STORAGE_DEVICE" == nvme* ]]; then
+        STORAGE_DEVICE_TYPE="nvme"
+    elif [[ "$STORAGE_DEVICE_ROTATIONAL" == "0" ]]; then
+        STORAGE_DEVICE_TYPE="ssd"
+    else
+        STORAGE_DEVICE_TYPE="hdd"
+    fi
+    
+    if [[ "$STORAGE_DEVICE" == nvme* ]]; then
+        STORAGE_DEVICE_BUS="nvme"
+    elif [[ "$STORAGE_DEVICE_ID_BUS" == "ata" ]]; then
+        STORAGE_DEVICE_BUS="sata"
+    elif [[ "$STORAGE_DEVICE_ID_BUS" == "usb" ]]; then
+        STORAGE_DEVICE_BUS="usb"
+    fi
+
+    #USB DEVICES USUALLY DOES NOT GET DETECTED AS A THEIR TYPE, SO IT MANUALLY MARKS IT AS ONE IF THE USED BUS IS USB
+    if [[ "$STORAGE_DEVICE_BUS" == "usb" ]]; then
+        STORAGE_DEVICE_TYPE="usb"
+    fi
+
+    cat > "$SAVED_STORAGE_DEVICE_DATA_FILE" <<EOF
+        export STORAGE_DEVICE="$STORAGE_DEVICE"
+        export STORAGE_DEVICE_PATH="$STORAGE_DEVICE_PATH"
+        export STORAGE_DEVICE_MODEL="$STORAGE_DEVICE_MODEL"
+        export STORAGE_DEVICE_ID_BUS="$STORAGE_DEVICE_ID_BUS"
+        export STORAGE_DEVICE_BUS="$STORAGE_DEVICE_BUS"
+        export STORAGE_DEVICE_TYPE="$STORAGE_DEVICE_TYPE"
+        export STORAGE_DEVICE_ROTATIONAL="$STORAGE_DEVICE_ROTATIONAL"
+
+        export STORAGE_DEVICE_SCHEDULER="$STORAGE_DEVICE_SCHEDULER"
+        export STORAGE_DEVICE_DISCARD_MAX_BYTES="$STORAGE_DEVICE_DISCARD_MAX_BYTES"
+        export STORAGE_DEVICE_READ_AHEAD_KB="$STORAGE_DEVICE_READ_AHEAD_KB"
+        export STORAGE_DEVICE_QUEUE_DEPTH="$STORAGE_DEVICE_QUEUE_DEPTH"
+        export STORAGE_DEVICE_IO_STATS="$STORAGE_DEVICE_IO_STATS"
+        export STORAGE_DEVICE_NOMERGES="$STORAGE_DEVICE_NOMERGES"
+        export STORAGE_DEVICE_FRONT_MERGES="$STORAGE_DEVICE_FRONT_MERGES"
+        export STORAGE_DEVICE_RQ_AFFINITY="$STORAGE_DEVICE_RQ_AFFINITY"
+        export STORAGE_DEVICE_ASYNC_DEPTH="$STORAGE_DEVICE_ASYNC_DEPTH"
+        export STORAGE_DEVICE_FIFO_BATCH="$STORAGE_DEVICE_FIFO_BATCH"
+        export STORAGE_DEVICE_READ_EXPIRE="$STORAGE_DEVICE_READ_EXPIRE"
+        export STORAGE_DEVICE_WRITES_STARVED="$STORAGE_DEVICE_WRITES_STARVED"
+        export STORAGE_DEVICE_NR_REQUESTS="$STORAGE_DEVICE_NR_REQUESTS"
+        export STORAGE_DEVICE_IO_POLL="$STORAGE_DEVICE_IO_POLL"
+        export STORAGE_DEVICE_IO_POLL_DELAY="$STORAGE_DEVICE_IO_POLL_DELAY"
+
+EOF
+
+    for STORAGE_PARTITION in $(lsblk -ln -o NAME,TYPE | awk '$2=="part"{print $1}'); do
+
+        STORAGE_PARTITION_PATH="/dev/$STORAGE_PARTITION"
+        STORAGE_PARTITION_PARENT_DEVICE=$(lsblk -no PKNAME "/dev/$STORAGE_PARTITION")
+
+        if [[ "$STORAGE_PARTITION_PARENT_DEVICE" == "$STORAGE_DEVICE" ]]; then
+ 
+            SAVED_STORAGE_PARTITION_DATA_FOLDER=$SAVED_STORAGE_PARTITIONS_DATA_FOLDER/$STORAGE_PARTITION
+            mkdir -p "$SAVED_STORAGE_PARTITION_DATA_FOLDER"
+            SAVED_STORAGE_PARTITION_FILE=$SAVED_STORAGE_PARTITION_DATA_FOLDER/$SAVED_STORAGE_PARTITION_DATA_FILE_NAME
+        
+            STORAGE_PARTITION_FILESYSTEM=$(lsblk -no FSTYPE "$STORAGE_PARTITION_PATH")
+            STORAGE_PARTITION_MOUNTPOINT=$(lsblk -no MOUNTPOINT "$STORAGE_PARTITION_PATH")
+            STORAGE_PARTITION_SIZE=$(lsblk -no SIZE "$STORAGE_PARTITION_PATH")
+            STORAGE_PARTITION_UUID=$(blkid -s UUID -o value "$STORAGE_PARTITION_PATH" 2>/dev/null)
+            STORAGE_PARTITION_PARTUUID=$(blkid -s PARTUUID -o value "$STORAGE_PARTITION_PATH" 2>/dev/null)
+            STORAGE_PARTITION_LABEL=$(blkid -s LABEL -o value "$STORAGE_PARTITION_PATH" 2>/dev/null)
+            STORAGE_PARTITION_MOUNT_OPTIONS=$(findmnt -no OPTIONS "$STORAGE_PARTITION_PATH" 2>/dev/null)
+
+            if echo "$STORAGE_PARTITION_MOUNT_OPTIONS" | grep -qw "ro"; then
+                STORAGE_PARTITION_READ_ONLY="true"
+            else
+                STORAGE_PARTITION_READ_ONLY="false"
+            fi
+
+            if [[ "$STORAGE_PARTITION_FILESYSTEM" == "swap" ]]; then
+                STORAGE_PARTITION_SWAP="true"
+            else
+                STORAGE_PARTITION_SWAP="false"
+            fi
+
+            if [[ "$STORAGE_PARTITION_FILESYSTEM" == "vfat" && "$STORAGE_PARTITION_MOUNTPOINT" == "/boot/efi" ]]; then
+                STORAGE_PARTITION_EFI="true"
+            else
+                STORAGE_PARTITION_EFI="false"
+            fi
+
+            if blkid "$STORAGE_PARTITION_PATH" 2>/dev/null | grep -q 'TYPE="crypto_LUKS"'; then
+                STORAGE_PARTITION_LUKS="true"
+            else
+                STORAGE_PARTITION_LUKS="false"
+            fi
+
+            if [[ "$STORAGE_PARTITION_FILESYSTEM" == "btrfs" ]]; then
+                STORAGE_PARTITION_BTRFS="true"
+            else
+                STORAGE_PARTITION_BTRFS="false"
+            fi
+
+            cat > "$SAVED_STORAGE_PARTITION_FILE" <<EOF
+                export STORAGE_DEVICE="$STORAGE_DEVICE"
+                export STORAGE_DEVICE_PATH="$STORAGE_DEVICE_PATH"
+                export STORAGE_DEVICE_MODEL="$STORAGE_DEVICE_MODEL"
+                export STORAGE_DEVICE_ID_BUS="$STORAGE_DEVICE_ID_BUS"
+                export STORAGE_DEVICE_BUS="$STORAGE_DEVICE_BUS"
+                export STORAGE_DEVICE_TYPE="$STORAGE_DEVICE_TYPE"
+                export STORAGE_DEVICE_ROTATIONAL="$STORAGE_DEVICE_ROTATIONAL"
+
+                export STORAGE_PARTITION="$STORAGE_PARTITION"
+                export STORAGE_PARTITION_PATH="$STORAGE_PARTITION_PATH"
+                export STORAGE_PARTITION_PARENT_DEVICE="$STORAGE_PARTITION_PARENT_DEVICE"
+                export STORAGE_PARTITION_FILESYSTEM="$STORAGE_PARTITION_FILESYSTEM"
+                export STORAGE_PARTITION_MOUNTPOINT="$STORAGE_PARTITION_MOUNTPOINT"
+                export STORAGE_PARTITION_SIZE="$STORAGE_PARTITION_SIZE"
+                export STORAGE_PARTITION_UUID="$STORAGE_PARTITION_UUID"
+                export STORAGE_PARTITION_PARTUUID="$STORAGE_PARTITION_PARTUUID"
+                export STORAGE_PARTITION_LABEL="$STORAGE_PARTITION_LABEL"
+
+                export STORAGE_PARTITION_MOUNT_OPTIONS="$STORAGE_PARTITION_MOUNT_OPTIONS"
+                export STORAGE_PARTITION_READ_ONLY="$STORAGE_PARTITION_READ_ONLY"
+                export STORAGE_PARTITION_SWAP="$STORAGE_PARTITION_SWAP"
+                export STORAGE_PARTITION_EFI="$STORAGE_PARTITION_EFI"
+                export STORAGE_PARTITION_LUKS="$STORAGE_PARTITION_LUKS"
+                export STORAGE_PARTITION_BTRFS="$STORAGE_PARTITION_BTRFS"
+EOF
+        fi
+
+        if [[ $STORAGE_PARTITION_MOUNTPOINT == "/" ]] || [[ $STORAGE_PARTITION_MOUNTPOINT == "/home" ]]; then
+            if [[ $STORAGE_ROOT_PARTITION_FOUND == "true" ]] && [[ $STORAGE_PARTITION_MOUNTPOINT == "/" ]]; then
+                STORAGE_ROOT_PARTITION_FOUND="false"
+            fi
+
+            if [[ $STORAGE_ROOT_PARTITION_FOUND == "false" ]]; then
+                 mkdir -p "$SAVED_ROOT_STORAGE_DATA_FOLDER"
+
+                 cat > "$SAVED_ROOT_STORAGE_DATA" <<EOF
+                    export STORAGE_ROOT_DEVICE="$STORAGE_DEVICE"
+                    export STORAGE_ROOT_DEVICE_PATH="$STORAGE_DEVICE_PATH"
+                    export STORAGE_ROOT_DEVICE_MODEL="$STORAGE_DEVICE_MODEL"
+                    export STORAGE_ROOT_DEVICE_ID_BUS="$STORAGE_DEVICE_ID_BUS"
+                    export STORAGE_ROOT_DEVICE_BUS="$STORAGE_DEVICE_BUS"
+                    export STORAGE_ROOT_DEVICE_TYPE="$STORAGE_DEVICE_TYPE"
+                    export STORAGE_ROOT_DEVICE_ROTATIONAL="$STORAGE_DEVICE_ROTATIONAL"
+
+                    export STORAGE_ROOT_PARTITION="$STORAGE_PARTITION"
+                    export STORAGE_ROOT_PARTITION_PATH="$STORAGE_PARTITION_PATH"
+                    export STORAGE_ROOT_PARTITION_PARENT_DEVICE="$STORAGE_PARTITION_PARENT_DEVICE"
+                    export STORAGE_ROOT_PARTITION_FILESYSTEM="$STORAGE_PARTITION_FILESYSTEM"
+                    export STORAGE_ROOT_PARTITION_MOUNTPOINT="$STORAGE_PARTITION_MOUNTPOINT"
+                    export STORAGE_ROOT_PARTITION_SIZE="$STORAGE_PARTITION_SIZE"
+                    export STORAGE_ROOT_PARTITION_UUID="$STORAGE_PARTITION_UUID"
+                    export STORAGE_ROOT_PARTITION_PARTUUID="$STORAGE_PARTITION_PARTUUID"
+                    export STORAGE_ROOT_PARTITION_LABEL="$STORAGE_PARTITION_LABEL"
+
+                    export STORAGE_ROOT_PARTITION_MOUNT_OPTIONS="$STORAGE_PARTITION_MOUNT_OPTIONS"
+                    export STORAGE_ROOT_PARTITION_READ_ONLY="$STORAGE_PARTITION_READ_ONLY"
+                    export STORAGE_ROOT_PARTITION_SWAP="$STORAGE_PARTITION_SWAP"
+                    export STORAGE_ROOT_PARTITION_EFI="$STORAGE_PARTITION_EFI"
+                    export STORAGE_ROOT_PARTITION_LUKS="$STORAGE_PARTITION_LUKS"
+                    export STORAGE_ROOT_PARTITION_BTRFS="$STORAGE_PARTITION_BTRFS"
+EOF
+                    STORAGE_ROOT_PARTITION_FOUND="true"
+            fi
+        fi
+
+    done
+done
