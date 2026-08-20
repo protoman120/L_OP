@@ -14,7 +14,7 @@ How to Install/Uninstall:
 
 1. Download the L_OP_DEV.tar.gz.
 2. Extract the tar.gz file.
-3. Open the folder and run L_OP_DEV.sh as sudo (due to the nature of the optimizations of this script, sudo is required).
+3. Open the folder and run L_OP_DEV.sh as sudo/root (due to the nature of the optimizations of this script, this is required).
 4. Choose Install/Uninstall.
 5. If installing, select your desired profile and the script will analyse your hardware to determine what's best to apply for your PC.
 6. Restart your PC to apply the optimizations.
