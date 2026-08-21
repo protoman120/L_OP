@@ -198,18 +198,33 @@ cpu_scheduler_optimizations(){
 
 cpu_performance_optimizations_apply_values(){
 
-	echo $CPU_POWER_CONTROL | tee "$CPU_PATH/power/control"
-	echo $CPU_POWER_ASYNC | tee "$CPU_DIR/power/async"
+	if [[ "$CPU_POWER_CONTROL" != "" ]]; then
+		echo $CPU_POWER_CONTROL | tee "$CPU_PATH/power/control"
+	fi
+
+	if [[ "$CPU_POWER_ASYNC" != "" ]]; then
+		echo $CPU_POWER_ASYNC | tee "$CPU_PATH/power/async"
+	fi
 
 	for ((i=0; i<CPU_THREADS; i++)); do
 	    CPU_DIR="$CPU_PATH/cpu$i"
 
-		echo $CPU_POWER_CONTROL | tee "$CPU_DIR/power/control"
+		if [[ "$CPU_POWER_CONTROL" != "" ]]; then
+			echo $CPU_POWER_CONTROL | tee "$CPU_DIR/power/control"
+		fi
 
-		echo $CPU_POWER_ASYNC | tee "$CPU_DIR/power/async"
+		if [[ "$CPU_POWER_ASYNC" != "" ]]; then
+			echo $CPU_POWER_ASYNC | tee "$CPU_DIR/power/async"
+		fi
 
-	    echo "$CPU_GOVERNOR" | tee "$CPU_DIR/cpufreq/scaling_governor"
-	    echo "$CPU_ENERGY_PERFORMANCE_PREFERENCE" | tee "$CPU_DIR/cpufreq/energy_performance_preference"
+		if [[ "$CPU_GOVERNOR" != "" ]]; then
+	    	echo "$CPU_GOVERNOR" | tee "$CPU_DIR/cpufreq/scaling_governor"
+		fi
+
+		if [[ "$CPU_ENERGY_PERFORMANCE_PREFERENCE" != "" ]]; then
+	    	echo "$CPU_ENERGY_PERFORMANCE_PREFERENCE" | tee "$CPU_DIR/cpufreq/energy_performance_preference"
+		fi
+		
 	done
 
 }
@@ -251,6 +266,17 @@ cpu_performance_optimizations(){
 		CPU_GOVERNOR="performance"
 		CPU_ENERGY_PERFORMANCE_PREFERENCE="performance" 
 	fi
+	cpu_performance_optimizations_apply_values
+
+}
+
+cpu_frequency_optimizations_apply_values(){
+
+	for ((i=0; i<CPU_THREADS; i++)); do
+		CPU_DIR="$CPU_PATH/cpu$i"
+    	echo $CPU_MAX_PERF | tee $CPU_DIR/cpufreq/scaling_max_freq
+    	echo $CPU_MIN_PERF | tee $CPU_DIR/cpufreq/scaling_min_freq
+    done
 
 }
 
@@ -286,13 +312,7 @@ cpu_frequency_optimizations(){
 		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
 	    fi
     fi
-    
-    for ((i=0; i<CPU_THREADS; i++)); do
-	CPU_DIR="$CPU_PATH/cpu$i"
-    	echo $CPU_MAX_PERF | tee $CPU_DIR/cpufreq/scaling_max_freq
-    	echo $CPU_MIN_PERF | tee $CPU_DIR/cpufreq/scaling_min_freq
-    done
-
+	cpu_frequency_optimizations_apply_values
 }
 
 if [[ "$@" == "cpu_scheduler_optimizations" ]]; then

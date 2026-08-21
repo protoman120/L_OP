@@ -31,12 +31,12 @@ RAM_SPEED="$( dmidecode -t memory | awk -F: '/Configured Memory Speed/ {print $2
 ram_classification
 
 cat > "$SAVED_RAM_DATA" <<EOF
-    export RAM_KB=$(printf '%q' "$RAM_KB")
-    export RAM_B=$(printf '%q' "$RAM_B")
-    export RAM_MB=$(printf '%q' "$RAM_MB")
-    export RAM_GB=$(printf '%q' "$RAM_GB")
-    export RAM_GB_PHYSICAL=$(printf '%q' "$RAM_GB_PHYSICAL")
-    export RAM_GENERATION=$(printf '%q' "$RAM_GENERATION")
-    export RAM_SPEED=$(printf '%q' "$RAM_SPEED")
-    export RAM_CLASS=$(printf '%q' $RAM_CLASS)
+    RAM_KB=$(printf '%q' "$RAM_KB")
+    RAM_B=$(printf '%q' "$RAM_B")
+    RAM_MB=$(printf '%q' "$RAM_MB")
+    RAM_GB=$(printf '%q' "$RAM_GB")
+    RAM_GB_PHYSICAL=$(printf '%q' "$RAM_GB_PHYSICAL")
+    RAM_GENERATION=$(printf '%q' "$RAM_GENERATION")
+    RAM_SPEED=$(printf '%q' "$RAM_SPEED")
+    RAM_CLASS=$(printf '%q' $RAM_CLASS)
 EOF
