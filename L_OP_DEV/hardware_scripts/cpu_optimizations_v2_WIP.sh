@@ -196,18 +196,46 @@ cpu_scheduler_optimizations(){
 	cpu_scheduler_optimizations_apply_values
 }
 
+cpu_performance_optimizations_apply_values(){
+
+	echo $CPU_POWER_CONTROL | tee "$CPU_PATH/power/control"
+	echo $CPU_POWER_ASYNC | tee "$CPU_DIR/power/async"
+
+	for ((i=0; i<CPU_THREADS; i++)); do
+	    CPU_DIR="$CPU_PATH/cpu$i"
+
+		echo $CPU_POWER_CONTROL | tee "$CPU_DIR/power/control"
+
+		echo $CPU_POWER_ASYNC | tee "$CPU_DIR/power/async"
+
+	    echo "$CPU_GOVERNOR" | tee "$CPU_DIR/cpufreq/scaling_governor"
+	    echo "$CPU_ENERGY_PERFORMANCE_PREFERENCE" | tee "$CPU_DIR/cpufreq/energy_performance_preference"
+	done
+
+}
+
 cpu_performance_optimizations(){
 
+	################################################################
+	#VARIABLE INITIALIZATION:
+
+	CPU_POWER_CONTROL=""
+	CPU_POWER_ASYNC=""
+	CPU_GOVERNOR=""
+	CPU_ENERGY_PERFORMANCE_PREFERENCE=""
+
+	################################################################
+
 	if [[ $CPU_CLASS == "verylow" ]]; then
-		echo auto | tee "$CPU_PATH/power/control"
+		CPU_POWER_CONTROL="auto"
 	else
-		echo on | tee "$CPU_PATH/power/control"
+		CPU_POWER_CONTROL="on"
 	fi
 	
 	if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-        echo "enabled" | tee "$CPU_DIR/power/async"
+		CPU_POWER_ASYNC="enabled"
     else
-        echo "disabled" | tee "$CPU_DIR/power/async"
+		CPU_POWER_ASYNC="disabled"
 	fi
 
 	if [[ $CPU_CLASS == "verylow" ]]; then
@@ -223,25 +251,6 @@ cpu_performance_optimizations(){
 		CPU_GOVERNOR="performance"
 		CPU_ENERGY_PERFORMANCE_PREFERENCE="performance" 
 	fi
-
-	for ((i=0; i<CPU_THREADS; i++)); do
-	    CPU_DIR="$CPU_PATH/cpu$i"
-
-	    if [[ $CPU_CLASS == "verylow" ]]; then
-		    echo auto | tee "$CPU_DIR/power/control"
-	    else
-		    echo on | tee "$CPU_DIR/power/control"
-	    fi
-	    
-	    if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-	    	echo "enabled" | tee "$CPU_DIR/power/async"
-	    else
-	    	echo "disabled" | tee "$CPU_DIR/power/async" #Specially for gaming, it has to be disabled, else it gives rendering issues, specially with frame generation
-	    fi
-
-	    echo "$CPU_GOVERNOR" | tee "$CPU_DIR/cpufreq/scaling_governor"
-	    echo "$CPU_ENERGY_PERFORMANCE_PREFERENCE" | tee "$CPU_DIR/cpufreq/energy_performance_preference"
-	done
 
 }
 
