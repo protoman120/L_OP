@@ -277,8 +277,11 @@ profile_selection_simple() {
 }
 
 uninstall_script(){
+    rm -r $SCRIPT_SAVED_DATA
     rm -r $SCRIPT_INSTALLED_DIR
     $BOOTLOADER_REMOVE_OPTIMIZATIONS
+    $SCRIPT_REMOVE_SERVICES
+    $TMPFS_CACHING_SERVICES_REMOVAL
 }
 
 install_script(){
@@ -286,6 +289,12 @@ install_script(){
 	#PROFILE SELECTION
 	#profile_selection
     profile_selection_simple
+
+    if [ -e "$SCRIPT_SAVED_DATA" ]; then
+        echo ""
+    else
+        mkdir -p "$SCRIPT_SAVED_DATA"
+    fi
 
 	#HARDWARE SCANNING:
 	$CPU_ANALYSIS
@@ -337,26 +346,21 @@ install_script(){
     #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL AND AUTO UPDATES
     profile_save_optimization_goals
 
+    if [ -e $SCRIPT_INSTALLED_DIR ]; then
+        echo "L_OP ALREADY INSTALLED, REINSTALLING"
+        uninstall_script
+        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
+    else
+        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
+    fi
+
     #SERVICES SETUP
     $SCRIPT_SETUP_SERVICES
     $TMPFS_CACHING_SERVICES_SETUP
 
-    if [ -e $SCRIPT_INSTALLED_DIR ]; then
-        echo "L_OP ALREADY INSTALLED, REINSTALLING"
-        rm -r $SCRIPT_INSTALLED_DIR
-        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALLED_DIR
-    else
-        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALLED_DIR
-    fi
-
     #HAS TO BE APPLIED HERE SO IT'S APPLIED ON REBOOT
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
         $BOOTLOADER_OPTIMIZATIONS
-    fi
-
-    if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
-        #THIS DATA WILL BE REGENERATED ON REBOOT
-        rm -r $SCRIPT_INSTALLED_DIR/saved_data
     fi
 
 	echo "Please restart your PC to apply"
