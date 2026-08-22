@@ -344,22 +344,7 @@ install_script(){
     if [ -e $SCRIPT_INSTALLED_DIR ]; then
         echo "L_OP ALREADY INSTALLED, REINSTALLING"
         rm -r $SCRIPT_INSTALLED_DIR
-        #IF DIR COULD NOT BE FULLY DELETED DUE TO TMPFS DATA, RECREATE DIRS
-        if [ -e $SCRIPT_INSTALLED_DIR ]; then
-            cp -r $SCRIPT_HARDWARE_SCRIPTS $SCRIPT_INSTALLED_DIR
-            cp -r $SCRIPT_SOFTWARE_SCRIPTS $SCRIPT_INSTALLED_DIR
-            cp -r $SCRIPT_UTILITY_SCRIPTS $SCRIPT_INSTALLED_DIR
-            if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
-                mkdir -p "$SCRIPT_INSTALLED_DIR/saved_data"
-            else
-                cp -r $SCRIPT_SAVED_DATA $SCRIPT_INSTALLED_DIR
-            fi
-            cp -r $SCRIPT_PROFILES $SCRIPT_INSTALLED_DIR
-            cp -r $SAVED_OPTIMIZATION_GOALS $SCRIPT_INSTALLED_DIR
-            cp -r $SCRIPT_MAIN_SCRIPT $SCRIPT_INSTALLED_DIR
-        else
-            cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALLED_DIR
-        fi
+        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALLED_DIR
     else
         cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALLED_DIR
     fi

@@ -603,13 +603,13 @@ COMMENT_BLOCK
                     if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
 
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="relatime,compress=lzo,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=lzo,space_cache=v2"
                         elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="relatime,compress=zstd:3,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
                         elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="relatime,compress=zstd:3,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
                         elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="relatime,compress=zstd:5,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:5,space_cache=v2"
                         fi
 
                         if [[ $RAM_CLASS == "verylow" ]]; then
@@ -629,13 +629,13 @@ COMMENT_BLOCK
                     elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
 
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=lzo,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
                         elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:1,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
                         elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:3,ssd,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,ssd,space_cache=v2"
                         elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:5,ssd,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,ssd,space_cache=v2"
                         fi
 
                         if [[ $RAM_CLASS == "verylow" ]]; then
@@ -655,13 +655,13 @@ COMMENT_BLOCK
                     elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
 
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=lzo,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
                         elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:1,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
                         elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
                         elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
                         fi
 
                         if [[ $RAM_CLASS == "verylow" ]]; then
@@ -681,13 +681,13 @@ COMMENT_BLOCK
                     elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
 
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=lzo,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
                         elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:1,space_cache=v2"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
                         elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
                         elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
                         fi
 
                         if [[ $RAM_CLASS == "verylow" ]]; then
