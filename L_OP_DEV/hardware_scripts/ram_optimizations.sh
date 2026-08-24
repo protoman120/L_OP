@@ -20,7 +20,7 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 200 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 30 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 125 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
 					echo 100 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
@@ -32,7 +32,7 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 150 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 20 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 90 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
 					echo 50 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
@@ -44,7 +44,7 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 100 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 10 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 40 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
 					echo 25 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
@@ -56,7 +56,7 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 50 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 5 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 20 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
 					echo 10 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
@@ -68,7 +68,7 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 25 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 1 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 8 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
 					echo 5 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
