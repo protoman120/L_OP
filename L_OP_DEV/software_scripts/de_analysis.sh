@@ -12,8 +12,11 @@ de_save_data(){
     export DISPLAY=$(printf '%q' "$DISPLAY")
     export USER_ID=$(printf '%q' "$USER_ID")
     export DBUS_SESSION_BUS_ADDRESS=$(printf '%q' "$DBUS_SESSION_BUS_ADDRESS")
+
+    #XFCE
     export XFCE_INSTALLED=$(printf '%q' "$XFCE_INSTALLED")
     export XFCE_COMPOSITING_ENABLED=$(printf '%q' "$XFCE_COMPOSITING_ENABLED")
+    export XFCE_WORKSPACE_WRAP_ENABLED=$(printf '%q' "$XFCE_WORKSPACE_WRAP_ENABLED")
     export XFCE_WORKSPACE_ANIMATIONS_ENABLED=$(printf '%q' "$XFCE_WORKSPACE_ANIMATIONS_ENABLED")
     export XFCE_WORKSPACE_CYCLE_PREVIEW_ENABLED=$(printf '%q' "$XFCE_WORKSPACE_CYCLE_PREVIEW_ENABLED")
     export XFCE_WORKSPACE_DOCK_SHADOW_ENABLED=$(printf '%q' "$XFCE_WORKSPACE_DOCK_SHADOW_ENABLED")
@@ -23,8 +26,12 @@ de_save_data(){
     export XFCE_WORKSPACE_ZOOM_POINTER_ENABLED=$(printf '%q' "$XFCE_WORKSPACE_ZOOM_POINTER_ENABLED")
     export XFCE_CYCLE_DRAW_FRAME_ENABLED=$(printf '%q' "$XFCE_CYCLE_DRAW_FRAME_ENABLED")
     export XFCE_FOCUS_HINT_ENABLED=$(printf '%q' "$XFCE_FOCUS_HINT_ENABLED")
+
+    #CINNAMON
     export CINNAMON_INSTALLED=$(printf '%q' "$CINNAMON_INSTALLED")
     export CINNAMON_ANIMATIONS_ENABLED=$(printf '%q' "$CINNAMON_ANIMATIONS_ENABLED")
+
+    #GNOME
     export GNOME_INSTALLED=$(printf '%q' "$GNOME_INSTALLED")
     export GNOME_ANIMATIONS_ENABLED=$(printf '%q' "$GNOME_ANIMATIONS_ENABLED")
     export GNOME_TRACKER_ENABLED=$(printf '%q' "$GNOME_TRACKER_ENABLED")
@@ -36,21 +43,19 @@ export DISPLAY=$(runuser -u "$SYSTEM_USER" -- printenv DISPLAY)
 export USER_ID=$(id -u "$SYSTEM_USER")
 export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$USER_ID/bus"
 
-XFWM4_CONFIG="/home/$SYSTEM_USER/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml"
-
-if [[ -f "$XFWM4_CONFIG" ]]; then
+if command -v xfwm4 >/dev/null 2>&1; then
     XFCE_INSTALLED="true"
 
-    XFCE_COMPOSITING_ENABLED="$(grep 'name="use_compositing"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_ANIMATIONS_ENABLED="$(grep 'name="wrap_workspaces"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_CYCLE_PREVIEW_ENABLED="$(grep 'name="cycle_preview"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_DOCK_SHADOW_ENABLED="$(grep 'name="show_dock_shadow"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_FRAME_SHADOW_ENABLED="$(grep 'name="show_frame_shadow"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_POPUP_SHADOW_ENABLED="$(grep 'name="show_popup_shadow"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_ZOOM_DESKTOP_ENABLED="$(grep 'name="zoom_desktop"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_WORKSPACE_ZOOM_POINTER_ENABLED="$(grep 'name="zoom_pointer"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_CYCLE_DRAW_FRAME_ENABLED="$(grep 'name="cycle_draw_frame"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
-    XFCE_FOCUS_HINT_ENABLED="$(grep 'name="focus_hint"' "$XFWM4_CONFIG" | sed -n 's/.*value="\([^"]*\)".*/\1/p')"
+    XFCE_COMPOSITING_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/use_compositing)"
+    XFCE_WORKSPACE_WRAP_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/wrap_workspaces)"
+    XFCE_WORKSPACE_CYCLE_PREVIEW_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/cycle_preview)"
+    XFCE_WORKSPACE_DOCK_SHADOW_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/show_dock_shadow)"
+    XFCE_WORKSPACE_FRAME_SHADOW_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/show_frame_shadow)"
+    XFCE_WORKSPACE_POPUP_SHADOW_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/show_popup_shadow)"
+    XFCE_WORKSPACE_ZOOM_DESKTOP_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/zoom_desktop)"
+    XFCE_WORKSPACE_ZOOM_POINTER_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/zoom_pointer)"
+    XFCE_CYCLE_DRAW_FRAME_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/cycle_draw_frame)"
+    XFCE_FOCUS_HINT_ENABLED="$(runuser -u "$SYSTEM_USER" -- xfconf-query -c xfwm4 -p /general/focus_hint)"
 
 else
     XFCE_INSTALLED="false"
@@ -75,7 +80,8 @@ fi
 if command -v gnome-shell >/dev/null 2>&1; then
     GNOME_INSTALLED="true"
     GNOME_ANIMATIONS_ENABLED="$(runuser -u "$SYSTEM_USER" -- gsettings get org.gnome.desktop.interface enable-animations)"
-    GNOME_TRACKER_ENABLED="$(runuser -u "$SYSTEM_USER" -- systemctl --user is-enabled tracker-miner-fs-3.service)"
+    GNOME_TRACKER_ENABLED="$(systemctl --user is-enabled tracker-miner-fs-3.service 2>/dev/null)"
+    GNOME_TRACKER_ACTIVE="$(systemctl --user is-active tracker-miner-fs-3.service 2>/dev/null)"
 else
     GNOME_INSTALLED="false"
 fi

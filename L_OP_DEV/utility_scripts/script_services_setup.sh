@@ -22,10 +22,35 @@ EOF
 #EOF MUST BE PLACED ON THE SIDE
 }
 
+script_create_user_systemd_service(){
+	tee $SYSTEM_SYSTEMD_SERVICES/$SCRIPT_SERVICE_NAME_USER > /dev/null <<EOF
+	[Unit]
+	Description=Applies L_OP Optimizations (After User Login)
+	After=graphical-session.target
+
+	[Service]
+	Type=oneshot
+	ExecStart=/path/to/de_optimizations.sh apply_user_optimizations
+	RemainAfterExit=true
+
+	[Install]
+	WantedBy=default.target
+EOF
+#EOF MUST BE PLACED ON THE SIDE
+}
+
+
 script_enable_systemd_service(){
 	 systemctl daemon-reload
  	 systemctl enable "$SCRIPT_SERVICE_NAME"
 }
 
+script_enable_user_systemd_service(){
+	 systemctl daemon-reload
+ 	 systemctl enable "$SCRIPT_SERVICE_NAME_USER"
+}
+
 script_create_systemd_service
 script_enable_systemd_service
+script_create_user_systemd_service
+script_enable_user_systemd_service

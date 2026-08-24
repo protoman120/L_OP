@@ -45,12 +45,16 @@ script_system_software_optimizations(){
         $NETWORK_OPTIMIZATIONS
     fi
 
-    if [[ $OPTIMIZATION_DE_ENABLED == "enabled" ]]; then
-        $DE_OPTIMIZATIONS
-    fi
-
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
         $BOOTLOADER_OPTIMIZATIONS
+    fi
+
+}
+
+script_system_user_software_optimizations(){
+
+    if [[ $OPTIMIZATION_DE_ENABLED == "enabled" ]]; then
+        $DE_OPTIMIZATIONS
     fi
 
 }
@@ -430,8 +434,6 @@ script_tmpfs_save_data_setup(){
 
 #MAIN LOGIC STARTS HERE:
 
-chmod -R +x $SCRIPT_MAIN_FOLDER
-
 if [[ "$@" == "apply_optimizations" ]]; then
 
     #############################################################################
@@ -457,12 +459,25 @@ if [[ "$@" == "apply_optimizations" ]]; then
         echo ""
     fi
 
+elif [[ "$@" == "apply_user_optimizations" ]]; then
+
+    #############################################################################
+    #IMPORTANT: SCRIPT DIRS SETUP (OPTIMIZATIONS - MAIN/TMFPS SCRIPT ONLY)
+    cd /var/lib/L_OP_DEV
+    source ./utility_scripts/script_directories.sh
+    source $SAVED_OPTIMIZATION_GOALS
+    #############################################################################
+
+    script_system_user_software_optimizations
+
 else
 
     ##################################################################
     #IMPORTANT: SCRIPT DIRS SETUP
     source ./utility_scripts/script_directories.sh
     ##################################################################
+
+    chmod -R +x "$SCRIPT_MAIN_FOLDER"
 
     if [[ -e $SCRIPT_MAIN_FOLDER ]]; then
         SCRIPT_BEING_INSTALLED="false"
@@ -476,8 +491,3 @@ else
     script_main_menu
 
 fi
-
-
-
-
-

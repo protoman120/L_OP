@@ -10,4 +10,11 @@ script_remove_systemd_service(){
 	 rm $SYSTEM_SYSTEMD_SERVICES/$SCRIPT_SERVICE_NAME
 }
 
+script_remove_user_systemd_service(){
+	 systemctl daemon-reload
+	 systemctl disable "$SCRIPT_SERVICE_NAME_USER"
+	 rm $SYSTEM_SYSTEMD_SERVICES/$SCRIPT_SERVICE_NAME_USER
+}
+
 script_remove_systemd_service
+script_remove_user_systemd_service

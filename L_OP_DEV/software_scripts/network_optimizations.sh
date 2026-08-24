@@ -1,5 +1,17 @@
 #!/bin/bash
 
+##################################################################
+#IMPORTANT: SCRIPT DIRS SETUP (OPTIMIZATIONS)
+source ./utility_scripts/script_directories.sh
+source $SAVED_OPTIMIZATION_GOALS
+source $SAVED_CPU_DATA
+source $SAVED_GPU_DATA
+source $SAVED_RAM_DATA
+source $SAVED_ROOT_STORAGE_DATA
+source $SAVED_OS_DATA
+source $SAVED_DE_DATA
+##################################################################
+
 #Network cache buffers
 
 if [[ $RAM_CLASS == "verylow" ]]; then
