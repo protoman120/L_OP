@@ -30,7 +30,7 @@ script_create_user_systemd_service(){
 
 	[Service]
 	Type=oneshot
-	ExecStart=/path/to/de_optimizations.sh apply_user_optimizations
+	ExecStart=$SCRIPT_INSTALLED_DIR/$SCRIPT_NAME.sh apply_user_optimizations
 	RemainAfterExit=true
 
 	[Install]

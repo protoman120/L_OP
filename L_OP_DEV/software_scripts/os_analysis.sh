@@ -13,8 +13,6 @@ os_save_data(){
       export SYSTEM_DISTRO=$(printf '%q' "$SYSTEM_DISTRO")
       export SYSTEM_DISTRO_BASE_1=$(printf '%q' "$SYSTEM_DISTRO_BASE_1")
       export SYSTEM_DISTRO_BASE_2=$(printf '%q' "$SYSTEM_DISTRO_BASE_2")
-      export SYSTEM_SETUP_USER=$(printf '%q' "$SYSTEM_SETUP_USER")
-      export SYSTEM_USER=$(printf '%q' "$SYSTEM_USER")
 EOF
 
 }

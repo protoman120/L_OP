@@ -3,6 +3,7 @@
 ##################################################################
 #IMPORTANT: SCRIPT DIRS SETUP
 source ./utility_scripts/script_directories.sh
+source $SAVED_OPTIMIZATION_GOALS
 ##################################################################
 
 de_save_data(){

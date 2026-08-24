@@ -163,5 +163,5 @@ if [[ $GNOME_INSTALLED == "true" ]]; then
 fi
 
 if [[ $DE_CONFIG_CHANGED == "true" ]]; then
-    de_analysis
+    $DE_ANALYSIS
 fi

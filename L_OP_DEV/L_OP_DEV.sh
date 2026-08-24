@@ -10,8 +10,11 @@ script_system_hardware_analysis(){
 }
 
 script_system_software_analysis(){
-    $DE_ANALYSIS
     $OS_ANALYSIS
+}
+
+script_system_user_software_analysis(){
+    $DE_ANALYSIS
 }
 
 script_system_hardware_optimizations(){
@@ -173,8 +176,8 @@ profile_save_optimization_goals() {
     cat > "$SAVED_OPTIMIZATION_GOALS" <<EOF
         #SYSTEM USER
 
-        SYSTEM_USER=$(printf '%q' "$SYSTEM_USER")
-        SYSTEM_SETUP_USER=$(printf '%q' "$SYSTEM_SETUP_USER")
+        export SYSTEM_USER=$(printf '%q' "$SYSTEM_USER")
+        export SYSTEM_SETUP_USER=$(printf '%q' "$SYSTEM_SETUP_USER")
 
         SYSTEM_AUTOMATIC_UPDATES=$(printf '%q' "$SYSTEM_AUTOMATIC_UPDATES")
         SYSTEM_PORTABLE_INSTALL=$(printf '%q' "$SYSTEM_PORTABLE_INSTALL")
@@ -300,13 +303,9 @@ install_script(){
         mkdir -p "$SCRIPT_SAVED_DATA"
     fi
 
-	#HARDWARE SCANNING:
-	$CPU_ANALYSIS
-	$GPU_ANALYSIS
-	$RAM_ANALYSIS
-	$STORAGE_ANALYSIS
-    $DE_ANALYSIS
-    $OS_ANALYSIS
+	script_system_hardware_analysis
+    script_system_software_analysis
+    script_system_user_software_analysis
 
     source $SAVED_ROOT_STORAGE_DATA
     if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
@@ -467,6 +466,11 @@ elif [[ "$@" == "apply_user_optimizations" ]]; then
     source ./utility_scripts/script_directories.sh
     source $SAVED_OPTIMIZATION_GOALS
     #############################################################################
+
+    if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
+        #REGENERATE ANALYSIS DATA
+        script_system_user_software_analysis
+    fi
 
     script_system_user_software_optimizations
 
