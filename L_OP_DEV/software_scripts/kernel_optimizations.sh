@@ -26,14 +26,18 @@ kernel_scheduler_optimizations(){
     fi
 
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
-	    if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-		    echo 950000 | tee /proc/sys/kernel/sched_rt_runtime_us
-    	elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-		    echo 850000 | tee /proc/sys/kernel/sched_rt_runtime_us
+	    if [[ "$OPTIMIZATION_PROFILE_USECASE" == "gaming" || "$OPTIMIZATION_PROFILE_USECASE" == "desktop" ]]; then
+		    if [[ "$CPU_CLASS" == "verylow" ]]; then
+                echo 10000 | tee /proc/sys/kernel/sched_rt_runtime_us
+            elif [[ "$CPU_CLASS" == "low" ]]; then
+                echo 20000 | tee /proc/sys/kernel/sched_rt_runtime_us
+            elif [[ $CPU_CLASS == "mid" ]]; then
+                echo 30000 | tee /proc/sys/kernel/sched_rt_runtime_us
+            elif [[ $CPU_CLASS == "high" ]]; then
+                echo 40000 | tee /proc/sys/kernel/sched_rt_runtime_us
+            fi
 	    elif [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-		    echo 750000 | tee /proc/sys/kernel/sched_rt_runtime_us
-    	else
-		    echo 650000 | tee /proc/sys/kernel/sched_rt_runtime_us
+		    echo 80000 | tee /proc/sys/kernel/sched_rt_runtime_us
     	fi
     fi
 
@@ -80,11 +84,21 @@ kernel_logging_optimizations(){
 
 kernel_debug_optimizations(){
 
-    if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-	    echo 30 | tee /proc/sys/kernel/hung_task_timeout_secs
+    if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" || $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
+        if [[ $CPU_CLASS == "verylow" ]]; then
+            echo 60 | tee /proc/sys/kernel/hung_task_timeout_secs
+		elif [[ $CPU_CLASS == "low" ]]; then
+            echo 40 | tee /proc/sys/kernel/hung_task_timeout_secs
+		elif [[ $CPU_CLASS == "mid" ]]; then
+            echo 30 | tee /proc/sys/kernel/hung_task_timeout_secs
+		elif [[ $CPU_CLASS == "high" ]]; then
+            echo 20 | tee /proc/sys/kernel/hung_task_timeout_secs
+		fi
     else
 	    echo 120 | tee /proc/sys/kernel/hung_task_timeout_secs
     fi
+
+    
 
     if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
 	    echo 0 | tee /proc/sys/kernel/watchdog
