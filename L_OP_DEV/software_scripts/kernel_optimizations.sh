@@ -16,8 +16,7 @@ kernel_scheduler_optimizations(){
 
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
         echo 0 | tee /proc/sys/kernel/numa_balancing
-    else
-        echo 1 | tee /proc/sys/kernel/numa_balancing
+        echo 0 | tee /proc/sys/kernel/sched_autogroup_enabled
     fi
 
     if [[ "$OPTIMIZATION_PROFILE_USECASE" == "gaming" ]]; then
@@ -28,31 +27,32 @@ kernel_scheduler_optimizations(){
 
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
 	    if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-		    #echo -1 | tee /proc/sys/kernel/sched_rt_runtime_us
-            echo ""
+		    echo 950000 | tee /proc/sys/kernel/sched_rt_runtime_us
     	elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-		    echo 950000 | tee /proc/sys/kernel/sched_rt_runtime_us
+		    echo 850000 | tee /proc/sys/kernel/sched_rt_runtime_us
 	    elif [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-		    echo 950000 | tee /proc/sys/kernel/sched_rt_runtime_us
+		    echo 750000 | tee /proc/sys/kernel/sched_rt_runtime_us
     	else
-		    echo 950000 | tee /proc/sys/kernel/sched_rt_runtime_us
+		    echo 650000 | tee /proc/sys/kernel/sched_rt_runtime_us
     	fi
     fi
+
 }
 
 kernel_memory_optimizations(){
 
-	if [[ $RAM_CLASS == "verylow" ]]; then
-		echo 0 | tee /sys/kernel/mm/lru_gen/enabled
-	elif [[ $RAM_CLASS == "low" ]]; then
-		echo 0 | tee /sys/kernel/mm/lru_gen/enabled
-	elif [[ $RAM_CLASS == "mid" ]]; then
+    if [[ $RAM_CLASS == "verylow" ]]; then
 		echo 1 | tee /sys/kernel/mm/lru_gen/enabled
+	elif [[ $RAM_CLASS == "low" ]]; then
+		echo 1 | tee /sys/kernel/mm/lru_gen/enabled
+	elif [[ $RAM_CLASS == "mid" ]]; then
+		echo 0 | tee /sys/kernel/mm/lru_gen/enabled
 	elif [[ $RAM_CLASS == "high" ]]; then
-		echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+		echo 0 | tee /sys/kernel/mm/lru_gen/enabled
 	elif [[ $RAM_CLASS == "veryhigh" ]]; then
-		echo 7 | tee /sys/kernel/mm/lru_gen/enabled
+		echo 0 | tee /sys/kernel/mm/lru_gen/enabled
 	fi
+
 }
 
 kernel_timer_optimizations(){
@@ -68,28 +68,28 @@ kernel_timer_optimizations(){
 kernel_logging_optimizations(){
 
     if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-	echo "3 3 3 3" | tee /proc/sys/kernel/printk
+	    echo "3 3 3 3" | tee /proc/sys/kernel/printk
     elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-	echo "4 4 4 4" | tee /proc/sys/kernel/printk
+	    echo "4 4 4 4" | tee /proc/sys/kernel/printk
     elif [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-	echo "3 3 3 3" | tee /proc/sys/kernel/printk
+	    echo "4 4 4 4" | tee /proc/sys/kernel/printk
     else
-	echo "4 4 4 4" | tee /proc/sys/kernel/printk
+	    echo "4 4 4 4" | tee /proc/sys/kernel/printk
     fi
 }
 
 kernel_debug_optimizations(){
 
     if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-	echo 0 | tee /proc/sys/kernel/hung_task_timeout_secs
+	    echo 30 | tee /proc/sys/kernel/hung_task_timeout_secs
     else
-	echo 120 | tee /proc/sys/kernel/hung_task_timeout_secs
+	    echo 120 | tee /proc/sys/kernel/hung_task_timeout_secs
     fi
 
     if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-	echo 0 | tee /proc/sys/kernel/watchdog
+	    echo 0 | tee /proc/sys/kernel/watchdog
     else
-	echo 1 | tee /proc/sys/kernel/watchdog
+	    echo 1 | tee /proc/sys/kernel/watchdog
     fi
 }
 
