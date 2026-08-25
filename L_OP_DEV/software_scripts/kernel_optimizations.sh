@@ -86,16 +86,16 @@ kernel_debug_optimizations(){
 
     if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" || $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
         if [[ $CPU_CLASS == "verylow" ]]; then
-            echo 60 | tee /proc/sys/kernel/hung_task_timeout_secs
+            echo 5 | tee /proc/sys/kernel/hung_task_timeout_secs
 		elif [[ $CPU_CLASS == "low" ]]; then
-            echo 40 | tee /proc/sys/kernel/hung_task_timeout_secs
+            echo 8 | tee /proc/sys/kernel/hung_task_timeout_secs
 		elif [[ $CPU_CLASS == "mid" ]]; then
-            echo 30 | tee /proc/sys/kernel/hung_task_timeout_secs
+            echo 10 | tee /proc/sys/kernel/hung_task_timeout_secs
 		elif [[ $CPU_CLASS == "high" ]]; then
             echo 20 | tee /proc/sys/kernel/hung_task_timeout_secs
 		fi
     else
-	    echo 120 | tee /proc/sys/kernel/hung_task_timeout_secs
+	    echo 60 | tee /proc/sys/kernel/hung_task_timeout_secs
     fi
 
     
