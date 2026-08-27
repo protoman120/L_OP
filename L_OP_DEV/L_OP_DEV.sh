@@ -283,6 +283,38 @@ profile_selection_simple() {
 
 }
 
+script_utilities_menu(){
+
+    SCRIPT_MENU_TITLE_BARS="###################################"
+
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME"
+    echo "$SCRIPT_MENU_TITLE_BARS"
+
+    echo ""
+    echo "Available Options:"
+    PS3='Choose an option: '
+    options=("Setup_Mint" "Return_To_Menu" "Quit")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "Setup_Mint")
+                $SETUP_LINUX_MINT
+                break
+                ;;
+            "Return_To_Menu")
+                script_main_menu
+                break
+                ;;
+            "Quit")
+                break
+                ;;
+            *) echo "invalid option $REPLY";;
+        esac
+    done
+
+}
+
 uninstall_script(){
     rm -r $SCRIPT_SAVED_DATA
     rm -r $SCRIPT_INSTALLED_DIR
@@ -381,7 +413,7 @@ script_main_menu(){
     echo ""
     echo "Available Options:"
     PS3='Choose an option: '
-    options=("Install" "Uninstall" "Change_Profile" "Toggle_Automatic_Updates" "Quit")
+    options=("Install" "Uninstall" "Change_Profile" "Toggle_Automatic_Updates" "Other_Utilties" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -406,8 +438,8 @@ script_main_menu(){
             	echo "NOT IMPLEMENTED YET"
                 #break
                 ;;
-            "Toggle_Automatic_Updates")
-                echo "NOT IMPLEMENTED YET"
+            "Other_Utilties")
+                script_utilities_menu
                 #break
                 ;;
             "Quit")
