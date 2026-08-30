@@ -20,61 +20,61 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 200 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 9500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 4500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 9000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 4000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
-            	echo 25 |  tee /proc/sys/vm/swappiness
-				echo 10000 |  tee /proc/sys/vm/vfs_cache_pressure
+            	echo 20 |  tee /proc/sys/vm/swappiness
+				echo 5000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 150 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 8500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 3500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 8000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 3000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
-            	echo 20 |  tee /proc/sys/vm/swappiness
-				echo 9000 |  tee /proc/sys/vm/vfs_cache_pressure
+            	echo 15 |  tee /proc/sys/vm/swappiness
+				echo 4000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 100 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 7500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 2500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 7000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 2000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
-            	echo 15 |  tee /proc/sys/vm/swappiness
-				echo 8000 |  tee /proc/sys/vm/vfs_cache_pressure
+            	echo 10 |  tee /proc/sys/vm/swappiness
+				echo 3000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 50 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 6500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 1500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 6000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 1000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
-            	echo 10 |  tee /proc/sys/vm/swappiness
-				echo 7000 |  tee /proc/sys/vm/vfs_cache_pressure
+            	echo 5 |  tee /proc/sys/vm/swappiness
+				echo 2000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 25 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 5500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 5000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
-            	echo 5 |  tee /proc/sys/vm/swappiness
-				echo 6000 |  tee /proc/sys/vm/vfs_cache_pressure
+            	echo 1 |  tee /proc/sys/vm/swappiness
+				echo 1000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		fi
 	
@@ -83,61 +83,61 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 300 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 100 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 7500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 200 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 7000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 300 |  tee /proc/sys/vm/swappiness
-				echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 8000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 280 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 50 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 6500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 150 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 6000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 280 |  tee /proc/sys/vm/swappiness
-				echo 200 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 7000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 260 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 25 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 5500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 100 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 5000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 260 |  tee /proc/sys/vm/swappiness
-				echo 150 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 6000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 240 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 10 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 4500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 50 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 4000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 240 |  tee /proc/sys/vm/swappiness
-				echo 100 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 5000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 220 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 5 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 3500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 25 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 3000 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 220 |  tee /proc/sys/vm/swappiness
-				echo 50 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 4000 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		fi
 	fi
