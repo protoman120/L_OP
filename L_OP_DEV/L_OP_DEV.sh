@@ -235,7 +235,7 @@ profile_selection_simple() {
     #TEMP FUNCTION UNTIL I GET THE OTHER WORKING
     echo "Available Options:"
     PS3='Choose a profile: '
-    options=("desktop" "gaming" "gaming_high_performance" "mc_server_self_hosting" "latency" "throughput" "custom_profile" "Quit")
+    options=("desktop" "gaming" "gaming_high_performance" "mc_server_self_hosting" "ai_self_hosting" "latency" "throughput" "custom_profile" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -253,6 +253,10 @@ profile_selection_simple() {
                 ;;
             "mc_server_self_hosting")
                 source $SCRIPT_PROFILES/mc_server_self_hosting.sh
+                break
+                ;;
+            "ai_self_hosting")
+                source $SCRIPT_PROFILES/ai_self_hosting.sh
                 break
                 ;;
             "latency")
