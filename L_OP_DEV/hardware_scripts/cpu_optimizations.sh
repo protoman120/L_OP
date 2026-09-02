@@ -226,13 +226,13 @@ cpu_frequency_optimizations(){
 		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 60 / 100 ))
 	    elif [[ $CPU_CLASS == "low" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 60 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
 	    elif [[ $CPU_CLASS == "mid" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 70 / 100 ))
 	    elif [[ $CPU_CLASS == "high" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
 	    fi
     fi
     

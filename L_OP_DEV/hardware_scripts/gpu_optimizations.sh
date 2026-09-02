@@ -78,16 +78,16 @@ gpu_performance_optimizations() {
                 elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
                     if (( GPU_POWER_CAP_W >= 200 )); then
                         GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 75 / 100 ))
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 75 / 100 ))
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 70 / 100 ))
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 70 / 100 ))
                     elif (( GPU_POWER_CAP_W >= 100 )); then
                         GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 20 / 100 ))
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 80 / 100 ))
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 80 / 100 ))
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 75 / 100 ))
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 75 / 100 ))
                     elif (( GPU_POWER_CAP_W >= 40 )); then
                         GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 15 / 100 ))
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 85 / 100 ))
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 85 / 100 ))
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 80 / 100 ))
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 80 / 100 ))
                     fi
                 fi
                 nvidia-smi --lock-gpu-clocks=$GPU_NVIDIA_NEW_MIN_GPU_CLOCK,$GPU_NVIDIA_NEW_MAX_GPU_CLOCK
@@ -100,7 +100,9 @@ gpu_performance_optimizations() {
 		        echo ""
 		    elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
 		        echo ""
-		    else
+		    elif [[ -n "$GPU_POWER_MIN_LIMIT" ]] && (( GPU_NEW_CAP < GPU_POWER_MIN_LIMIT )); then
+                GPU_NEW_CAP_W="$GPU_POWER_MIN_LIMIT"
+            else
 		        echo ""
 		    fi
         fi
@@ -120,9 +122,11 @@ gpu_performance_optimizations() {
             elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
                 #GPU_NEW_MIN_FREQ=$(( GPU_FREQ_MAX * 10 / 100 ))
                 #echo $GPU_NEW_MIN_FREQ | tee "$GPU_DRM_PATH/gt/gt0/rps_min_freq_mhz"
+                echo ""
                 if [[ "$GPU_DRIVER" == "i915" ]]; then
                     #echo 1 | tee "/sys/module/i915/parameters/enable_fbc"
                     #echo 0 | tee "/sys/module/i915/parameters/enable_psr"
+                    echo ""
                 fi
             fi
         fi
@@ -145,20 +149,21 @@ gpu_auto_power_tuner() {
             
             GPU_POWER_CAP_W=$GPU_POWER_MAX_LIMIT
             
-	    if (( GPU_POWER_CAP_W >= 200 )); then
-	    	GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 70 / 100 ))
-	    elif (( GPU_POWER_CAP_W >= 100 )); then
-	    	GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 75 / 100 ))
-	    elif (( GPU_POWER_CAP_W >= 40 )); then
-	    	GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 80 / 100 ))
-	    else
-	        GPU_NEW_CAP_W="$GPU_POWER_LIMIT"
-	    fi
+            if (( GPU_POWER_CAP_W >= 200 )); then
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 70 / 100 ))
+            elif (( GPU_POWER_CAP_W >= 100 )); then
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 75 / 100 ))
+            elif (( GPU_POWER_CAP_W >= 40 )); then
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 80 / 100 ))
+            else
+                GPU_NEW_CAP_W="$GPU_POWER_LIMIT"
+            fi
 
             if [[ -n "$GPU_POWER_MIN_LIMIT" ]] && (( GPU_NEW_CAP < GPU_POWER_MIN_LIMIT )); then
                 GPU_NEW_CAP_W="$GPU_POWER_MIN_LIMIT"
             fi
-	    #pl = power limit
+
+            #pl = power limit
             nvidia-smi -pl "$GPU_NEW_CAP_W"
         fi
 

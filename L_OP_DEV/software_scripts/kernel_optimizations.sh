@@ -98,8 +98,6 @@ kernel_debug_optimizations(){
 	    echo 60 | tee /proc/sys/kernel/hung_task_timeout_secs
     fi
 
-    
-
     if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
 	    echo 0 | tee /proc/sys/kernel/watchdog
     else

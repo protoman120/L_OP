@@ -298,10 +298,14 @@ script_utilities_menu(){
     echo ""
     echo "Available Options:"
     PS3='Choose an option: '
-    options=("Setup_Mint" "Return_To_Menu" "Quit")
+    options=("Setup_Mint" "Fix_Grub_Env" "Return_To_Menu" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
+            "Fix_Grub_Env")
+                $FIX_GRUB_ENV 
+                break
+                ;;
             "Setup_Mint")
                 $SETUP_LINUX_MINT
                 break
@@ -332,6 +336,11 @@ install_script(){
 	#PROFILE SELECTION
 	#profile_selection
     profile_selection_simple
+
+    if [ -e $SCRIPT_INSTALLED_DIR ]; then
+        echo "L_OP ALREADY INSTALLED, REINSTALLING"
+        uninstall_script
+    fi
 
     if [ -e "$SCRIPT_SAVED_DATA" ]; then
         echo ""
@@ -385,13 +394,7 @@ install_script(){
     #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL AND AUTO UPDATES
     profile_save_optimization_goals
 
-    if [ -e $SCRIPT_INSTALLED_DIR ]; then
-        echo "L_OP ALREADY INSTALLED, REINSTALLING"
-        uninstall_script
-        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
-    else
-        cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
-    fi
+    cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
 
     #SERVICES SETUP
     $SCRIPT_SETUP_SERVICES
@@ -490,10 +493,6 @@ if [[ "$@" == "apply_optimizations" ]]; then
     script_system_hardware_optimizations
     script_system_software_optimizations
 
-    if [[ $SYSTEM_AUTOMATIC_UPDATES == "true" ]]; then
-        echo ""
-    fi
-
 elif [[ "$@" == "apply_user_optimizations" ]]; then
 
     #############################################################################
@@ -506,6 +505,10 @@ elif [[ "$@" == "apply_user_optimizations" ]]; then
     if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
         #REGENERATE ANALYSIS DATA
         script_system_user_software_analysis
+    fi
+
+    if [[ $SYSTEM_AUTOMATIC_UPDATES == "true" ]]; then
+        $UPDATE_DISTRO
     fi
 
     script_system_user_software_optimizations
