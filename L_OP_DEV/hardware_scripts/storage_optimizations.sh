@@ -64,7 +64,9 @@ STORAGE OPTIMIZATIONS:
 echo ""
 COMMENT_BLOCK
 
-    
+    source $SAVED_ROOT_STORAGE_DATA
+    source $SAVED_SWAP_STORAGE_DATA
+
     for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); do
         
         STORAGE_DEVICE_PATH="/dev/$STORAGE_DEVICE"
@@ -76,12 +78,42 @@ COMMENT_BLOCK
 
         for CURRENT_STORAGE_FILE in "$SAVED_STORAGE_DEVICE_DATA_FILE"; do
 
-             source "$CURRENT_STORAGE_FILE"
+            source "$CURRENT_STORAGE_FILE"
 
-             if [[ "$DEBUG_MODE" == "true" ]]; then
-                echo "STORAGE_OPTIMIZATIONS_DEBUG: CURRENT_STORAGE_FILE = $CURRENT_STORAGE_FILE"
-                echo "STORAGE_OPTIMIZATIONS_DEBUG: STORAGE_DEVICE_TYPE = $STORAGE_DEVICE_TYPE"
-                echo "CPU_CLASS: CPU_CLASS = $CPU_CLASS"
+            STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+            if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                
+                STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "hdd" && "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    HDD_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+                
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "usb" && "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    USB_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "ssd" && "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    SSD_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "nvme" && "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    NVME_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+
             fi
 
             echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iostats
@@ -270,7 +302,7 @@ COMMENT_BLOCK
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
@@ -280,7 +312,7 @@ COMMENT_BLOCK
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
@@ -290,7 +322,7 @@ COMMENT_BLOCK
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
@@ -300,7 +332,7 @@ COMMENT_BLOCK
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
@@ -310,7 +342,7 @@ COMMENT_BLOCK
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     #read_ahead_kb SET TO 0 TO LOWER USB TEMPERATURES
                 	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
@@ -594,6 +626,9 @@ COMMENT_BLOCK
                         STORAGE_REQUIRED_ARGS="nosuid,nodev,nofail,x-gvfs-show"
                     elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
                         STORAGE_REQUIRED_ARGS="nosuid,nodev,nofail,x-gvfs-show"
+                    elif [[ $STORAGE_PARTITION_FILESYSTEM == "swap" ]]; then
+                        swapoff $STORAGE_PARTITION_PATH
+                        swapon -p 250 $STORAGE_PARTITION_PATH
                     fi
 
                 fi
@@ -811,6 +846,33 @@ COMMENT_BLOCK
 
                     STORAGE_NEW_MOUNT_ARGS="${STORAGE_REQUIRED_ARGS},${STORAGE_PARTITION_MOUNT_ARGS_CPU},${STORAGE_PARTITION_MOUNT_ARGS_RAM}"
                     mount -o remount,"$STORAGE_NEW_MOUNT_ARGS" "$STORAGE_PARTITION_MOUNTPOINT"
+
+                fi
+
+                if [[ "$STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+                    if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                        HDD_STORAGE_OPTIMIZATION_GOAL="latency"
+                    fi
+
+                    if [[ "$HDD_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                        USB_STORAGE_OPTIMIZATION_GOAL="latency"
+                    fi
+                    
+                    if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                        SSD_STORAGE_OPTIMIZATION_GOAL="latency"
+                    fi
+
+                    if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                        NVME_STORAGE_OPTIMIZATION_GOAL="latency"
+                    fi
+
+                    HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                    USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                    SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                    NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
 
                 fi
             done

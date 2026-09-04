@@ -218,7 +218,7 @@ cpu_frequency_optimizations(){
 		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
 	    elif [[ $CPU_CLASS == "high" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
 	    fi
     else
 	    if [[ $CPU_CLASS == "verylow" ]]; then

@@ -64,7 +64,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
 
     if [[ "$CPU_CLASS" == "verylow" ]]; then
         if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
+            if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+                GRUB_ZSWAP_ALGO="lz4"
+            else
+                GRUB_ZSWAP_ALGO="zstd"
+            fi
         else
             GRUB_ZSWAP_ALGO="lz4"
         fi
@@ -78,7 +82,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ "$CPU_CLASS" == "low" ]]; then
         if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
+            if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+                GRUB_ZSWAP_ALGO="lz4"
+            else
+                GRUB_ZSWAP_ALGO="zstd"
+            fi
         else
             GRUB_ZSWAP_ALGO="lz4"
         fi

@@ -213,9 +213,6 @@ EOF
         fi
 
         if [[ $STORAGE_PARTITION_MOUNTPOINT == "[SWAP]" ]]; then
-            if [[ $STORAGE_SWAP_PARTITION_FOUND == "true" ]] && [[ $STORAGE_PARTITION_MOUNTPOINT == "[SWAP]" ]]; then
-                STORAGE_SWAP_PARTITION_FOUND="false"
-            fi
 
             if [[ $STORAGE_SWAP_PARTITION_FOUND == "false" ]]; then
                  mkdir -p "$SAVED_SWAP_STORAGE_DATA_FOLDER"
