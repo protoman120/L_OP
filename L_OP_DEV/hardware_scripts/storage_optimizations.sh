@@ -64,8 +64,581 @@ STORAGE OPTIMIZATIONS:
 echo ""
 COMMENT_BLOCK
 
-    source $SAVED_ROOT_STORAGE_DATA
-    source $SAVED_SWAP_STORAGE_DATA
+source $SAVED_ROOT_STORAGE_DATA
+source $SAVED_SWAP_STORAGE_DATA
+
+io_scheduler_optimizations(){
+
+    #DEVICE SCHEDULER MUST BE UPDATED TO THE NEW ONE SET BEFORE THIS FUNCTION
+    STORAGE_DEVICE_SCHEDULER=$(cat /sys/block/$STORAGE_DEVICE/queue/scheduler | grep -o '\[.*\]' | tr -d '[]')
+
+    if [[ "$STORAGE_DEVICE_SCHEDULER" == "bfq" ]]; then
+        #SETTINGS THAT CAN BE ADJUSTED:
+        #SOURCE: https://docs.kernel.org/block/bfq-iosched.html
+        #slice_idle: How long BFQ should idle for the next I/O request.
+        #strict_guarantees: Read source for details.
+        #back_seek_max: (in Kbytes) Allows the scheduler to anticipate requests in the “backward” direction and consider them as being the “next”.
+        #fifo_expire_async: Timeout of asynchronous requests.
+        #fifo_expire_sync: Timeout of synchronous requests.
+        #low_latency: (bool) Enable/disable BFQ’s low latency mode.
+        #timeout_sync: Maximum amount of device time that can be given to a task (queue).
+        #max_budget: Maximum amount of service, measured in sectors, that can be provided to a BFQ queue.
+        if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        fi
+    elif [[ "$STORAGE_DEVICE_SCHEDULER" == "kyber" ]]; then
+        #SETTINGS THAT CAN BE ADJUSTED:
+        #SOURCE: https://docs.kernel.org/5.19/block/kyber-iosched.html
+        #read_lat_nsec: Target latency for reads (in nanoseconds).
+        #write_lat_nsec: Target latency for synchronous writes (in nanoseconds).
+        #IMPORTANT: Kyber will throttle requests in order to meet these target latencies.
+        if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        fi
+    elif [[ "$STORAGE_DEVICE_SCHEDULER" == "mq-deadline" ]]; then
+        #SETTINGS THAT CAN BE ADJUSTED:
+        #SOURCE: https://docs.kernel.org/block/deadline-iosched.html
+        #read_expire: (in ms) 
+        #write_expire: (in ms)
+        #fifo_batch: Maximum number of requests per batch. Requests are grouped into batches of a particular data direction (read or write).
+        #writes_starved: Controls how many times it gives preference to reads over writes.
+        #front_merges: (bool)
+        if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                    echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    echo ""
+                fi
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    echo ""
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    echo ""
+                fi
+            fi
+        fi
+    fi
+
+}
 
     for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); do
         
@@ -368,7 +941,7 @@ COMMENT_BLOCK
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-		            echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
+		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
