@@ -122,7 +122,7 @@ COMMENT_BLOCK
         
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
 		        if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 2 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -131,7 +131,7 @@ COMMENT_BLOCK
 		            echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
 		        elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-			        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+			        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 			        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -266,7 +266,7 @@ COMMENT_BLOCK
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
 		            echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
 	            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -286,7 +286,7 @@ COMMENT_BLOCK
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
 		            echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -407,7 +407,7 @@ COMMENT_BLOCK
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
 		            echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-			        echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+			        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 			        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
 			        echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -416,7 +416,7 @@ COMMENT_BLOCK
                 fi
             elif [[ $CPU_CLASS == "high" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -516,7 +516,7 @@ COMMENT_BLOCK
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-	        	    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+	        	    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 	 		        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
@@ -525,7 +525,7 @@ COMMENT_BLOCK
                 fi
             elif [[ $CPU_CLASS == "high" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
