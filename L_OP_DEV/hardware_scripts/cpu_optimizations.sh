@@ -169,11 +169,21 @@ cpu_performance_optimizations(){
 	fi
 
 	if [[ $CPU_CLASS == "verylow" ]]; then
-		CPU_GOVERNOR="ondemand"
-		CPU_ENERGY_PERFORMANCE_PREFERENCE="balance_performance"
+		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
+			CPU_GOVERNOR="performance"
+			CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
+		else
+			CPU_GOVERNOR="ondemand"
+			CPU_ENERGY_PERFORMANCE_PREFERENCE="balance_performance"
+		fi
 	elif [[ $CPU_CLASS == "low" ]]; then
-		CPU_GOVERNOR="performance"
-		CPU_ENERGY_PERFORMANCE_PREFERENCE="balance_performance"
+		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
+			CPU_GOVERNOR="performance"
+			CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
+		else
+			CPU_GOVERNOR="performance"
+			CPU_ENERGY_PERFORMANCE_PREFERENCE="balance_performance"
+		fi
 	elif [[ $CPU_CLASS == "mid" ]]; then
 		CPU_GOVERNOR="performance"
 		CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
@@ -254,7 +264,6 @@ elif [[ "$@" == "cpu_frequency_optimizations" ]]; then
     cpu_frequency_optimizations
 else
     cpu_scheduler_optimizations
-    cpu_performance_optimizations
     if [[ "$CPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
         if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
             intel_cpu_auto_power_tuner
@@ -264,4 +273,5 @@ else
         fi
         cpu_frequency_optimizations
     fi
+	cpu_performance_optimizations
 fi
