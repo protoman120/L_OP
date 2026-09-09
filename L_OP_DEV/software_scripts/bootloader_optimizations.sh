@@ -64,11 +64,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
 
     if [[ "$CPU_CLASS" == "verylow" ]]; then
         if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
-            if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-                GRUB_ZSWAP_ALGO="lz4"
-            else
-                GRUB_ZSWAP_ALGO="zstd"
-            fi
+            GRUB_ZSWAP_ALGO="zstd"
         else
             GRUB_ZSWAP_ALGO="lz4"
         fi
@@ -82,11 +78,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ "$CPU_CLASS" == "low" ]]; then
         if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
-            if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-                GRUB_ZSWAP_ALGO="lz4"
-            else
-                GRUB_ZSWAP_ALGO="zstd"
-            fi
+            GRUB_ZSWAP_ALGO="zstd"
         else
             GRUB_ZSWAP_ALGO="lz4"
         fi
@@ -120,17 +112,9 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
 
-    if [[ $RAM_CLASS == "verylow" ]]; then
-        GRUB_ZSWAP_ENABLED=0
-        GRUB_ZSWAP_PERCENT=0
-        if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-            GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
-        elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
-        fi
-    elif [[ $RAM_CLASS == "low" ]]; then
+    if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
         GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=10
+        GRUB_ZSWAP_PERCENT=25
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -138,23 +122,15 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ $RAM_CLASS == "mid" ]]; then
         GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=15
+        GRUB_ZSWAP_PERCENT=30
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="always"
         fi
-    elif [[ $RAM_CLASS == "high" ]]; then
+    elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
         GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=20
-        if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-            GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
-        elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            GRUB_TRANSPARENT_HUGEPAGES_MODE="always"
-        fi
-    elif [[ $RAM_CLASS == "veryhigh" ]]; then
-        GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=25
+        GRUB_ZSWAP_PERCENT=35
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then

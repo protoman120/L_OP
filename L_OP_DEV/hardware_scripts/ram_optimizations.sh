@@ -487,13 +487,21 @@ ram_zram_configuration(){
 	ZRAM_PRIORITY=500
     
 	if [[ $CPU_CLASS == "verylow" ]]; then
-        	ZRAM_ALGO="lz4"
+		if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
+            ZRAM_ALGO="zstd"
+        else
+            ZRAM_ALGO="lz4"
+        fi
 	elif [[ $CPU_CLASS == "low" ]]; then
-        	ZRAM_ALGO="lzo-rle"
+		if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
+            ZRAM_ALGO="zstd"
+        else
+            ZRAM_ALGO="lzo-rle"
+        fi
 	elif [[ $CPU_CLASS == "mid" ]]; then
-        	ZRAM_ALGO="zstd"
+		ZRAM_ALGO="zstd"
 	elif [[ $CPU_CLASS == "high" ]]; then
-        	ZRAM_ALGO="zstd"
+		ZRAM_ALGO="zstd"
 	fi
 
 	if [[ $RAM_CLASS == "verylow" ]]; then
