@@ -35,29 +35,28 @@ The goal is to make the PC not go to it's limit, while keeping/improving as much
 Supported Hardware:
 
 CPUs/IGPUs:
-    - Intel
-    - AMD
-    (Note that hybrid CPUs with P-Cores/E-Cores will not get correcly analyzed at the moment)
+- Intel
+- AMD
+(Note that hybrid CPUs with P-Cores/E-Cores will not get correcly analyzed at the moment)
 
 Dedicaded GPUs:
-    - NVIDIA
-    (I don't own either a Radeon or Intel ARC GPU, so i can't test them)
+- NVIDIA
+(I don't own either a Radeon or Intel ARC GPU, so i can't test them)
 
 
 Supported Software:
 
 Mainly supported distros:
-    - Linux Mint
-    - Bazzite
-    (Other distros should work as well)
+- Linux Mint
+(Other distros should work as well)
 
 Supported bootloader:
-    - GRUB
-    (If it's not present, the script will auto skip those that would be applied to it, the other optimizations will still work)
+- GRUB
+(If it's not present, the script will auto skip those that would be applied to it, the other optimizations will still work)
 
 Supported desktop environments:
-    - XFCE
-    (Same as with before, if you have a different DE, those optimizations will be skipped, the other optimizations will still work)
+- XFCE
+(Same as with before, if you have a different DE, those optimizations will be skipped, the other optimizations will still work)
 
 
 How does this script work?

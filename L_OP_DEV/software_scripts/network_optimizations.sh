@@ -24,24 +24,24 @@ if [[ $RAM_CLASS == "verylow" ]]; then
     echo $((10 * $MB)) |  tee /proc/sys/net/core/wmem_max
 elif [[ $RAM_CLASS == "low" ]]; then
     echo $((10 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((20 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((15 * $MB)) |  tee /proc/sys/net/core/rmem_max
     echo $((10 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_max
+    echo $((15 * $MB)) |  tee /proc/sys/net/core/wmem_max
 elif [[ $RAM_CLASS == "mid" ]]; then
-    echo $((20 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((40 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((40 * $MB)) |  tee /proc/sys/net/core/wmem_max
+    echo $((15 * $MB)) |  tee /proc/sys/net/core/rmem_default
+    echo $((20 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((15 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_max
 elif [[ $RAM_CLASS == "high" ]]; then
-    echo $((40 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((80 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((40 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((80 * $MB)) |  tee /proc/sys/net/core/wmem_max
+    echo $((20 * $MB)) |  tee /proc/sys/net/core/rmem_default
+    echo $((25 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((25 * $MB)) |  tee /proc/sys/net/core/wmem_max
 elif [[ $RAM_CLASS == "veryhigh" ]]; then
-    echo $((80 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((160 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((80 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((160 * $MB)) |  tee /proc/sys/net/core/wmem_max
+    echo $((25 * $MB)) |  tee /proc/sys/net/core/rmem_default
+    echo $((30 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((25 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((30 * $MB)) |  tee /proc/sys/net/core/wmem_max
 fi
 
 if (( $CPU_THREADS >= 32 )); then

@@ -33,7 +33,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     GRUB_PREEMPT="preempt=${GRUB_PREEMPT_MODE}"
 
     GRUB_ZSWAP_ALGO="zstd"
-    GRUB_ZSWAP_PERCENT=10
+    GRUB_ZSWAP_PERCENT=25
     GRUB_ZSWAP_ENABLED=1
     GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT}"
 
@@ -62,7 +62,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         
     GRUB_TRANSPARENT_HUGEPAGES_AMOUNT=0
 
-    if [[ "$CPU_CLASS" == "verylow" ]]; then
+    if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
         if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
             GRUB_ZSWAP_ALGO="zstd"
         else
@@ -76,31 +76,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
         fi
-    elif [[ "$CPU_CLASS" == "low" ]]; then
-        if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
-        else
-            GRUB_ZSWAP_ALGO="lz4"
-        fi
-        GRUB_CPU_MAX_CSTATE=1
-        if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
-            GRUB_PREEMPT_MODE="voluntary"
-            GRUB_EXTRA_ARGS+=" nohz=off"
-        elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            GRUB_PREEMPT_MODE="voluntary"
-            GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
-        fi
-    elif [[ "$CPU_CLASS" == "mid" ]]; then
-        GRUB_ZSWAP_ALGO="zstd"
-        GRUB_CPU_MAX_CSTATE=0
-        if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
-            GRUB_PREEMPT_MODE="full"
-            GRUB_EXTRA_ARGS+=" nohz=off"
-        elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            GRUB_PREEMPT_MODE="voluntary"
-            GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
-        fi
-    elif [[ "$CPU_CLASS" == "high" ]]; then
+    elif [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
         GRUB_ZSWAP_ALGO="zstd"
         GRUB_CPU_MAX_CSTATE=0
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -114,7 +90,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
 
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
         GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=25
+        if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+            GRUB_ZSWAP_PERCENT=30
+        else
+            GRUB_ZSWAP_PERCENT=25
+        fi
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -122,7 +102,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ $RAM_CLASS == "mid" ]]; then
         GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=30
+        if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+            GRUB_ZSWAP_PERCENT=35
+        else
+            GRUB_ZSWAP_PERCENT=30
+        fi
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -130,7 +114,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
         GRUB_ZSWAP_ENABLED=1
-        GRUB_ZSWAP_PERCENT=35
+        if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+            GRUB_ZSWAP_PERCENT=40
+        else
+            GRUB_ZSWAP_PERCENT=35
+        fi
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then

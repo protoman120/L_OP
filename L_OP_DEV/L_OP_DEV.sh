@@ -391,6 +391,8 @@ install_script(){
         esac
     done
 
+    source $SAVED_CPU_DATA
+    source $SAVED_RAM_DATA
     #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL AND AUTO UPDATES
     profile_save_optimization_goals
 
@@ -488,6 +490,18 @@ if [[ "$@" == "apply_optimizations" ]]; then
         #REGENERATE ANALYSIS DATA
         script_system_hardware_analysis
         script_system_software_analysis
+
+         if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
+	    	if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
+	    	    #IF BOOTLOADER ARGS NEED TO BE UPDATED, REBOOT COMPUTER ONCE (IT'S ONLY NEEDED FOR PORTABLE INSTALLS)
+    		    if [[ "$SCANNED_CPU_CLASSIFICATION" != "$CPU_CLASS" ]] || [[ "$SCANNED_RAM_CLASSIFICATION" != "$RAM_CLASS" ]]; then
+                    $BOOTLOADER_OPTIMIZATIONS
+                    #UPDATE OPTIMIZATION GOALS FILE WITH THE NEWLY SCANNED HARDWARE, OR ELSE IT WILL TRIGGER A REBOOT LOOP
+                    profile_save_optimization_goals
+                    reboot
+	    	    fi
+	    	fi
+	    fi
     fi
 
     script_system_hardware_optimizations
