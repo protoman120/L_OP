@@ -18,30 +18,30 @@ source $SAVED_DE_DATA
 MB=1048576
 
 if [[ $RAM_CLASS == "verylow" ]]; then
-    echo $((5 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((10 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((5 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((10 * $MB)) |  tee /proc/sys/net/core/wmem_max
-elif [[ $RAM_CLASS == "low" ]]; then
     echo $((10 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((15 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((10 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((15 * $MB)) |  tee /proc/sys/net/core/wmem_max
-elif [[ $RAM_CLASS == "mid" ]]; then
-    echo $((15 * $MB)) |  tee /proc/sys/net/core/rmem_default
     echo $((20 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((15 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((10 * $MB)) |  tee /proc/sys/net/core/wmem_default
     echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_max
-elif [[ $RAM_CLASS == "high" ]]; then
+elif [[ $RAM_CLASS == "low" ]]; then
     echo $((20 * $MB)) |  tee /proc/sys/net/core/rmem_default
-    echo $((25 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_default
-    echo $((25 * $MB)) |  tee /proc/sys/net/core/wmem_max
-elif [[ $RAM_CLASS == "veryhigh" ]]; then
-    echo $((25 * $MB)) |  tee /proc/sys/net/core/rmem_default
     echo $((30 * $MB)) |  tee /proc/sys/net/core/rmem_max
-    echo $((25 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((20 * $MB)) |  tee /proc/sys/net/core/wmem_default
     echo $((30 * $MB)) |  tee /proc/sys/net/core/wmem_max
+elif [[ $RAM_CLASS == "mid" ]]; then
+    echo $((30 * $MB)) |  tee /proc/sys/net/core/rmem_default
+    echo $((40 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((30 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((40 * $MB)) |  tee /proc/sys/net/core/wmem_max
+elif [[ $RAM_CLASS == "high" ]]; then
+    echo $((40 * $MB)) |  tee /proc/sys/net/core/rmem_default
+    echo $((50 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((40 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((50 * $MB)) |  tee /proc/sys/net/core/wmem_max
+elif [[ $RAM_CLASS == "veryhigh" ]]; then
+    echo $((50 * $MB)) |  tee /proc/sys/net/core/rmem_default
+    echo $((60 * $MB)) |  tee /proc/sys/net/core/rmem_max
+    echo $((50 * $MB)) |  tee /proc/sys/net/core/wmem_default
+    echo $((60 * $MB)) |  tee /proc/sys/net/core/wmem_max
 fi
 
 if (( $CPU_THREADS >= 32 )); then
@@ -77,19 +77,19 @@ if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
         #BUSY_POLL AND BUSY_READ CAN CAUSE KERNEL PANICS ON SPECIFIC HARDWARE
         #echo 0 |  tee /proc/sys/net/core/busy_poll
         #echo 0 |  tee /proc/sys/net/core/busy_read
-        echo 4 |  tee /proc/sys/net/core/dev_weight
+        echo 12 |  tee /proc/sys/net/core/dev_weight
     elif [[ $CPU_CLASS == "low" ]]; then
         #echo 0 |  tee /proc/sys/net/core/busy_poll
         #echo 0 |  tee /proc/sys/net/core/busy_read
-        echo 8 |  tee /proc/sys/net/core/dev_weight
+        echo 24 |  tee /proc/sys/net/core/dev_weight
     elif [[ $CPU_CLASS == "mid" ]]; then
         #echo 25 |  tee /proc/sys/net/core/busy_poll
         #echo 25 |  tee /proc/sys/net/core/busy_read
-        echo 16 |  tee /proc/sys/net/core/dev_weight
+        echo 36 |  tee /proc/sys/net/core/dev_weight
     elif [[ $CPU_CLASS == "high" ]]; then
         #echo 50 |  tee /proc/sys/net/core/busy_poll
         #echo 50 |  tee /proc/sys/net/core/busy_read
-        echo 32 |  tee /proc/sys/net/core/dev_weight
+        echo 48 |  tee /proc/sys/net/core/dev_weight
     fi
 
     echo 1 |  tee /proc/sys/net/ipv4/tcp_low_latency

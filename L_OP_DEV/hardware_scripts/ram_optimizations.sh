@@ -18,7 +18,7 @@ ram_swappiness(){
 	
 		if [[ $RAM_CLASS == "verylow" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-				echo 100 |  tee /proc/sys/vm/swappiness
+				echo 80 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
 					echo 4500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
@@ -30,7 +30,7 @@ ram_swappiness(){
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-				echo 80 |  tee /proc/sys/vm/swappiness
+				echo 60 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
 					echo 3500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
@@ -42,7 +42,7 @@ ram_swappiness(){
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-				echo 60 |  tee /proc/sys/vm/swappiness
+				echo 40 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
 					echo 2500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
@@ -54,7 +54,7 @@ ram_swappiness(){
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-				echo 40 |  tee /proc/sys/vm/swappiness
+				echo 20 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
 					echo 1500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
@@ -66,7 +66,7 @@ ram_swappiness(){
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-				echo 20 |  tee /proc/sys/vm/swappiness
+				echo 10 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
 					echo 500 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
@@ -486,21 +486,13 @@ ram_zram_configuration(){
 	ZRAM_AMOUNT="2G"
 	ZRAM_PRIORITY=500
     
-	if [[ $CPU_CLASS == "verylow" ]]; then
+	if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
 		if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
             ZRAM_ALGO="zstd"
         else
             ZRAM_ALGO="lz4"
         fi
-	elif [[ $CPU_CLASS == "low" ]]; then
-		if [[ $RAM_CLASS == "verylow" ||  $RAM_CLASS == "low" ]]; then
-            ZRAM_ALGO="zstd"
-        else
-            ZRAM_ALGO="lzo-rle"
-        fi
-	elif [[ $CPU_CLASS == "mid" ]]; then
-		ZRAM_ALGO="zstd"
-	elif [[ $CPU_CLASS == "high" ]]; then
+	elif [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
 		ZRAM_ALGO="zstd"
 	fi
 
