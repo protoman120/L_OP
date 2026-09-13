@@ -20,9 +20,9 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 80 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-					echo 2750 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 3750 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 2500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 3500 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
             	echo 20 |  tee /proc/sys/vm/swappiness
@@ -452,31 +452,25 @@ ram_vm_optimizations(){
     fi
 
 	if [[ $RAM_CLASS == "verylow" ]]; then
-		echo 131072 |  tee /proc/sys/vm/min_free_kbytes
-		echo 32768 |  tee /proc/sys/vm/max_map_count
-	elif [[ $RAM_CLASS == "low" ]]; then
 		echo 262144 |  tee /proc/sys/vm/min_free_kbytes
 		echo 65536 |  tee /proc/sys/vm/max_map_count
-	elif [[ $RAM_CLASS == "mid" ]]; then
+	elif [[ $RAM_CLASS == "low" ]]; then
 		echo 524288 |  tee /proc/sys/vm/min_free_kbytes
 		echo 131072 |  tee /proc/sys/vm/max_map_count
-	elif [[ $RAM_CLASS == "high" ]]; then
+	elif [[ $RAM_CLASS == "mid" ]]; then
 		echo 1048576 |  tee /proc/sys/vm/min_free_kbytes
 		echo 262144 |  tee /proc/sys/vm/max_map_count
-	elif [[ $RAM_CLASS == "veryhigh" ]]; then
+	elif [[ $RAM_CLASS == "high" ]]; then
 		echo 2097152 |  tee /proc/sys/vm/min_free_kbytes
 		echo 524288 |  tee /proc/sys/vm/max_map_count
+	elif [[ $RAM_CLASS == "veryhigh" ]]; then
+		echo 4194304 |  tee /proc/sys/vm/min_free_kbytes
+		echo 1048576 |  tee /proc/sys/vm/max_map_count
 	fi
 
-	if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
-		echo 4 |  tee /proc/sys/vm/zone_reclaim_mode
-	else
-		echo 0 |  tee /proc/sys/vm/zone_reclaim_mode
-	fi
-
+	echo 1 |  tee /proc/sys/vm/zone_reclaim_mode
 	echo 1 |  tee /proc/sys/vm/overcommit_memory
-
-
+	
 }
 
 ram_zram_configuration(){
