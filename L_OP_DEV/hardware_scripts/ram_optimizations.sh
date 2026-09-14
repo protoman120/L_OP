@@ -458,17 +458,32 @@ ram_vm_optimizations(){
 		echo 524288 |  tee /proc/sys/vm/min_free_kbytes
 		echo 131072 |  tee /proc/sys/vm/max_map_count
 	elif [[ $RAM_CLASS == "mid" ]]; then
-		echo 1048576 |  tee /proc/sys/vm/min_free_kbytes
+		echo 786432 |  tee /proc/sys/vm/min_free_kbytes
 		echo 262144 |  tee /proc/sys/vm/max_map_count
 	elif [[ $RAM_CLASS == "high" ]]; then
-		echo 2097152 |  tee /proc/sys/vm/min_free_kbytes
-		echo 524288 |  tee /proc/sys/vm/max_map_count
+		echo 1048576 |  tee /proc/sys/vm/min_free_kbytes
+		echo 327680 |  tee /proc/sys/vm/max_map_count
 	elif [[ $RAM_CLASS == "veryhigh" ]]; then
-		echo 4194304 |  tee /proc/sys/vm/min_free_kbytes
-		echo 1048576 |  tee /proc/sys/vm/max_map_count
+		echo 1310720 |  tee /proc/sys/vm/min_free_kbytes
+		echo 393216 |  tee /proc/sys/vm/max_map_count
 	fi
 
-	echo 1 |  tee /proc/sys/vm/zone_reclaim_mode
+	if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+		if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+			echo 4 |  tee /proc/sys/vm/zone_reclaim_mode
+		else
+			echo 1 |  tee /proc/sys/vm/zone_reclaim_mode
+		fi
+	else
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			echo 1 |  tee /proc/sys/vm/zone_reclaim_mode
+		elif [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+			echo 4 |  tee /proc/sys/vm/zone_reclaim_mode
+		else
+			echo 0 |  tee /proc/sys/vm/zone_reclaim_mode
+		fi
+	fi
+
 	echo 1 |  tee /proc/sys/vm/overcommit_memory
 	
 }
@@ -546,8 +561,10 @@ ram_zram_configuration(){
 }
 
 ram_swappiness
-if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-	ram_deduplication
+if [[ "$CPU_CLASS" == "high" ]]; then
+	if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+		ram_deduplication
+	fi
 fi
 ram_vm_optimizations
 ram_zram_configuration
