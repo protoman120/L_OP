@@ -123,11 +123,16 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     fi
 
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-        GRUB_ZSWAP_ENABLED=1
-        if [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-            GRUB_ZSWAP_PERCENT=30
+        if [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
+            GRUB_ZSWAP_ENABLED=1
+            if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+                GRUB_ZSWAP_PERCENT=25
+            else
+                GRUB_ZSWAP_PERCENT=20
+            fi
         else
-            GRUB_ZSWAP_PERCENT=25
+            GRUB_ZSWAP_ENABLED=1
+            GRUB_ZSWAP_PERCENT=15
         fi
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
@@ -135,11 +140,17 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
         fi
     elif [[ $RAM_CLASS == "mid" ]]; then
-        GRUB_ZSWAP_ENABLED=1
-        if [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-            GRUB_ZSWAP_PERCENT=35
+
+        if [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
+            GRUB_ZSWAP_ENABLED=1
+            if [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+                GRUB_ZSWAP_PERCENT=30
+            else
+                GRUB_ZSWAP_PERCENT=25
+            fi
         else
-            GRUB_ZSWAP_PERCENT=30
+            GRUB_ZSWAP_ENABLED=1
+            GRUB_ZSWAP_PERCENT=20
         fi
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
@@ -147,11 +158,16 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="always"
         fi
     elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-        GRUB_ZSWAP_ENABLED=1
-        if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-            GRUB_ZSWAP_PERCENT=40
+        if [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
+            GRUB_ZSWAP_ENABLED=1
+            if [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+                GRUB_ZSWAP_PERCENT=35
+            else
+                GRUB_ZSWAP_PERCENT=30
+            fi
         else
-            GRUB_ZSWAP_PERCENT=35
+            GRUB_ZSWAP_ENABLED=1
+            GRUB_ZSWAP_PERCENT=25
         fi
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
