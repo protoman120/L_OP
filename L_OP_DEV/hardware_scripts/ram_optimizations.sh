@@ -200,8 +200,8 @@ ram_vm_optimizations(){
     if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 64 MB
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 256 MB
 		    echo 400 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -210,8 +210,8 @@ ram_vm_optimizations(){
 		    echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 350 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -220,8 +220,8 @@ ram_vm_optimizations(){
             echo 750 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 300 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -230,8 +230,8 @@ ram_vm_optimizations(){
 		    echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 250 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -240,8 +240,8 @@ ram_vm_optimizations(){
 		    echo 1250 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 200 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/page-cluster
@@ -270,8 +270,8 @@ ram_vm_optimizations(){
 		    echo 0 |  tee /proc/sys/vm/page-cluster
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1250 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 15 seconds
 		    echo 1600 | tee /proc/sys/vm/dirty_writeback_centisecs
     	    echo 5 | tee /proc/sys/vm/laptop_mode
@@ -282,8 +282,8 @@ ram_vm_optimizations(){
 		    echo 0 |  tee /proc/sys/vm/page-cluster
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1500 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 25 seconds
 		    echo 1700 | tee /proc/sys/vm/dirty_writeback_centisecs
     	    echo 5 | tee /proc/sys/vm/laptop_mode
@@ -294,9 +294,9 @@ ram_vm_optimizations(){
 		    echo 0 |  tee /proc/sys/vm/page-cluster
 		    echo 1 |  tee /proc/sys/vm/stat_interval
             #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
-		    echo 1750 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 40 seconds
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 64 MB
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo 1750 | tee /proc/sys/vm/dirty_expire_centisecs
 		    echo 1800 | tee /proc/sys/vm/dirty_writeback_centisecs
 		    echo 5 | tee /proc/sys/vm/laptop_mode
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
@@ -306,8 +306,8 @@ ram_vm_optimizations(){
 		    echo 1 |  tee /proc/sys/vm/page-cluster
 		    echo 1 |  tee /proc/sys/vm/stat_interval
     	    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 2000 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 60 seconds
 		    echo 2000 | tee /proc/sys/vm/dirty_writeback_centisecs
     	    echo 5 | tee /proc/sys/vm/laptop_mode
@@ -316,8 +316,8 @@ ram_vm_optimizations(){
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 256 MB
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 512 MB
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 400 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -326,8 +326,8 @@ ram_vm_optimizations(){
 		    echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 512 MB
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 1048 MB
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 350 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -337,8 +337,8 @@ ram_vm_optimizations(){
 		    echo 750 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 1024 MB
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 2048 MB
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 300 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -347,8 +347,8 @@ ram_vm_optimizations(){
 		    echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 2048 MB
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 4096 MB
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 250 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -357,8 +357,8 @@ ram_vm_optimizations(){
 		    echo 1500 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 2048 MB
-		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 8192 MB
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((16384 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 200 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/page-cluster
@@ -370,8 +370,8 @@ ram_vm_optimizations(){
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "nvme" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 256 MB
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 512 MB
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 400 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -380,8 +380,8 @@ ram_vm_optimizations(){
 		    echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 512 MB
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 1048 MB
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 350 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -390,8 +390,8 @@ ram_vm_optimizations(){
     	    echo 750 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 1024 MB
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 2048 MB
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 300 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -400,8 +400,8 @@ ram_vm_optimizations(){
 		    echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 2048 MB
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 4096 MB
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((16384 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 250 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 0 |  tee /proc/sys/vm/page-cluster
@@ -410,8 +410,8 @@ ram_vm_optimizations(){
 		    echo 1500 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 2048 MB
-		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 8192 MB
+		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((32768 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 200 |  tee /proc/sys/vm/watermark_scale_factor
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/page-cluster
@@ -423,30 +423,30 @@ ram_vm_optimizations(){
 
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
 	    if [[ $CPU_CLASS == "verylow" ]]; then
-	        echo 0 |  tee /proc/sys/vm/compaction_proactiveness
-	        echo 0 |  tee /proc/sys/vm/page_lock_unfairness
-	    elif [[ $CPU_CLASS == "low" ]]; then
-	        echo 0 |  tee /proc/sys/vm/compaction_proactiveness
+	        echo 2 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 1 |  tee /proc/sys/vm/page_lock_unfairness
-	    elif [[ $CPU_CLASS == "mid" ]]; then
-	        echo 0 |  tee /proc/sys/vm/compaction_proactiveness
+	    elif [[ $CPU_CLASS == "low" ]]; then
+	        echo 4 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 2 |  tee /proc/sys/vm/page_lock_unfairness
-	    elif [[ $CPU_CLASS == "high" ]]; then
-	        echo 0 |  tee /proc/sys/vm/compaction_proactiveness
+	    elif [[ $CPU_CLASS == "mid" ]]; then
+	        echo 6 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 3 |  tee /proc/sys/vm/page_lock_unfairness
+	    elif [[ $CPU_CLASS == "high" ]]; then
+	        echo 8 |  tee /proc/sys/vm/compaction_proactiveness
+	        echo 4 |  tee /proc/sys/vm/page_lock_unfairness
 	    fi
     elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
 	    if [[ $CPU_CLASS == "verylow" ]]; then
-	        echo 50 |  tee /proc/sys/vm/compaction_proactiveness
+	        echo 20 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 10 |  tee /proc/sys/vm/page_lock_unfairness
 	    elif [[ $CPU_CLASS == "low" ]]; then
-	        echo 100 |  tee /proc/sys/vm/compaction_proactiveness
+	        echo 40 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 20 |  tee /proc/sys/vm/page_lock_unfairness
 	    elif [[ $CPU_CLASS == "mid" ]]; then
-	        echo 150 |  tee /proc/sys/vm/compaction_proactiveness
+	        echo 60 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 30 |  tee /proc/sys/vm/page_lock_unfairness
 	    elif [[ $CPU_CLASS == "high" ]]; then
-	        echo 200 |  tee /proc/sys/vm/compaction_proactiveness
+	        echo 80 |  tee /proc/sys/vm/compaction_proactiveness
 	        echo 40 |  tee /proc/sys/vm/page_lock_unfairness
 	    fi
     fi
