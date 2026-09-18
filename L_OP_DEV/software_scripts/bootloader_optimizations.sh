@@ -130,6 +130,9 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             else
                 GRUB_ZSWAP_PERCENT=25
             fi
+        elif [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
+            GRUB_ZSWAP_ENABLED=0
+            GRUB_ZSWAP_PERCENT=0
         else
             GRUB_ZSWAP_ENABLED=1
             if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
@@ -143,7 +146,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
         fi
-    elif [[ $RAM_CLASS == "mid" ]]; then
+    elif [[ $RAM_CLASS == "mid" || $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
         if [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
             GRUB_ZSWAP_ENABLED=1
             if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
@@ -161,27 +164,6 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi 
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="never"
-        elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            GRUB_TRANSPARENT_HUGEPAGES_MODE="always"
-        fi
-    elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-        if [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-            GRUB_ZSWAP_ENABLED=1
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_PERCENT=40
-            else
-                GRUB_ZSWAP_PERCENT=35
-            fi
-        else
-            GRUB_ZSWAP_ENABLED=1
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_PERCENT=30
-            else
-                GRUB_ZSWAP_PERCENT=25
-            fi
-        fi
-        if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-            GRUB_TRANSPARENT_HUGEPAGES_MODE="madvise"
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
             GRUB_TRANSPARENT_HUGEPAGES_MODE="always"
         fi
