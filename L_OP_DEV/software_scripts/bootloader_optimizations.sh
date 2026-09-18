@@ -149,14 +149,14 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     elif [[ $RAM_CLASS == "mid" || $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
         if [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
             GRUB_ZSWAP_ENABLED=1
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                 GRUB_ZSWAP_PERCENT=35
             else
                 GRUB_ZSWAP_PERCENT=30
             fi
         else
             GRUB_ZSWAP_ENABLED=1
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                 GRUB_ZSWAP_PERCENT=25
             else
                 GRUB_ZSWAP_PERCENT=20
