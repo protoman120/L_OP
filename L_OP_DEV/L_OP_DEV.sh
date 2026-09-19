@@ -329,6 +329,11 @@ uninstall_script(){
     $BOOTLOADER_REMOVE_OPTIMIZATIONS
     $SCRIPT_REMOVE_SERVICES
     $TMPFS_CACHING_SERVICES_REMOVAL
+
+    if [[ $INSTALLING_SCRIPT != "true" ]]; then
+        ask_system_reboot
+    fi
+
 }
 
 install_script(){
@@ -407,8 +412,27 @@ install_script(){
         $BOOTLOADER_OPTIMIZATIONS
     fi
 
-	echo "Please restart your PC to apply"
+	ask_system_reboot
 
+}
+
+ask_system_reboot(){
+    while true; do
+        read -rp "Changes applied, a reboot is required to apply them, reboot now? (Y/N): " answer
+        case "$answer" in
+            [Yy])
+                reboot
+                break
+                ;;
+            [Nn])
+                echo "Changes will be applied on next reboot"
+                break
+                ;;
+            *)
+                echo ""
+                ;;
+        esac
+    done
 }
 
 script_main_menu(){
@@ -427,6 +451,7 @@ script_main_menu(){
     do
         case $opt in
             "Install")
+                INSTALLING_SCRIPT="true"
                 install_script
                 break
                 ;;
@@ -440,7 +465,12 @@ script_main_menu(){
 				break
                 ;;
             "Change_Profile")
-                profile_selection
+                cd /var/lib/L_OP_DEV
+                source ./utility_scripts/script_directories.sh
+                source $SAVED_OPTIMIZATION_GOALS
+                profile_selection_simple
+                profile_save_optimization_goals
+                ask_system_reboot
                 break
                 ;;
             "Toggle_Automatic_Updates")
