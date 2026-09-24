@@ -125,7 +125,7 @@ pc_info(){
 	fi
 	echo "	- KERNEL VERSION: $SYSTEM_KERNEL_VERSION"
     
-    if [[ "$TESTING_MODE" == "true" ]];then
+    if [[ "$TESTING_MODE" == "true" ]]; then
          echo ""
          echo "${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}"
          echo "WARNING: TESTING MODE ENABLED, OPTIMIZATIONS SELECTED WILL NOT BE APPLIED"

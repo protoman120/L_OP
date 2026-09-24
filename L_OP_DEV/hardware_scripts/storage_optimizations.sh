@@ -203,7 +203,7 @@ io_scheduler_optimizations(){
                     #VALUES:
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/slice_idle
                     echo 40 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_penalty
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
+                    echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
                     echo 70 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_async
                     echo 35 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_sync
                 elif [[ $CPU_CLASS == "low" ]]; then
@@ -213,7 +213,7 @@ io_scheduler_optimizations(){
                     #VALUES:
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/slice_idle
                     echo 38 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_penalty
-                    echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
+                    echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
                     echo 60 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_async
                     echo 30 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_sync
                 elif [[ $CPU_CLASS == "mid" ]]; then
@@ -223,7 +223,7 @@ io_scheduler_optimizations(){
                     #VALUES:
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/slice_idle
                     echo 36 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_penalty
-                    echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
+                    echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
                     echo 50 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_async
                     echo 25 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_sync
                 elif [[ $CPU_CLASS == "high" ]]; then
@@ -233,7 +233,7 @@ io_scheduler_optimizations(){
                     #VALUES:
                     echo 6 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/slice_idle
                     echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_penalty
-                    echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
+                    echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/back_seek_max
                     echo 40 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_async
                     echo 20 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_expire_sync
                 fi
@@ -1221,42 +1221,42 @@ io_scheduler_optimizations(){
             #OPTIMIZED FOR SLOW STORAGE (USB ONLY)
             if [[ $RAM_CLASS == "verylow" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB / 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB / 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB / 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "low" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB / 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "mid" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "high" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "veryhigh" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 256 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             fi
@@ -1265,7 +1265,7 @@ io_scheduler_optimizations(){
 		        echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
 		        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
 	        elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
 		        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
 	        fi
 
@@ -1726,10 +1726,8 @@ io_scheduler_optimizations(){
                 fi
 
                 if [[ "$STORAGE_MOUNT_ARGS_CHANGED" == "true" ]]; then
-
                     STORAGE_NEW_MOUNT_ARGS="${STORAGE_REQUIRED_ARGS},${STORAGE_PARTITION_MOUNT_ARGS_CPU},${STORAGE_PARTITION_MOUNT_ARGS_RAM}"
                     mount -o remount,"$STORAGE_NEW_MOUNT_ARGS" "$STORAGE_PARTITION_MOUNTPOINT"
-
                 fi
 
                 if [[ "$STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
