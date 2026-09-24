@@ -476,82 +476,162 @@ ram_vm_optimizations(){
 	if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
 		if [[ $RAM_CLASS == "verylow" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 2 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 2 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 1 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 2 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 1 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 8 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 			else
-				echo 2 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 2 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 6 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 12 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 6 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 3 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 6 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 3 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 8 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 16 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 8 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 8 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 10 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 20 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 10 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 5 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 10 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 5 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		fi
 	elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
 		if [[ $RAM_CLASS == "verylow" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 40 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 40 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 20 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 40 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 20 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 160 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 40 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 40 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 120 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 240 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 120 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 60 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 120 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 60 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 160 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 320 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 160 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 160 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				echo 200 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 400 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 200 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
-				echo 100 |  tee /proc/sys/vm/watermark_scale_factor
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 200 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 100 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		fi
