@@ -309,8 +309,8 @@ ram_vm_optimizations(){
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -322,8 +322,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 131072 |  tee /proc/sys/vm/min_free_kbytes
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -335,8 +335,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -347,8 +347,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -373,8 +373,8 @@ ram_vm_optimizations(){
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "nvme" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 50 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -385,8 +385,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 100 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -397,8 +397,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -409,8 +409,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((16384 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -421,8 +421,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((32768 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((16384 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -477,9 +477,9 @@ ram_vm_optimizations(){
 		if [[ $RAM_CLASS == "verylow" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 20 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 2 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 10 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
@@ -493,23 +493,25 @@ ram_vm_optimizations(){
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 8 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 40 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 20 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
+				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
 					echo 4 |  tee /proc/sys/vm/watermark_scale_factor
 				else
 					echo 2 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
+				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 12 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 60 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 6 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 30 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
@@ -523,9 +525,9 @@ ram_vm_optimizations(){
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 16 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 8 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 40 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
@@ -539,9 +541,9 @@ ram_vm_optimizations(){
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 20 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 100 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 10 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 50 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
@@ -557,9 +559,25 @@ ram_vm_optimizations(){
 		if [[ $RAM_CLASS == "verylow" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 200 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 40 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 100 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
+				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
+			else
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 20 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 10 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
+				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
+			fi
+		elif [[ $RAM_CLASS == "low" ]]; then
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 400 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 200 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
@@ -570,12 +588,28 @@ ram_vm_optimizations(){
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
-		elif [[ $RAM_CLASS == "low" ]]; then
+		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 160 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 600 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 300 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
+				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
+			else
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 60 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 30 |  tee /proc/sys/vm/watermark_scale_factor
+				fi
+				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
+			fi
+		elif [[ $RAM_CLASS == "high" ]]; then
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+					echo 800 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 400 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
@@ -586,51 +620,19 @@ ram_vm_optimizations(){
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi
-		elif [[ $RAM_CLASS == "mid" ]]; then
-			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 240 |  tee /proc/sys/vm/watermark_scale_factor
-				else
-					echo 120 |  tee /proc/sys/vm/watermark_scale_factor
-				fi
-				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-			else
-				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 120 |  tee /proc/sys/vm/watermark_scale_factor
-				else
-					echo 60 |  tee /proc/sys/vm/watermark_scale_factor
-				fi
-				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-			fi
-		elif [[ $RAM_CLASS == "high" ]]; then
-			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 320 |  tee /proc/sys/vm/watermark_scale_factor
-				else
-					echo 160 |  tee /proc/sys/vm/watermark_scale_factor
-				fi
-				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-			else
-				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 160 |  tee /proc/sys/vm/watermark_scale_factor
-				else
-					echo 80 |  tee /proc/sys/vm/watermark_scale_factor
-				fi
-				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 400 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 1000 |  tee /proc/sys/vm/watermark_scale_factor
 				else
-					echo 200 |  tee /proc/sys/vm/watermark_scale_factor
+					echo 500 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			else
 				if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-					echo 200 |  tee /proc/sys/vm/watermark_scale_factor
-				else
 					echo 100 |  tee /proc/sys/vm/watermark_scale_factor
+				else
+					echo 50 |  tee /proc/sys/vm/watermark_scale_factor
 				fi
 				echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 			fi

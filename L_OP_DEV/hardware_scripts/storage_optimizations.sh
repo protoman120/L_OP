@@ -1130,39 +1130,39 @@ io_scheduler_optimizations(){
             if [[ $RAM_CLASS == "verylow" ]]; then
             	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((2 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((4 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "low" ]]; then
             	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((4 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((8 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "mid" ]]; then
             	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((8 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((16 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 512 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "high" ]]; then
             	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((16 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((32 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 512 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 256 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "veryhigh" ]]; then
             	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((32 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((64 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 512 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
@@ -1210,7 +1210,7 @@ io_scheduler_optimizations(){
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
 		            echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/async_depth
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1293,7 +1293,7 @@ io_scheduler_optimizations(){
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1333,7 +1333,7 @@ io_scheduler_optimizations(){
             if [[ $RAM_CLASS == "verylow" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((10 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((20 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
@@ -1341,33 +1341,33 @@ io_scheduler_optimizations(){
             elif [[ $RAM_CLASS == "low" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((15 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((25 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((30 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "mid" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((20 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((30 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((40 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 256 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "high" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((25 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((35 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((50 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 512 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "veryhigh" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((30 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 256 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((40 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((60 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 1024 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             fi
@@ -1404,7 +1404,7 @@ io_scheduler_optimizations(){
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-	        	    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+	        	    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 	 		        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1430,7 +1430,7 @@ io_scheduler_optimizations(){
             if [[ $RAM_CLASS == "verylow" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((20 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $((40 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
@@ -1438,33 +1438,33 @@ io_scheduler_optimizations(){
             elif [[ $RAM_CLASS == "low" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((25 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((45 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((50 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 256 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "mid" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((30 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((50 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((60 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 512 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "high" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((35 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 256 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((55 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((70 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 1024 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "veryhigh" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $((40 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+                	echo 512 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $((60 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $((80 * $READ_AHEAD_MB)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 2048 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             fi
