@@ -198,40 +198,40 @@ ram_vm_optimizations(){
     if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 64 MB
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 256 MB
+		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 1500 | tee /proc/sys/vm/dirty_expire_centisecs
 		    echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 1750 | tee /proc/sys/vm/dirty_expire_centisecs
             echo 750 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 2000 | tee /proc/sys/vm/dirty_expire_centisecs
 		    echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 2250 | tee /proc/sys/vm/dirty_expire_centisecs
 		    echo 1250 | tee /proc/sys/vm/dirty_writeback_centisecs
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 3500 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -309,8 +309,8 @@ ram_vm_optimizations(){
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -322,8 +322,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 		    echo 131072 |  tee /proc/sys/vm/min_free_kbytes
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -335,8 +335,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -347,8 +347,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -359,8 +359,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((16384 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 500 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -373,8 +373,8 @@ ram_vm_optimizations(){
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "nvme" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 50 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -385,8 +385,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "low" ]]; then
 		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 100 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -397,8 +397,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "mid" ]]; then
 		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -409,8 +409,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
@@ -421,8 +421,8 @@ ram_vm_optimizations(){
 			fi
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((16384 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((8192 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
