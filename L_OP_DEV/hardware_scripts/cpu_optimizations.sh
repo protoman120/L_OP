@@ -62,68 +62,68 @@ cpu_scheduler_optimizations(){
         #NOTE: LOWERING "base_slice_ns" FURTHER WILL RESULT IN SERIOUS STUTTERING IN GAMING WORKLOADS
 		if [[ $CPU_CLASS == "verylow" ]]; then
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-                echo 20000 | tee /sys/kernel/debug/sched/base_slice_ns
+                echo 40000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 10000000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 1 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 1 | tee /sys/kernel/debug/sched/nr_migrate
 			elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-				echo 40000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 80000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 25000000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 2 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 1 | tee /sys/kernel/debug/sched/nr_migrate
     		else
-				echo 80000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 160000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 50000000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 4 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 1 | tee /sys/kernel/debug/sched/nr_migrate
     		fi
 		elif [[ $CPU_CLASS == "low" ]]; then
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-                echo 15000 | tee /sys/kernel/debug/sched/base_slice_ns
+                echo 30000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 5000000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 2 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 1 | tee /sys/kernel/debug/sched/nr_migrate
 			elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-				echo 30000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 60000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 7500000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 4 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 2 | tee /sys/kernel/debug/sched/nr_migrate
 			else
-				echo 60000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 120000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 10000000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 8 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 3 | tee /sys/kernel/debug/sched/nr_migrate
 			fi
 		elif [[ $CPU_CLASS == "mid" ]]; then
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-                echo 10000 | tee /sys/kernel/debug/sched/base_slice_ns
+                echo 20000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 250000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 4 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 2 | tee /sys/kernel/debug/sched/nr_migrate
 			elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-				echo 20000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 40000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 500000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 8 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 3 | tee /sys/kernel/debug/sched/nr_migrate
 			else
-				echo 40000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 80000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 500000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 16 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 4 | tee /sys/kernel/debug/sched/nr_migrate
 			fi
 		elif [[ $CPU_CLASS == "high" ]]; then
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-				echo 5000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 10000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 150000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 8 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 3 | tee /sys/kernel/debug/sched/nr_migrate
 			elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-				echo 10000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 20000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 250000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 16 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 4 | tee /sys/kernel/debug/sched/nr_migrate
 			else
-				echo 20000 | tee /sys/kernel/debug/sched/base_slice_ns
+				echo 40000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 250000 | tee /sys/kernel/debug/sched/migration_cost_ns
 				echo 32 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 5 | tee /sys/kernel/debug/sched/nr_migrate
@@ -131,23 +131,23 @@ cpu_scheduler_optimizations(){
 		fi
 	elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
 		if [[ $CPU_CLASS == "verylow" ]]; then
-			echo 100000 |  tee /sys/kernel/debug/sched/base_slice_ns
-			echo 500000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
+			echo 200000 |  tee /sys/kernel/debug/sched/base_slice_ns
+			echo 5000000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
             echo 16 |  tee /proc/sys/kernel/sched_numa_migrate
             echo 10 |  tee /sys/kernel/debug/sched/nr_migrate
 		elif [[ $CPU_CLASS == "low" ]]; then
-			echo 125000 |  tee /sys/kernel/debug/sched/base_slice_ns
-			echo 100000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
+			echo 400000 |  tee /sys/kernel/debug/sched/base_slice_ns
+			echo 1000000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
             echo 32 |  tee /proc/sys/kernel/sched_numa_migrate
             echo 15 |  tee /sys/kernel/debug/sched/nr_migrate
 		elif [[ $CPU_CLASS == "mid" ]]; then
-			echo 150000 |  tee /sys/kernel/debug/sched/base_slice_ns
-			echo 5000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
+			echo 800000 |  tee /sys/kernel/debug/sched/base_slice_ns
+			echo 50000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
             echo 64 |  tee /proc/sys/kernel/sched_numa_migrate
             echo 20 |  tee /sys/kernel/debug/sched/nr_migrate
 		elif [[ $CPU_CLASS == "high" ]]; then
-			echo 200000 |  tee /sys/kernel/debug/sched/base_slice_ns
-			echo 2500000 |  tee /sys/kernel/debug/sched/migration_cost_ns
+			echo 1600000 |  tee /sys/kernel/debug/sched/base_slice_ns
+			echo 25000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
             echo 128 |  tee /proc/sys/kernel/sched_numa_migrate
             echo 25 |  tee /sys/kernel/debug/sched/nr_migrate
 		fi
