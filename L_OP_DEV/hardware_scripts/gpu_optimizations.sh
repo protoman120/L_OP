@@ -65,15 +65,15 @@ gpu_performance_optimizations() {
                     if [[ $OPTIMIZATION_PROFILE == "AI_Self_Hosting" ]]; then
                         if (( GPU_POWER_CAP_W >= 200 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 0 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 15 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 98 / 100 ))
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 95 / 100 ))
                         elif (( GPU_POWER_CAP_W >= 100 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 0 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 20 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 98 / 100 ))
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 35 / 100 ))
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 96 / 100 ))
                         elif (( GPU_POWER_CAP_W >= 40 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 0 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 50 / 100 ))
                             GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 98 / 100 ))
                         fi
                     else
