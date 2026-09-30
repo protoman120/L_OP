@@ -63,16 +63,8 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     GRUB_TRANSPARENT_HUGEPAGES_AMOUNT=0
 
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_ALGO="zstd"
-            else
-                GRUB_ZSWAP_ALGO="lz4"
-            fi
-        else
-            GRUB_ZSWAP_ALGO="lz4"
-        fi
-        GRUB_CPU_MAX_CSTATE=1
+        GRUB_ZSWAP_ALGO="lz4"
+        GRUB_CPU_MAX_CSTATE=0
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -88,7 +80,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         else
             GRUB_ZSWAP_ALGO="lz4"
         fi
-        GRUB_CPU_MAX_CSTATE=1
+        GRUB_CPU_MAX_CSTATE=0
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -112,7 +104,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
                 GRUB_ZSWAP_ALGO="lz4"
             fi
         fi
-        GRUB_CPU_MAX_CSTATE=0
+        GRUB_CPU_MAX_CSTATE=1
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="full"
             GRUB_EXTRA_ARGS+=" nohz=on"
