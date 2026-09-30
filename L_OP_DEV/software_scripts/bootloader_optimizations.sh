@@ -73,7 +73,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
         fi
     elif [[ "$CPU_CLASS" == "mid" ]]; then
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+        if [[ $RAM_CLASS == "mid" || $RAM_CLASS == "low" || $RAM_CLASS == "verylow" ]]; then
             GRUB_ZSWAP_ALGO="zstd"
         elif [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
             GRUB_ZSWAP_ALGO="zstd"
@@ -89,14 +89,8 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
         fi
     elif [[ "$CPU_CLASS" == "high" ]]; then
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ALGO="deflate"
-		elif [[ $RAM_CLASS == "mid" ]]; then
-            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_ALGO="deflate"
-            else
-                GRUB_ZSWAP_ALGO="zstd"
-            fi
+        if [[ $RAM_CLASS == "mid" || $RAM_CLASS == "low" || $RAM_CLASS == "verylow" ]]; then
+            GRUB_ZSWAP_ALGO="zstd"
         else
             if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                 GRUB_ZSWAP_ALGO="zstd"

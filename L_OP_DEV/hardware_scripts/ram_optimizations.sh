@@ -692,7 +692,7 @@ ram_zram_configuration(){
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
 		ZRAM_ALGO="lz4"
 	elif [[ "$CPU_CLASS" == "mid" ]]; then
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
             ZRAM_ALGO="zstd"
         else
             if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
@@ -702,14 +702,8 @@ ram_zram_configuration(){
             fi
         fi
 	elif [[ "$CPU_CLASS" == "high" ]]; then
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            ZRAM_ALGO="deflate"
-		elif [[ $RAM_CLASS == "mid" ]]; then
-			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                ZRAM_ALGO="deflate"
-            else
-				ZRAM_ALGO="zstd"
-            fi
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+			ZRAM_ALGO="zstd"
         else
             if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                 ZRAM_ALGO="zstd"
