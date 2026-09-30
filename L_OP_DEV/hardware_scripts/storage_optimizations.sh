@@ -1084,7 +1084,7 @@ io_scheduler_optimizations(){
         
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
 		        if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 2 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1173,7 +1173,7 @@ io_scheduler_optimizations(){
         
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll

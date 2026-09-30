@@ -32,7 +32,7 @@
 	flatpak install flathub org.nickvision.tubeconverter -y
 
 	echo "Installing OBS (Desktop Recording)"
-	flatpak flatpak install flathub com.obsproject.Studio -y
+	flatpak install flathub com.obsproject.Studio -y
 
 	echo "Installing Krita (Drawing)"
 	flatpak install flathub org.kde.krita -y
