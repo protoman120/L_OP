@@ -60,7 +60,8 @@ gpu_performance_optimizations() {
             	#pm = Persistence Mode
                 nvidia-smi -pm 1
                 
-                GPU_POWER_CAP_W=$GPU_POWER_MAX_LIMIT
+                #Value needs to be rounded without decimals to work properly
+                GPU_POWER_CAP_W=${GPU_POWER_MAX_LIMIT%.*}
                 if [[ "$GPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     if [[ $OPTIMIZATION_PROFILE == "AI_Self_Hosting" ]]; then
                         if (( GPU_POWER_CAP_W >= 200 )); then
