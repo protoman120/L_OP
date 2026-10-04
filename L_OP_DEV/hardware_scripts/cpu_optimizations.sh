@@ -219,30 +219,30 @@ cpu_frequency_optimizations(){
     if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
 	    if [[ $CPU_CLASS == "verylow" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
 	    elif [[ $CPU_CLASS == "low" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
 	    elif [[ $CPU_CLASS == "mid" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 20 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
 	    elif [[ $CPU_CLASS == "high" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 95 / 100 ))
 	    fi
     else
 	    if [[ $CPU_CLASS == "verylow" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 60 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
 	    elif [[ $CPU_CLASS == "low" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 70 / 100 ))
 	    elif [[ $CPU_CLASS == "mid" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 70 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
 	    elif [[ $CPU_CLASS == "high" ]]; then
 		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
+		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
 	    fi
     fi
     

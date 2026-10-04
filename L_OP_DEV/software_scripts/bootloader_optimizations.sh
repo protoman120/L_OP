@@ -63,8 +63,12 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     GRUB_TRANSPARENT_HUGEPAGES_AMOUNT=0
 
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
-        GRUB_ZSWAP_ALGO="lz4"
         GRUB_CPU_MAX_CSTATE=0
+        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+            GRUB_ZSWAP_ALGO="lz4hc"
+		else
+			GRUB_ZSWAP_ALGO="lz4"
+		fi
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -73,14 +77,18 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
         fi
     elif [[ "$CPU_CLASS" == "mid" ]]; then
-        if [[ $RAM_CLASS == "mid" || $RAM_CLASS == "low" || $RAM_CLASS == "verylow" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
-        elif [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
-        else
-            GRUB_ZSWAP_ALGO="lz4"
-        fi
         GRUB_CPU_MAX_CSTATE=0
+        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+            GRUB_ZSWAP_ALGO="zstd"
+		elif [[ $RAM_CLASS == "mid" ]]; then
+			GRUB_ZSWAP_ALGO="lz4hc"
+        else
+            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+                GRUB_ZSWAP_ALGO="lz4hc"
+            else
+				GRUB_ZSWAP_ALGO="lz4"
+            fi
+        fi
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -89,16 +97,20 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
             GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
         fi
     elif [[ "$CPU_CLASS" == "high" ]]; then
-        if [[ $RAM_CLASS == "mid" || $RAM_CLASS == "low" || $RAM_CLASS == "verylow" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
+        GRUB_CPU_MAX_CSTATE=1
+        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			GRUB_ZSWAP_ALGO="deflate"
+		elif [[ $RAM_CLASS == "mid" ]]; then
+			GRUB_ZSWAP_ALGO="zstd"
+		elif [[ $RAM_CLASS == "high" ]]; then
+			GRUB_ZSWAP_ALGO="lz4hc"
         else
             if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_ALGO="zstd"
+                GRUB_ZSWAP_ALGO="lz4hc"
             else
-                GRUB_ZSWAP_ALGO="lz4"
+				GRUB_ZSWAP_ALGO="lz4"
             fi
         fi
-        GRUB_CPU_MAX_CSTATE=1
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="full"
             GRUB_EXTRA_ARGS+=" nohz=on"
@@ -108,6 +120,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
 
+    #NOTE: Values lower than 15 for GRUB_ZSWAP_PERCENT will most likely cause performance issues or crashes for gaming workloads
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
         if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
             GRUB_ZSWAP_ENABLED=0

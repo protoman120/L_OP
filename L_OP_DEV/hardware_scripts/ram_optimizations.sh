@@ -19,49 +19,49 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 80 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 2000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 325 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 1750 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 300 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
             	echo 20 |  tee /proc/sys/vm/swappiness
-				echo 2250 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 350 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 60 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 1500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 275 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 1250 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
             	echo 15 |  tee /proc/sys/vm/swappiness
-				echo 1750 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 300 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 40 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 1000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 225 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 750 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 200 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
             	echo 10 |  tee /proc/sys/vm/swappiness
-				echo 1250 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 20 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 175 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 150 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
             	echo 5 |  tee /proc/sys/vm/swappiness
-				echo 750 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 200 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
@@ -73,7 +73,7 @@ ram_swappiness(){
 				fi
 			else
             	echo 1 |  tee /proc/sys/vm/swappiness
-				echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 150 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		fi
 	
@@ -82,61 +82,61 @@ ram_swappiness(){
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 300 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 3750 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 375 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 3500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 350 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 300 |  tee /proc/sys/vm/swappiness
-				echo 4000 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 400 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "low" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 280 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 3250 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 325 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 3000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 300 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 280 |  tee /proc/sys/vm/swappiness
-				echo 3500 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 350 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 260 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 2750 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 275 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 2500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 260 |  tee /proc/sys/vm/swappiness
-				echo 3000 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 300 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 240 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 2250 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 225 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 2000 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 200 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 240 |  tee /proc/sys/vm/swappiness
-				echo 2500 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 250 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		elif [[ $RAM_CLASS == "veryhigh" ]]; then
 			if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 				echo 220 |  tee /proc/sys/vm/swappiness
 				if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-					echo 1750 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 175 |  tee /proc/sys/vm/vfs_cache_pressure
 				else
-					echo 1500 |  tee /proc/sys/vm/vfs_cache_pressure
+					echo 150 |  tee /proc/sys/vm/vfs_cache_pressure
 				fi
 			else
 				echo 220 |  tee /proc/sys/vm/swappiness
-				echo 2000 |  tee /proc/sys/vm/vfs_cache_pressure
+				echo 200 |  tee /proc/sys/vm/vfs_cache_pressure
 			fi
 		fi
 	fi
@@ -685,28 +685,38 @@ ram_vm_optimizations(){
 ram_zram_configuration(){
 
 	#DEFAULT VALUES
-	ZRAM_ALGO="zstd"
+	ZRAM_ALGO="lz4hc"
 	ZRAM_AMOUNT="2G"
 	ZRAM_PRIORITY=500
 
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
-		ZRAM_ALGO="lz4"
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+            ZRAM_ALGO="lz4hc"
+		else
+			ZRAM_ALGO="lz4"
+		fi
 	elif [[ "$CPU_CLASS" == "mid" ]]; then
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
             ZRAM_ALGO="zstd"
+		elif [[ $RAM_CLASS == "mid" ]]; then
+			ZRAM_ALGO="lz4hc"
         else
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                ZRAM_ALGO="zstd"
+            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+                ZRAM_ALGO="lz4hc"
             else
 				ZRAM_ALGO="lz4"
             fi
         fi
 	elif [[ "$CPU_CLASS" == "high" ]]; then
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			ZRAM_ALGO="deflate"
+		elif [[ $RAM_CLASS == "mid" ]]; then
 			ZRAM_ALGO="zstd"
+		elif [[ $RAM_CLASS == "high" ]]; then
+			ZRAM_ALGO="lz4hc"
         else
-            if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                ZRAM_ALGO="zstd"
+            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+                ZRAM_ALGO="lz4hc"
             else
 				ZRAM_ALGO="lz4"
             fi
