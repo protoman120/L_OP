@@ -728,7 +728,7 @@ ram_zram_configuration(){
 	if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 		#Lower values so the rest can be used for ZSWAP
 		#IMPORTANT: ZSWAP + ZRAM MUST NOT EXCEED 100%
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
 			TEMP_ZRAM_AMOUNT=$RAM_GB_PHYSICAL
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			TEMP_ZRAM_AMOUNT=$(($HALF_RAM / $QUARTER_RAM))
