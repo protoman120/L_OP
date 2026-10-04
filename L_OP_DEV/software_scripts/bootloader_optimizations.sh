@@ -34,7 +34,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
 
     GRUB_ZSWAP_ALGO="zstd"
     GRUB_ZSWAP_PERCENT=25
-    GRUB_ZSWAP_ENABLED=1
+    GRUB_ZSWAP_ENABLED=0
     GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT}"
 
     GRUB_ZRAM_DEVICES=1
@@ -121,12 +121,13 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     fi
 
     #NOTE: Values lower than 15 for GRUB_ZSWAP_PERCENT will most likely cause performance issues or crashes for gaming workloads
+    #NOTE: Zswap disabled for further zram testing
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
         if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
             GRUB_ZSWAP_ENABLED=0
             GRUB_ZSWAP_PERCENT=0
         else
-            GRUB_ZSWAP_ENABLED=1
+            GRUB_ZSWAP_ENABLED=0
             if [[ $RAM_CLASS == "mid" ]]; then
                 if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                     GRUB_ZSWAP_PERCENT=20
@@ -148,14 +149,14 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
         if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-            GRUB_ZSWAP_ENABLED=1
+            GRUB_ZSWAP_ENABLED=0
             if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                 GRUB_ZSWAP_PERCENT=25
             else
                 GRUB_ZSWAP_PERCENT=20
             fi
         else
-            GRUB_ZSWAP_ENABLED=1
+            GRUB_ZSWAP_ENABLED=0
             if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
                 GRUB_ZSWAP_PERCENT=30
             else
