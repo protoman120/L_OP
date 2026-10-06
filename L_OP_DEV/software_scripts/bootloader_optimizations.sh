@@ -8,6 +8,7 @@ source $SAVED_CPU_DATA
 source $SAVED_GPU_DATA
 source $SAVED_RAM_DATA
 source $SAVED_ROOT_STORAGE_DATA
+source $SAVED_SWAP_STORAGE_DATA
 source $SAVED_OS_DATA
 source $SAVED_DE_DATA
 ##################################################################
@@ -120,32 +121,28 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
 
-    #NOTE: Values lower than 15 for GRUB_ZSWAP_PERCENT will most likely cause performance issues or crashes for gaming workloads
-    if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-        #IMPORTANT: ZSWAP + ZRAM MUST NOT EXCEED 100%
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ENABLED=0
-			GRUB_ZSWAP_PERCENT=0
-        elif [[ $RAM_CLASS == "mid" ]]; then
-            GRUB_ZSWAP_ENABLED=1
-			GRUB_ZSWAP_PERCENT=25
+    if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+        #IMPORTANT: ZSWAP should only be used when a physical swap partition is present
+        #NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
+        #NOTE: Values lower than 15 for GRUB_ZSWAP_PERCENT will most likely cause performance issues or crashes for gaming workloads
+        GRUB_ZSWAP_ENABLED=1
+        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+			if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+                GRUB_ZSWAP_PERCENT=100
+            else
+                GRUB_ZSWAP_PERCENT=75
+            fi
 		elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-            GRUB_ZSWAP_ENABLED=1
-			GRUB_ZSWAP_PERCENT=50
+            if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+                GRUB_ZSWAP_PERCENT=75
+            else
+                GRUB_ZSWAP_PERCENT=50
+            fi
 		fi
-    elif [[ $STORAGE_DEVICE_TYPE == "ssd" ]]; then
-        #IMPORTANT: ZSWAP + ZRAM MUST NOT EXCEED 100%
-       if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ENABLED=0
-			GRUB_ZSWAP_PERCENT=0
-		elif [[ $RAM_CLASS == "mid" || $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-            GRUB_ZSWAP_ENABLED=1
-			GRUB_ZSWAP_PERCENT=25
-		fi
-	else
-		GRUB_ZSWAP_ENABLED=0
+    else
+        GRUB_ZSWAP_ENABLED=0
         GRUB_ZSWAP_PERCENT=0
-	fi
+    fi
 
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then

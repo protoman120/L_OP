@@ -1041,43 +1041,6 @@ io_scheduler_optimizations(){
         for CURRENT_STORAGE_FILE in "$SAVED_STORAGE_DEVICE_DATA_FILE"; do
 
             source "$CURRENT_STORAGE_FILE"
-
-            STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-
-            if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
-                
-                STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-
-                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "hdd" && "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    HDD_STORAGE_OPTIMIZATION_GOAL="throughput"
-                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                    HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                fi
-                
-                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "usb" && "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    USB_STORAGE_OPTIMIZATION_GOAL="throughput"
-                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                    USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                fi
-
-                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "ssd" && "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    SSD_STORAGE_OPTIMIZATION_GOAL="throughput"
-                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                    SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                fi
-
-                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "nvme" && "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    NVME_STORAGE_OPTIMIZATION_GOAL="throughput"
-                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                    NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
-                fi
-
-            fi
-
             echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iostats
 
         if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then

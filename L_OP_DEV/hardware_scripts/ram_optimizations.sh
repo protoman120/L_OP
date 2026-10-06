@@ -723,38 +723,16 @@ ram_zram_configuration(){
         fi
 	fi
 
-	HALF_RAM=$((RAM_GB_PHYSICAL / 2))
-	QUARTER_RAM=$((RAM_GB_PHYSICAL / 4))
-	if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-		#Lower values so the rest can be used for ZSWAP
-		#IMPORTANT: ZSWAP + ZRAM MUST NOT EXCEED 100%
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-			TEMP_ZRAM_AMOUNT=$RAM_GB_PHYSICAL
-		elif [[ $RAM_CLASS == "mid" ]]; then
-			TEMP_ZRAM_AMOUNT=$(($HALF_RAM / $QUARTER_RAM))
-		elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-			TEMP_ZRAM_AMOUNT=$HALF_RAM
-		fi
-		#For some reason, calculated amount is -1GB than it should be, so for now, this is a "fix"
-		ZRAM_AMOUNT=$(($TEMP_ZRAM_AMOUNT + 1))
-	elif [[ $STORAGE_DEVICE_TYPE == "ssd" ]]; then
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-			TEMP_ZRAM_AMOUNT=$RAM_GB_PHYSICAL
-		elif [[ $RAM_CLASS == "mid" || $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-			TEMP_ZRAM_AMOUNT=$(($HALF_RAM / $QUARTER_RAM))
-		fi
-		#For some reason, calculated amount is -1GB than it should be, so for now, this is a "fix"
-		ZRAM_AMOUNT=$(($TEMP_ZRAM_AMOUNT + 1))
-	else
-		TEMP_ZRAM_AMOUNT=$RAM_GB_PHYSICAL
-		ZRAM_AMOUNT=$(($TEMP_ZRAM_AMOUNT + 1))
-	fi
-
+	TEMP_ZRAM_AMOUNT=$RAM_GB_PHYSICAL
+	ZRAM_AMOUNT=$(($TEMP_ZRAM_AMOUNT + 1))
+	
 	modprobe zram
 	echo ${ZRAM_ALGO} > /sys/block/zram0/comp_algorithm
 	echo "${ZRAM_AMOUNT}G" > /sys/block/zram0/disksize
 	mkswap /dev/zram0
 	swapon -p ${ZRAM_PRIORITY} /dev/zram0
+
+
 }
 
 ram_swappiness
@@ -764,5 +742,8 @@ if [[ "$CPU_CLASS" == "high" ]]; then
 	fi
 fi
 ram_vm_optimizations
-ram_zram_configuration
+if [[ $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
+	#NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
+	ram_zram_configuration
+fi
 
