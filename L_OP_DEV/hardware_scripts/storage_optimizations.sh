@@ -1041,6 +1041,41 @@ io_scheduler_optimizations(){
         for CURRENT_STORAGE_FILE in "$SAVED_STORAGE_DEVICE_DATA_FILE"; do
 
             source "$CURRENT_STORAGE_FILE"
+            STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+            if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                
+                STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "hdd" && "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    HDD_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+                
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "usb" && "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    USB_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "ssd" && "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    SSD_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+
+                if [[ "$STORAGE_SWAP_DEVICE_TYPE" == "nvme" && "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    NVME_STORAGE_OPTIMIZATION_GOAL="throughput"
+                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                    NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="true"
+                fi
+
+            fi
             echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iostats
 
         if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
@@ -1048,13 +1083,13 @@ io_scheduler_optimizations(){
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
 		        if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 		            echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 2 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+		            echo 1 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
 		        elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 			        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+			        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay			
@@ -1062,7 +1097,7 @@ io_scheduler_optimizations(){
             elif [[ $CPU_CLASS == "mid" ]]; then
                 if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
@@ -1124,7 +1159,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $RAM_CLASS == "veryhigh" ]]; then
             	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
@@ -1137,13 +1172,13 @@ io_scheduler_optimizations(){
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                     echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
@@ -1183,7 +1218,10 @@ io_scheduler_optimizations(){
 
             #OPTIMIZED FOR SLOW STORAGE (USB ONLY)
             if [[ $RAM_CLASS == "verylow" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            	elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $(($READ_AHEAD_MB / 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -1191,7 +1229,10 @@ io_scheduler_optimizations(){
                 	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "low" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            	elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $(($READ_AHEAD_MB / 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -1199,7 +1240,10 @@ io_scheduler_optimizations(){
                 	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "mid" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            	elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -1207,7 +1251,10 @@ io_scheduler_optimizations(){
                 	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "high" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            	elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -1215,7 +1262,10 @@ io_scheduler_optimizations(){
                 	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 fi
             elif [[ $RAM_CLASS == "veryhigh" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+                	echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                	echo 128 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            	elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
                 	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
@@ -1257,7 +1307,7 @@ io_scheduler_optimizations(){
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
@@ -1279,7 +1329,7 @@ io_scheduler_optimizations(){
             elif [[ $CPU_CLASS == "high" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
@@ -1439,6 +1489,13 @@ io_scheduler_optimizations(){
                 echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
 		        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
 	        fi
+        fi
+        if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
         fi
         io_scheduler_optimizations
         for STORAGE_PARTITION in $(lsblk -ln -o NAME,TYPE | awk '$2=="part"{print $1}'); do

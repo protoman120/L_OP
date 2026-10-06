@@ -63,33 +63,9 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         
     GRUB_TRANSPARENT_HUGEPAGES_AMOUNT=0
 
-    if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
+    if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" || "$CPU_CLASS" == "mid" ]]; then
         GRUB_CPU_MAX_CSTATE=0
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ALGO="lz4hc"
-		else
-			GRUB_ZSWAP_ALGO="lz4"
-		fi
-        if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
-            GRUB_PREEMPT_MODE="voluntary"
-            GRUB_EXTRA_ARGS+=" nohz=off"
-        elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            GRUB_PREEMPT_MODE="voluntary"
-            GRUB_EXTRA_ARGS="intel_iommu=on amd_iommu=on iommu=pt"
-        fi
-    elif [[ "$CPU_CLASS" == "mid" ]]; then
-        GRUB_CPU_MAX_CSTATE=0
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-            GRUB_ZSWAP_ALGO="zstd"
-		elif [[ $RAM_CLASS == "mid" ]]; then
-			GRUB_ZSWAP_ALGO="lz4hc"
-        else
-            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_ALGO="lz4hc"
-            else
-				GRUB_ZSWAP_ALGO="lz4"
-            fi
-        fi
+        GRUB_ZSWAP_ALGO="lz4"
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -99,19 +75,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ "$CPU_CLASS" == "high" ]]; then
         GRUB_CPU_MAX_CSTATE=1
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-			GRUB_ZSWAP_ALGO="deflate"
-		elif [[ $RAM_CLASS == "mid" ]]; then
-			GRUB_ZSWAP_ALGO="zstd"
-		elif [[ $RAM_CLASS == "high" ]]; then
-			GRUB_ZSWAP_ALGO="lz4hc"
-        else
-            if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-                GRUB_ZSWAP_ALGO="lz4hc"
-            else
-				GRUB_ZSWAP_ALGO="lz4"
-            fi
-        fi
+        GRUB_ZSWAP_ALGO="lz4hc"
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="full"
             GRUB_EXTRA_ARGS+=" nohz=on"
