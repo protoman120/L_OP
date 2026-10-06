@@ -667,14 +667,18 @@ ram_vm_optimizations(){
 		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
 			echo 0 |  tee /proc/sys/vm/overcommit_memory
 		else
-			echo 1 |  tee /proc/sys/vm/overcommit_memory
+			if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
+				echo 1 |  tee /proc/sys/vm/overcommit_memory
+			else
+				echo 2 |  tee /proc/sys/vm/overcommit_memory
+			fi
 		fi
 	else
 		echo 0 |  tee /proc/sys/vm/overcommit_memory
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-			echo 1 |  tee /proc/sys/vm/zone_reclaim_mode
-		elif [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+		if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
 			echo 4 |  tee /proc/sys/vm/zone_reclaim_mode
+		elif [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+			echo 1 |  tee /proc/sys/vm/zone_reclaim_mode
 		else
 			echo 0 |  tee /proc/sys/vm/zone_reclaim_mode
 		fi
