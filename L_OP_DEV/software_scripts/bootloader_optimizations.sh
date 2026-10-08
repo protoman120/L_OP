@@ -35,6 +35,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
 
     GRUB_ZSWAP_ALGO="zstd"
     GRUB_ZSWAP_PERCENT=25
+    GRUB_ZSWAP_ZPOOL=z3fold
     GRUB_ZSWAP_ENABLED=0
     GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT}"
 
@@ -65,7 +66,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
 
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" || "$CPU_CLASS" == "mid" ]]; then
         GRUB_CPU_MAX_CSTATE=0
-        GRUB_ZSWAP_ALGO="lz4"
+        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+            GRUB_ZSWAP_ALGO="lz4hc"
+        else
+            GRUB_ZSWAP_ALGO="lz4"
+        fi
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -75,7 +80,11 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ "$CPU_CLASS" == "high" ]]; then
         GRUB_CPU_MAX_CSTATE=1
-        GRUB_ZSWAP_ALGO="lz4hc"
+        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+            GRUB_ZSWAP_ALGO="zstd"
+        else
+            GRUB_ZSWAP_ALGO="lz4hc"
+        fi
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="full"
             GRUB_EXTRA_ARGS+=" nohz=on"
@@ -85,22 +94,22 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
 
-    if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+    if [[ $RAM_CLASS != "verylow" && $RAM_CLASS != "low" && $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
         #IMPORTANT: ZSWAP should only be used when a physical swap partition is present
         #NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
         #NOTE: Values lower than 15 for GRUB_ZSWAP_PERCENT will most likely cause performance issues or crashes for gaming workloads
         GRUB_ZSWAP_ENABLED=1
-        if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+        if [[ $RAM_CLASS == "mid" || $RAM_CLASS == "low" || $RAM_CLASS == "verylow" ]]; then
 			if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
-                GRUB_ZSWAP_PERCENT=100
-            else
-                GRUB_ZSWAP_PERCENT=75
-            fi
-		elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-            if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
                 GRUB_ZSWAP_PERCENT=75
             else
                 GRUB_ZSWAP_PERCENT=50
+            fi
+		else
+            if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+                GRUB_ZSWAP_PERCENT=50
+            else
+                GRUB_ZSWAP_PERCENT=25
             fi
 		fi
     else
@@ -130,7 +139,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     
     #VARIABLES WHOSE VALUES COULD HAVE BEEN CHANGED FROM BASELINE
     GRUB_PREEMPT="preempt=${GRUB_PREEMPT_MODE}"
-    GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT}"
+    GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT} zswap.zpool=${GRUB_ZSWAP_ZPOOL}"
     GRUB_CPU_CSTATE="processor.max_cstate=${GRUB_CPU_MAX_CSTATE}"
     GRUB_TRANSPARENT_HUGEPAGES="hugepages=${GRUB_TRANSPARENT_HUGEPAGES_AMOUNT} transparent_hugepage=${GRUB_TRANSPARENT_HUGEPAGES_MODE}"
     

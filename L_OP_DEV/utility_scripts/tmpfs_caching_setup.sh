@@ -15,14 +15,12 @@ tmpfs_cache_dir(){
     local TMPFS_FOLDER_DIR="$2"
 
     if [ -e "$SYSTEM_DIR" ]; then
-            
-            local TMPFS_DIR="${TMPFS_FOLDER_DIR}${SYSTEM_DIR}"
+        local TMPFS_DIR="${TMPFS_FOLDER_DIR}${SYSTEM_DIR}"
 
-            mkdir -p "$TMPFS_DIR"
+        mkdir -p "$TMPFS_DIR"
 
-            #mount -t tmpfs -o "$TMFS_ARGUMENTS" tmpfs "$TMPFS_DIR"
-            mount --bind "$TMPFS_DIR" "$SYSTEM_DIR"
-
+        #mount -t tmpfs -o "$TMFS_ARGUMENTS" tmpfs "$TMPFS_DIR"
+        mount --bind "$TMPFS_DIR" "$SYSTEM_DIR"
     fi
 
 }
@@ -40,109 +38,176 @@ if [ -e "$MAIN_TMPFS_CACHE_DIR" ]; then
         mount -t tmpfs -o "$TMFS_ARGUMENTS" tmpfs "$MAIN_TMPFS_CACHE_DIR"
 fi
 
+#VARIABLE INITIALIZATION:
+TMPFS_SYSTEM_CACHES_ENABLED="false"
+TMPFS_FLATPAK_CACHES_ENABLED="false"
+TMPFS_GAMING_CACHES_ENABLED="false"
+TMPFS_SERVER_CACHES_ENABLED="false"
+
 if [[ "$TMPFS_SYSTEM_CACHING" == "enabled" ]]; then
+    if [[ $RAM_CLASS == "verylow" ]]; then
+        if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="false"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            TMPFS_SERVER_CACHES_ENABLED="false"
+        else
+            TMPFS_SYSTEM_CACHES_ENABLED="false"
+            TMPFS_FLATPAK_CACHES_ENABLED="false"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            TMPFS_SERVER_CACHES_ENABLED="false"
+        fi
+    elif [[ $RAM_CLASS == "low" ]]; then
+        if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="true"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            TMPFS_SERVER_CACHES_ENABLED="false"
+        else
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="false"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            TMPFS_SERVER_CACHES_ENABLED="false"
+        fi
+    elif [[ $RAM_CLASS == "mid" ]]; then
+        if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="true"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+                TMPFS_SERVER_CACHES_ENABLED="true"
+            else
+                TMPFS_SERVER_CACHES_ENABLED="false"
+            fi
+        else
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="true"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            TMPFS_SERVER_CACHES_ENABLED="false"
+        fi
+    elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
+        if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="true"
+            TMPFS_GAMING_CACHES_ENABLED="true"
+            if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+                TMPFS_SERVER_CACHES_ENABLED="true"
+            else
+                TMPFS_SERVER_CACHES_ENABLED="false"
+            fi
+        else
+            TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_FLATPAK_CACHES_ENABLED="true"
+            TMPFS_GAMING_CACHES_ENABLED="false"
+            if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+                TMPFS_SERVER_CACHES_ENABLED="true"
+            else
+                TMPFS_SERVER_CACHES_ENABLED="false"
+            fi
+        fi
+    fi
+
+    #INITIALITZATION OF THE VARIABLE THAT WILL CONATIN THE LIST OF DIRECTORIES TO BE SET UP FOR TMPFS
     SYSTEM_CACHE_DIRS=()
 
-    #CACHING "/var/cache" BREAKS LINUX MINT'S UPDATE MANAGER, MAYBE OTHERS TOO
-    #"/var/cache"
-
-    SYSTEM_CACHE_DIRS+=(
-        "/tmp"
-        "/dev/shm"
-        "/var/log"
+    if [[ "$TMPFS_SYSTEM_CACHES_ENABLED" == "true" ]]; then
         #CACHING "/var/cache" BREAKS LINUX MINT'S UPDATE MANAGER, MAYBE OTHERS TOO
         #"/var/cache"
-        "/var/lib/systemd/coredump"
-        "/var/crash"
-        
-        "/var/cache/debconf"
-        "/var/cache/ldconfig"
-        "/var/cache/man"
-        "/var/cache/fwupd"
-        "/var/cache/PackageKit"
-        "/var/lib/snapd/cache"
-        "/var/cache/debconf"
-        
-        "/home/$SYSTEM_USER/.cache"
-    )
 
-    OTHER_CACHE_DIRS+=(
-        "/home/$SYSTEM_USER/.config/*/cache"
-        "/home/$SYSTEM_USER/.config/*/cache*"
-        "/home/$SYSTEM_USER/.config/*/*cache"
-        "/home/$SYSTEM_USER/.config/*/*cache*"
-        "/home/$SYSTEM_USER/.config/*/Cache"
-        "/home/$SYSTEM_USER/.config/*/Cache*"
-        "/home/$SYSTEM_USER/.config/*/*Cache"
-        "/home/$SYSTEM_USER/.config/*/*Cache*"
-    )
+        SYSTEM_CACHE_DIRS+=(
+            "/tmp"
+            "/dev/shm"
+            "/var/log"
+            #CACHING "/var/cache" BREAKS LINUX MINT'S UPDATE MANAGER, MAYBE OTHERS TOO
+            #"/var/cache"
+            "/var/lib/systemd/coredump"
+            "/var/crash"
+            
+            "/var/cache/debconf"
+            "/var/cache/ldconfig"
+            "/var/cache/man"
+            "/var/cache/fwupd"
+            "/var/cache/PackageKit"
+            "/var/lib/snapd/cache"
+            "/var/cache/debconf"
+            
+            "/home/$SYSTEM_USER/.cache"
+        )
 
-    for OTHER_CACHES in "${OTHER_CACHE_DIRS[@]}"; do
+        OTHER_CACHE_DIRS+=(
+            "/home/$SYSTEM_USER/.config/*/cache"
+            "/home/$SYSTEM_USER/.config/*/cache*"
+            "/home/$SYSTEM_USER/.config/*/*cache"
+            "/home/$SYSTEM_USER/.config/*/*cache*"
+            "/home/$SYSTEM_USER/.config/*/Cache"
+            "/home/$SYSTEM_USER/.config/*/Cache*"
+            "/home/$SYSTEM_USER/.config/*/*Cache"
+            "/home/$SYSTEM_USER/.config/*/*Cache*"
+        )
+
+        for OTHER_CACHES in "${OTHER_CACHE_DIRS[@]}"; do
             SYSTEM_CACHE_DIRS+=(
                 #NOTE: DO NOT USE "$OTHER_CACHES" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
                 $OTHER_CACHES
             )
-    done
-
-    if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]] || [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]] ; then
-        for FLATPAK_CACHE_DIR in "/home/$SYSTEM_USER/.var/app/*/cache"; do
-                SYSTEM_CACHE_DIRS+=(
-                    #NOTE: DO NOT USE "$FLATPAK_CACHE_DIR" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
-                    $FLATPAK_CACHE_DIR
-                )
         done
     fi
 
-    if [[ "$OPTIMIZATION_PROFILE_USECASE" == "gaming" ]]; then
-        if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]] || [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]] ; then
-
-            HEROIC_CACHE_DIRS=(
-                "/home/$SYSTEM_USER/.config/heroic/GPUCache"
-                "/home/$SYSTEM_USER/.config/heroic/Cache"
-                "/home/$SYSTEM_USER/Games/Heroic/Prefixes/*/shadercache"
+    if [[ "$TMPFS_FLATPAK_CACHES_ENABLED" == "true" ]]; then
+        for FLATPAK_CACHE_DIR in "/home/$SYSTEM_USER/.var/app/*/cache"; do
+            SYSTEM_CACHE_DIRS+=(
+                #NOTE: DO NOT USE "$FLATPAK_CACHE_DIR" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
+                $FLATPAK_CACHE_DIR
             )
-
-            for HEROIC_SHADERCACHE_DIR in "${HEROIC_CACHE_DIRS[@]}"; do
-                    SYSTEM_CACHE_DIRS+=(
-                        $HEROIC_SHADERCACHE_DIR
-                    )
-            done
-
-            STEAM_CACHE_DIRS=(
-                "/home/$SYSTEM_USER/.local/share/Steam/steamapps/shadercache"
-                "/home/$SYSTEM_USER/.steam/steam/appcache"
-                "/home/$SYSTEM_USER/.steam/debian-installation/steamapps/shadercache"
-                "/home/$SYSTEM_USER/.steam/debian-installation/appcache"
-                "/mnt/*/SteamLibrary/steamapps/shadercache"
-            )
-
-            for STEAM_CACHE_DIR in "${STEAM_CACHE_DIRS[@]}"; do
-                    SYSTEM_CACHE_DIRS+=(
-                        $STEAM_CACHE_DIR
-                    )
-            done
-
-            PRISM_LAUNCHER_MINECRAFT_CACHE_DIRS=(
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/cache"
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/tmp"
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/cache"
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/.cache"
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/*/.cache"
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/config/*/cache"
-                "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/config/*/.cache"
-            )
-
-            for PRISM_LAUNCHER_MINECRAFT_CACHE_DIR in "${PRISM_LAUNCHER_MINECRAFT_CACHE_DIRS[@]}"; do
-                    SYSTEM_CACHE_DIRS+=(
-                        #NOTE: DO NOT USE "$PUFFERPANEL_MINECRAFT_CACHE_DIR" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
-                        $PUFFERPANEL_MINECRAFT_CACHE_DIR
-                    )
-            done
-
-        fi
+        done
     fi
 
-    if [[ "$OPTIMIZATION_PROFILE_USECASE" == "server" ]]; then
+    if [[ "$TMPFS_GAMING_CACHES_ENABLED" == "true" ]]; then
+        HEROIC_CACHE_DIRS=(
+            "/home/$SYSTEM_USER/.config/heroic/GPUCache"
+            "/home/$SYSTEM_USER/.config/heroic/Cache"
+            "/home/$SYSTEM_USER/Games/Heroic/Prefixes/*/shadercache"
+        )
+
+        for HEROIC_SHADERCACHE_DIR in "${HEROIC_CACHE_DIRS[@]}"; do
+            SYSTEM_CACHE_DIRS+=(
+                $HEROIC_SHADERCACHE_DIR
+            )
+        done
+
+        STEAM_CACHE_DIRS=(
+            "/home/$SYSTEM_USER/.local/share/Steam/steamapps/shadercache"
+            "/home/$SYSTEM_USER/.steam/steam/appcache"
+            "/home/$SYSTEM_USER/.steam/debian-installation/steamapps/shadercache"
+            "/home/$SYSTEM_USER/.steam/debian-installation/appcache"
+            "/mnt/*/SteamLibrary/steamapps/shadercache"
+        )
+
+        for STEAM_CACHE_DIR in "${STEAM_CACHE_DIRS[@]}"; do
+            SYSTEM_CACHE_DIRS+=(
+                $STEAM_CACHE_DIR
+            )
+        done
+
+        PRISM_LAUNCHER_MINECRAFT_CACHE_DIRS=(
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/cache"
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/tmp"
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/cache"
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/.cache"
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/*/.cache"
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/config/*/cache"
+            "/home/$SYSTEM_USER/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/*/minecraft/config/*/.cache"
+        )
+
+        for PRISM_LAUNCHER_MINECRAFT_CACHE_DIR in "${PRISM_LAUNCHER_MINECRAFT_CACHE_DIRS[@]}"; do
+            SYSTEM_CACHE_DIRS+=(
+                #NOTE: DO NOT USE "$PUFFERPANEL_MINECRAFT_CACHE_DIR" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
+                $PUFFERPANEL_MINECRAFT_CACHE_DIR
+            )
+        done
+    fi
+
+    if [[ "$TMPFS_SERVER_CACHES_ENABLED" == "true" ]]; then
         PUFFERPANEL_MINECRAFT_SERVER_CACHE_DIRS=(
             "/var/lib/pufferpanel/cache"
 
@@ -157,10 +222,10 @@ if [[ "$TMPFS_SYSTEM_CACHING" == "enabled" ]]; then
         )
 
         for PUFFERPANEL_MINECRAFT_CACHE_DIR in "${PUFFERPANEL_MINECRAFT_SERVER_CACHE_DIRS[@]}"; do
-                SYSTEM_CACHE_DIRS+=(
-                    #NOTE: DO NOT USE "$PUFFERPANEL_MINECRAFT_CACHE_DIR" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
-                    $PUFFERPANEL_MINECRAFT_CACHE_DIR
-                )
+            SYSTEM_CACHE_DIRS+=(
+                #NOTE: DO NOT USE "$PUFFERPANEL_MINECRAFT_CACHE_DIR" WITH "" AS THE /*/ WILL NOT BE REPLACED BY THE DIFFERENT FOLDER NAMES AND THUS NOT WORK
+                $PUFFERPANEL_MINECRAFT_CACHE_DIR
+            )
         done
     fi
 
