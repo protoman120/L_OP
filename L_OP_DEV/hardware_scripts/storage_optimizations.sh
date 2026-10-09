@@ -1080,16 +1080,24 @@ io_scheduler_optimizations(){
 COMMENT_BLOCK
             echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iostats
         if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
-        
+
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
 		        if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+		                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    else
+                        echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    fi
 		            echo 1 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
 		        elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-			        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+			        if [[ $CPU_CLASS == "verylow" ]]; then
+		                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    else
+                        echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    fi
 			        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1172,13 +1180,21 @@ COMMENT_BLOCK
         
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+		                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    else
+                        echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    fi
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+		                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    else
+                        echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    fi
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
