@@ -196,168 +196,153 @@ ram_deduplication(){
 
 ram_vm_optimizations(){
     if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+		if [[ $CPU_CLASS == "high" ]]; then
+			echo 10 |  tee /proc/sys/vm/stat_interval
+		else
+			echo 20 |  tee /proc/sys/vm/stat_interval
+		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
 		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes #Hard cap at 128 MB
-		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "low" ]]; then
-		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 500 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 250 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 1000 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "mid" ]]; then
-		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 1200 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "high" ]]; then
-		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 700 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 350 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 1400 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 700 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
-		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs
 		    	echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
 			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 				echo 1600 | tee /proc/sys/vm/dirty_expire_centisecs
 				echo 800 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
+	    elif [[ $RAM_CLASS == "low" ]]; then
+		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 1000 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 2000 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
+	    elif [[ $RAM_CLASS == "mid" ]]; then
+		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 1200 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 2400 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 1200 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
+	    elif [[ $RAM_CLASS == "high" ]]; then
+		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 1400 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 700 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 2800 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 1400 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
+	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
+		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 1600 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 800 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 3200 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 1600 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
 	    fi
 
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
+		if [[ $CPU_CLASS == "high" ]]; then
+			echo 15 |  tee /proc/sys/vm/stat_interval
+		else
+			echo 30 |  tee /proc/sys/vm/stat_interval
+		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
-		    echo 1 |  tee /proc/sys/vm/stat_interval
             #Changing these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure. NOTE: Using either too low or too high values can create extremely high temperatures for target device, use carefully.
 		    echo $((16 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 100 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
 				echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-		    echo 5 | tee /proc/sys/vm/laptop_mode
-	    elif [[ $RAM_CLASS == "low" ]]; then
-		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
-		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 150 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-    	    echo 5 | tee /proc/sys/vm/laptop_mode
-	    elif [[ $RAM_CLASS == "mid" ]]; then
-		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
-		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
 			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs
 				echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
+		    echo 5 | tee /proc/sys/vm/laptop_mode
+	    elif [[ $RAM_CLASS == "low" ]]; then
+		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
+		    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
+		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 1200 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
+    	    echo 5 | tee /proc/sys/vm/laptop_mode
+	    elif [[ $RAM_CLASS == "mid" ]]; then
+		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
+		    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 1600 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 800 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
     	    echo 5 | tee /proc/sys/vm/laptop_mode
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo 1 |  tee /proc/sys/vm/stat_interval
             #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
 		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 		    echo 500 | tee /proc/sys/vm/dirty_expire_centisecs
 		    echo 250 | tee /proc/sys/vm/dirty_writeback_centisecs
 			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 500 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 250 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 				echo 1000 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
+		    	echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 2000 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
 		    echo 5 | tee /proc/sys/vm/laptop_mode
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
-		    echo 1 |  tee /proc/sys/vm/stat_interval
     	    #Lowering these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure
 		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 			if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 				echo 1200 | tee /proc/sys/vm/dirty_expire_centisecs
-				echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
+		    	echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 2400 | tee /proc/sys/vm/dirty_expire_centisecs
+				echo 1200 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
     	    echo 5 | tee /proc/sys/vm/laptop_mode
 	    fi
 
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" ]]; then
+		if [[ $CPU_CLASS == "high" ]]; then
+			echo 5 |  tee /proc/sys/vm/stat_interval
+		else
+			echo 10 |  tee /proc/sys/vm/stat_interval
+		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 0 |  tee /proc/sys/vm/watermark_boost_factor
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 100 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 50 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
-				echo 100 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "low" ]]; then
-		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-		    echo 131072 |  tee /proc/sys/vm/min_free_kbytes
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs
 		    	echo 100 | tee /proc/sys/vm/dirty_writeback_centisecs
@@ -365,23 +350,11 @@ ram_vm_optimizations(){
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
 				echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
-	    elif [[ $RAM_CLASS == "mid" ]]; then
-		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 150 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
-				echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "high" ]]; then
-		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
+	    elif [[ $RAM_CLASS == "low" ]]; then
+		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+		    echo 131072 |  tee /proc/sys/vm/min_free_kbytes
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
 		    	echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
@@ -389,37 +362,50 @@ ram_vm_optimizations(){
 				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
 				echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
+	    elif [[ $RAM_CLASS == "mid" ]]; then
+		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 1200 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
+				echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
+	    elif [[ $RAM_CLASS == "high" ]]; then
+		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 1600 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
+				echo 800 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 500 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 250 | tee /proc/sys/vm/dirty_writeback_centisecs
+				echo 1000 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
 			elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 1000 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
-				echo 500 | tee /proc/sys/vm/dirty_writeback_centisecs
+				echo 2000 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
+				echo 1000 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
 	    fi
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "nvme" ]]; then
+		if [[ $CPU_CLASS == "high" ]]; then
+			echo 2 |  tee /proc/sys/vm/stat_interval
+		else
+			echo 4 |  tee /proc/sys/vm/stat_interval
+		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
-			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 50 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 25 | tee /proc/sys/vm/dirty_writeback_centisecs
-			elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 100 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
-				echo 50 | tee /proc/sys/vm/dirty_writeback_centisecs
-			fi
-	    elif [[ $RAM_CLASS == "low" ]]; then
-		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 100 | tee /proc/sys/vm/dirty_expire_centisecs
 		    	echo 50 | tee /proc/sys/vm/dirty_writeback_centisecs
@@ -427,11 +413,10 @@ ram_vm_optimizations(){
 				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
 				echo 100 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
-	    elif [[ $RAM_CLASS == "mid" ]]; then
-		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
-		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
-		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
+	    elif [[ $RAM_CLASS == "low" ]]; then
+		    echo 80 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((128 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 				echo 200 | tee /proc/sys/vm/dirty_expire_centisecs
 		    	echo 100 | tee /proc/sys/vm/dirty_writeback_centisecs
@@ -439,29 +424,38 @@ ram_vm_optimizations(){
 				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
 				echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
+	    elif [[ $RAM_CLASS == "mid" ]]; then
+		    echo 90 |  tee /proc/sys/vm/overcommit_ratio
+		    echo $((256 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
+		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
+			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
+			elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
+				echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
+			fi
 	    elif [[ $RAM_CLASS == "high" ]]; then
 		    echo 95 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((512 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((2048 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 300 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 150 | tee /proc/sys/vm/dirty_writeback_centisecs
+				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
 			elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 600 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
-				echo 300 | tee /proc/sys/vm/dirty_writeback_centisecs
+				echo 1200 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
+				echo 600 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
 	    elif [[ $RAM_CLASS == "veryhigh" ]]; then
 		    echo 100 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((1024 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
 		    echo $((4096 * 1024 * 1024)) | tee /proc/sys/vm/dirty_bytes
-		    echo 1 |  tee /proc/sys/vm/stat_interval
 			if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-				echo 400 | tee /proc/sys/vm/dirty_expire_centisecs
-		    	echo 200 | tee /proc/sys/vm/dirty_writeback_centisecs
+				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs
+		    	echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
 			elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				echo 800 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
-				echo 400 | tee /proc/sys/vm/dirty_writeback_centisecs
+				echo 1600 | tee /proc/sys/vm/dirty_expire_centisecs #Expire after 2 seconds
+				echo 800 | tee /proc/sys/vm/dirty_writeback_centisecs
 			fi
 	    fi
     fi
