@@ -196,10 +196,18 @@ ram_deduplication(){
 
 ram_vm_optimizations(){
     if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
-		if [[ $CPU_CLASS == "high" ]]; then
-			echo 10 |  tee /proc/sys/vm/stat_interval
-		else
-			echo 20 |  tee /proc/sys/vm/stat_interval
+		if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 10 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 20 |  tee /proc/sys/vm/stat_interval
+			fi
+		elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 20 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 40 |  tee /proc/sys/vm/stat_interval
+			fi
 		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
@@ -259,10 +267,18 @@ ram_vm_optimizations(){
 	    fi
 
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-		if [[ $CPU_CLASS == "high" ]]; then
-			echo 15 |  tee /proc/sys/vm/stat_interval
-		else
-			echo 30 |  tee /proc/sys/vm/stat_interval
+		if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 20 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 40 |  tee /proc/sys/vm/stat_interval
+			fi
+		elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 40 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 80 |  tee /proc/sys/vm/stat_interval
+			fi
 		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
@@ -334,10 +350,18 @@ ram_vm_optimizations(){
 	    fi
 
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" ]]; then
-		if [[ $CPU_CLASS == "high" ]]; then
-			echo 5 |  tee /proc/sys/vm/stat_interval
-		else
-			echo 10 |  tee /proc/sys/vm/stat_interval
+		if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 5 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 10 |  tee /proc/sys/vm/stat_interval
+			fi
+		elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 10 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 20 |  tee /proc/sys/vm/stat_interval
+			fi
 		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
@@ -397,10 +421,18 @@ ram_vm_optimizations(){
 			fi
 	    fi
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "nvme" ]]; then
-		if [[ $CPU_CLASS == "high" ]]; then
-			echo 2 |  tee /proc/sys/vm/stat_interval
-		else
-			echo 4 |  tee /proc/sys/vm/stat_interval
+		if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 2 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 4 |  tee /proc/sys/vm/stat_interval
+			fi
+		elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
+			if [[ $CPU_CLASS == "high" ]]; then
+				echo 5 |  tee /proc/sys/vm/stat_interval
+			else
+				echo 10 |  tee /proc/sys/vm/stat_interval
+			fi
 		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
