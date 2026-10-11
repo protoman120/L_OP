@@ -94,24 +94,16 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
 
-    if [[ $RAM_CLASS != "verylow" && $RAM_CLASS != "low" && $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+    if [[ $RAM_CLASS != "verylow" && $RAM_CLASS != "low" && $RAM_CLASS != "mid" && $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
         #IMPORTANT: ZSWAP should only be used when a physical swap partition is present
         #NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
         #NOTE: Values lower than 15 for GRUB_ZSWAP_PERCENT will most likely cause performance issues or crashes for gaming workloads
         GRUB_ZSWAP_ENABLED=1
-        if [[ $RAM_CLASS == "mid" || $RAM_CLASS == "low" || $RAM_CLASS == "verylow" ]]; then
-			if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
-                GRUB_ZSWAP_PERCENT=75
-            else
-                GRUB_ZSWAP_PERCENT=50
-            fi
-		else
-            if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
-                GRUB_ZSWAP_PERCENT=50
-            else
-                GRUB_ZSWAP_PERCENT=25
-            fi
-		fi
+        if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
+            GRUB_ZSWAP_PERCENT=25
+        else
+            GRUB_ZSWAP_PERCENT=15
+        fi
     else
         GRUB_ZSWAP_ENABLED=0
         GRUB_ZSWAP_PERCENT=0
