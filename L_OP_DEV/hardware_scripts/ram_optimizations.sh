@@ -195,36 +195,128 @@ ram_deduplication(){
 }
 
 ram_vm_optimizations(){
-    if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+	if [[ $CPU_CLASS == "verylow" ]]; then
 		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 20 |  tee /proc/sys/vm/stat_interval
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 80 |  tee /proc/sys/vm/stat_interval
 				else
-					echo 40 |  tee /proc/sys/vm/stat_interval
+					echo 160 |  tee /proc/sys/vm/stat_interval
 				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
 					echo 40 |  tee /proc/sys/vm/stat_interval
 				else
 					echo 80 |  tee /proc/sys/vm/stat_interval
 				fi
 			fi
 		else
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 10 |  tee /proc/sys/vm/stat_interval
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 40 |  tee /proc/sys/vm/stat_interval
 				else
-					echo 20 |  tee /proc/sys/vm/stat_interval
+					echo 80 |  tee /proc/sys/vm/stat_interval
 				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
 					echo 20 |  tee /proc/sys/vm/stat_interval
 				else
 					echo 40 |  tee /proc/sys/vm/stat_interval
 				fi
 			fi
 		fi
+	elif [[ $CPU_CLASS == "low" ]]; then
+		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 40 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 80 |  tee /proc/sys/vm/stat_interval
+				fi
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 40 |  tee /proc/sys/vm/stat_interval
+				fi
+			fi
+		else
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 40 |  tee /proc/sys/vm/stat_interval
+				fi
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				fi
+			fi
+		fi
+	elif [[ $CPU_CLASS == "mid" ]]; then
+		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 40 |  tee /proc/sys/vm/stat_interval
+				fi
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				fi
+			fi
+		else
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				fi
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 5 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				fi
+			fi
+		fi
+	elif [[ $CPU_CLASS == "high" ]]; then
+		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 20 |  tee /proc/sys/vm/stat_interval
+				fi
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 5 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				fi
+			fi
+		else
+			if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 5 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 10 |  tee /proc/sys/vm/stat_interval
+				fi
+			else
+				if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
+					echo 2 |  tee /proc/sys/vm/stat_interval
+				else
+					echo 5 |  tee /proc/sys/vm/stat_interval
+				fi
+			fi
+		fi
+	fi
+    if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes #Start flushing at 32 MB
@@ -283,35 +375,6 @@ ram_vm_optimizations(){
 	    fi
 
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 40 |  tee /proc/sys/vm/stat_interval
-				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 40 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 80 |  tee /proc/sys/vm/stat_interval
-				fi
-			fi
-		else
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 40 |  tee /proc/sys/vm/stat_interval
-				fi
-			fi
-		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
             #Changing these value seems to help lower the USB device's temps, very important for portable installs, specially SD cards which can get VERY HOT under I/O pressure. NOTE: Using either too low or too high values can create extremely high temperatures for target device, use carefully.
@@ -382,35 +445,6 @@ ram_vm_optimizations(){
 	    fi
 
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "ssd" ]]; then
-		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 40 |  tee /proc/sys/vm/stat_interval
-				fi
-			fi
-		else
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 5 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				fi
-			fi
-		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((32 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
@@ -469,35 +503,6 @@ ram_vm_optimizations(){
 			fi
 	    fi
     elif [[ $STORAGE_ROOT_DEVICE_TYPE == "nvme" ]]; then
-		if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 5 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 20 |  tee /proc/sys/vm/stat_interval
-				fi
-			fi
-		else
-			if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 2 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 4 |  tee /proc/sys/vm/stat_interval
-				fi
-			elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-				if [[ $CPU_CLASS == "high" ]]; then
-					echo 5 |  tee /proc/sys/vm/stat_interval
-				else
-					echo 10 |  tee /proc/sys/vm/stat_interval
-				fi
-			fi
-		fi
 	    if [[ $RAM_CLASS == "verylow" ]]; then
 		    echo 70 |  tee /proc/sys/vm/overcommit_ratio
 		    echo $((64 * 1024 * 1024)) | tee /proc/sys/vm/dirty_background_bytes
