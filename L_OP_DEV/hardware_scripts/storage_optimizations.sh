@@ -1141,7 +1141,7 @@ io_scheduler_optimizations(){
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then then
+                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
 		            echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
