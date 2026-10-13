@@ -1061,7 +1061,7 @@ io_scheduler_optimizations(){
 		        fi
             elif [[ $CPU_CLASS == "mid" ]]; then
                 if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1150,7 +1150,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $CPU_CLASS == "mid" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1234,7 +1234,7 @@ io_scheduler_optimizations(){
 
         elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
 
-            if [[ $CPU_CLASS == "verylow" ]]; then
+            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
 		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
@@ -1248,23 +1248,9 @@ io_scheduler_optimizations(){
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 fi
-            elif [[ $CPU_CLASS == "low" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
             elif [[ $CPU_CLASS == "mid" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1361,7 +1347,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $CPU_CLASS == "mid" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
