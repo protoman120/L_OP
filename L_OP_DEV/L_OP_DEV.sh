@@ -134,43 +134,6 @@ pc_info(){
     fi
 }
 
-profile_selection() {
-
-    PROFILE=""
-    PROFILE_AMOUNT=0
-    echo "TESTING: $SCRIPT_PROFILES"
-
-    for PROFILE in $SCRIPT_PROFILES/*; do
-        echo "TESTING PROFILE_FILE: $SCRIPT_PROFILES"
-        if [ e- $PROFILE ]; then
-            $PROFILE_NAME=$PROFILE
-            $PROFILE_AMOUNT=$($PROFILE_AMOUNT + 1)
-            echo "$PROFILE_AMOUNT ) $PROFILE_NAME"
-        fi
-    done
-
-    SELECTED_PROFILE=10000000
-    while (( $SELECTED_PROFILE > PROFILE_AMOUNT)); do
-        read -rp "Choose a profile: " SELECTED_PROFILE
-    done
-
-    PROFILE_COUNT=0
-    for PROFILE in $SCRIPT_PROFILES/*; do
-        if [ e- $SCRIPT_PROFILES/$PROFILE ]; then
-            PROFILE_COUNT=$($PROFILE_COUNT + 1)
-            if $(($PROFILE_COUNT == $SELECTED_PROFILE)); then
-                SELECTED_PROFILE="$PROFILE"
-            fi
-        fi
-    done
-
-    if [ e- $PROFILE != "" ]; then
-        PROFILE_SELECTED="true"
-        echo "SELECTED PROFILE: $SELECTED_PROFILE"
-    fi
-
-}
-
 profile_save_optimization_goals() {
 
     cat > "$SAVED_OPTIMIZATION_GOALS" <<EOF
@@ -232,96 +195,58 @@ EOF
 
 }
 
-profile_selection_simple() {
-    #TEMP FUNCTION UNTIL I GET THE OTHER WORKING
-    echo "Available Options:"
-    PS3='Choose a profile: '
-    options=("desktop" "gaming" "gaming_high_performance" "mc_server_self_hosting" "ai_self_hosting" "latency" "throughput" "custom_profile" "Quit")
-    select opt in "${options[@]}"
-    do
-        case $opt in
-            "desktop")
-                source $SCRIPT_PROFILES/desktop.sh
-                break
-                ;;
-            "gaming")
-				source $SCRIPT_PROFILES/gaming.sh
-				break
-                ;;
-            "gaming_high_performance")
-                source $SCRIPT_PROFILES/gaming_high_performance.sh
-                break
-                ;;
-            "mc_server_self_hosting")
-                source $SCRIPT_PROFILES/mc_server_self_hosting.sh
-                break
-                ;;
-            "ai_self_hosting")
-                source $SCRIPT_PROFILES/ai_self_hosting.sh
-                break
-                ;;
-            "latency")
-                source $SCRIPT_PROFILES/latency.sh
-                break
-                ;;
-            "throughput")
-                source $SCRIPT_PROFILES/throughput.sh
-                break
-                ;;
-            "custom_profile")
-                read -rp "Enter profile name: " custom_profile_name
-                if [ -e $SCRIPT_PROFILES/custom_profile_name.sh ]; then
-                    source $SCRIPT_PROFILES/custom_profile_name.sh
-                    break
-                else
-                    echo "$SCRIPT_PROFILES/custom_profile_name.sh: File not found"
-                fi
-                ;;    
-            "Quit")
-                break
-                ;;
-            *) echo "invalid option $REPLY";;
-        esac
-    done
+profile_selection_ui() {
 
-    echo "Selected profile: $opt"
+    FILECOUNTER=1
 
+    if [[ $BASIC_INSTALL_SCRIPT == "true" ]]; then
+        DIR=$SCRIPT_BASIC_PROFILES
+    elif [[ $SCRIPT_UTILITIES_SETUP == "true" ]]; then
+        DIR=$SCRIPT_EXTRA_UTILITY_SCRIPTS
+    else
+        DIR=$SCRIPT_PROFILES
+    fi
+
+    for FOUNDFILE in $DIR/*; do
+        if [[ -f "$FOUNDFILE" ]]; then
+            FILENAME[$FILECOUNTER]=$FOUNDFILE
+	   		echo "$FILECOUNTER -> $(basename "$FOUNDFILE")"
+		    ((FILECOUNTER++))
+		fi
+	done
+
+    if [[ $INSTALL_SCRIPT == "true" && $BASIC_INSTALL_SCRIPT != "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
+        echo "$FILECOUNTER -> Basic profiles"
+    fi
+
+    echo "Select a profile:"
+	read PROFILE_SELECTION
+	while (($PROFILE_SELECTION > $FILECOUNTER)); do
+		echo "ERROR: The selection is invalid."
+        echo "Select a profile:"
+	    read PROFILE_SELECTION
+	done
+    SELECTED_PROFILE="${FILENAME[$PROFILE_SELECTION]}"
+
+    if [[ $BASIC_INSTALL_SCRIPT != "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
+        if (( $PROFILE_SELECTION == $FILECOUNTER )); then
+            BASIC_INSTALL_SCRIPT="true"
+            profile_selection_ui
+        else
+            source $SELECTED_PROFILE
+        fi
+    else
+        if [[ $SCRIPT_UTILITIES_SETUP == "true" ]]; then
+            $SELECTED_PROFILE
+        else
+            source $SELECTED_PROFILE
+        fi
+    fi
 }
 
 script_utilities_menu(){
-
-    SCRIPT_MENU_TITLE_BARS="###################################"
-
-    echo "$SCRIPT_MENU_TITLE_BARS"
-    echo "$SCRIPT_NAME"
-    echo "$SCRIPT_MENU_TITLE_BARS"
-
-    echo ""
-    echo "Available Options:"
-    PS3='Choose an option: '
-    options=("Setup_Mint" "Fix_Grub_Env" "Return_To_Menu" "Quit")
-    select opt in "${options[@]}"
-    do
-        case $opt in
-            "Fix_Grub_Env")
-                $FIX_GRUB_ENV 
-                break
-                ;;
-            "Setup_Mint")
-                $SETUP_LINUX_MINT
-                break
-                ;;
-            "Return_To_Menu")
-                script_main_menu
-                break
-                ;;
-            "Quit")
-                break
-                ;;
-            *) echo "invalid option $REPLY";;
-        esac
-    done
-
+    UTILITIES_SETUP="true"
+	profile_selection_ui
 }
 
 uninstall_script(){
@@ -340,12 +265,13 @@ uninstall_script(){
 install_script(){
 
 	#PROFILE SELECTION
-	#profile_selection
-    profile_selection_simple
+    INSTALL_SCRIPT="true"
+	profile_selection_ui
+    #profile_selection_simple
 
     if [ -e $SCRIPT_INSTALLED_DIR ]; then
-        echo "L_OP ALREADY INSTALLED, REINSTALLING"
-        uninstall_script
+        echo "L_OP ALREADY INSTALLED, UNINSTALL FIRST, THEN REINSTALL"
+        return 0
     fi
 
     if [ -e "$SCRIPT_SAVED_DATA" ]; then
@@ -453,11 +379,17 @@ script_main_menu(){
         case $opt in
             "Install")
                 INSTALLING_SCRIPT="true"
+                echo "$SCRIPT_MENU_TITLE_BARS"
+                echo "$SCRIPT_NAME: PROFILE SELECTION"
+                echo "$SCRIPT_MENU_TITLE_BARS"
                 install_script
                 break
                 ;;
             "Uninstall")
                 if [ -e $SCRIPT_INSTALLED_DIR ]; then
+                    echo "$SCRIPT_MENU_TITLE_BARS"
+                    echo "$SCRIPT_NAME: UNINSTALLING"
+                    echo "$SCRIPT_MENU_TITLE_BARS"
 				    uninstall_script
                     echo "L_OP UNINSTALLED"
                 else
@@ -469,7 +401,10 @@ script_main_menu(){
                 cd /var/lib/L_OP_DEV
                 source ./utility_scripts/script_directories.sh
                 source $SAVED_OPTIMIZATION_GOALS
-                profile_selection_simple
+                echo "$SCRIPT_MENU_TITLE_BARS"
+                echo "$SCRIPT_NAME: CHANGE PROFILE"
+                echo "$SCRIPT_MENU_TITLE_BARS"
+                profile_selection_ui
                 profile_save_optimization_goals
                 ask_system_reboot
                 break
@@ -479,7 +414,11 @@ script_main_menu(){
                 #break
                 ;;
             "Other_Utilties")
-                script_utilities_menu
+                echo "$SCRIPT_MENU_TITLE_BARS"
+                echo "$SCRIPT_NAME: UTILITY SELECTION"
+                echo "$SCRIPT_MENU_TITLE_BARS"
+                SCRIPT_UTILITIES_SETUP="true"
+                profile_selection_ui
                 #break
                 ;;
             "Quit")

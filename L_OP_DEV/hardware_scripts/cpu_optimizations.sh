@@ -263,15 +263,25 @@ elif [[ "$@" == "intel_cpu_auto_power_tuner" ]]; then
 elif [[ "$@" == "cpu_frequency_optimizations" ]]; then
     cpu_frequency_optimizations
 else
-    cpu_scheduler_optimizations
-    if [[ "$CPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
-        if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
-            intel_cpu_auto_power_tuner
-        elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
-            #amd_cpu_power_tuner
-            echo ""
-        fi
-        cpu_frequency_optimizations
-    fi
-	cpu_performance_optimizations
+	if [[ $OPTIMIZATION_PROFILE == "cpu_cooling_basic" ]]; then
+		if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
+			intel_cpu_auto_power_tuner
+		elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
+			#amd_cpu_power_tuner
+			echo ""
+		fi
+		cpu_frequency_optimizations
+	else
+		cpu_scheduler_optimizations
+		if [[ "$CPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
+			if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
+				intel_cpu_auto_power_tuner
+			elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
+				#amd_cpu_power_tuner
+				echo ""
+			fi
+			cpu_frequency_optimizations
+		fi
+		cpu_performance_optimizations
+	fi
 fi

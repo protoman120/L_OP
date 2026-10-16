@@ -731,20 +731,20 @@ io_scheduler_optimizations(){
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 480 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 4800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 490 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4900 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 460 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 4600 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 480 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 440 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 4400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 470 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -762,26 +762,26 @@ io_scheduler_optimizations(){
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 14 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 900 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 9000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 750 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 7500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 850 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 8500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 740 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 7400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 18 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 18 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 8000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 730 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 7300 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 20 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 20 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 750 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 7500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 720 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 7200 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 22 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -801,26 +801,26 @@ io_scheduler_optimizations(){
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 4000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 450 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 5000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 380 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 3800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 440 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4900 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 360 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 3600 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 430 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 14 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 340 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 3400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 420 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4200 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 6 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -838,26 +838,26 @@ io_scheduler_optimizations(){
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 8000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 7000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
 		            echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 14 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 750 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 7500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 690 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6900 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
 		            echo 6 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 7000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 680 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
 		            echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 18 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 650 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 6500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 670 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -877,26 +877,26 @@ io_scheduler_optimizations(){
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 6 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 300 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 3000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 4000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 280 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 2800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 390 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3900 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 14 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 260 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 2600 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 380 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 240 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 2400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 370 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -914,26 +914,26 @@ io_scheduler_optimizations(){
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 18 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 7000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 650 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 20 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 650 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 6500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 640 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 14 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 22 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 600 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 6000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 630 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6300 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 24 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 550 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 5500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 620 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 6200 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -953,26 +953,26 @@ io_scheduler_optimizations(){
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 200 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 2000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 350 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 12 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 180 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 1800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 340 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 10 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 3 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 160 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 1600 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 330 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3300 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 140 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 1400 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 320 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 3200 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 6 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
@@ -996,20 +996,20 @@ io_scheduler_optimizations(){
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 22 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 550 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 5500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 590 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 5900 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 3 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 24 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 5000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 580 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 5800 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
                     echo 26 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/fifo_batch
-                    echo 450 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
-                    echo 4500 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
+                    echo 570 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_expire
+                    echo 5700 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_expire
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/writes_starved
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then

@@ -221,8 +221,10 @@ gpu_auto_power_tuner() {
         fi
     done
 }
+if [[ $OPTIMIZATION_PROFILE != "cpu_cooling_basic" ]]; then
+    gpu_power_optimizations
+fi
 
-gpu_power_optimizations
 if [[ "$GPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
     gpu_performance_optimizations
     gpu_auto_power_tuner

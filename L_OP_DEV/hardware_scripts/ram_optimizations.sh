@@ -836,11 +836,7 @@ ram_zram_configuration(){
 		fi
 	elif [[ "$CPU_CLASS" == "mid" ]]; then
 		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-                ZRAM_ALGO="deflate"
-            else
-				ZRAM_ALGO="zstd"
-            fi
+			ZRAM_ALGO="zstd"
 		elif [[ $RAM_CLASS == "mid" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
             	ZRAM_ALGO="zstd"
@@ -855,14 +851,8 @@ ram_zram_configuration(){
             fi
         fi
 	elif [[ "$CPU_CLASS" == "high" ]]; then
-		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
-			ZRAM_ALGO="deflate"
-		elif [[ $RAM_CLASS == "mid" ]]; then
-			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-            	ZRAM_ALGO="deflate"
-			else
-				ZRAM_ALGO="zstd"
-			fi
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+			ZRAM_ALGO="zstd"
 		elif [[ $RAM_CLASS == "high" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
                 ZRAM_ALGO="zstd"
@@ -890,14 +880,21 @@ ram_zram_configuration(){
 
 }
 
-ram_swappiness
-if [[ "$CPU_CLASS" == "high" ]]; then
-	if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-		ram_deduplication
+if [[ $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
+	if [[ $OPTIMIZATION_PROFILE == "zram+swap_basic" ]]; then
+		ram_swappiness
+	else
+		ram_swappiness
+		if [[ "$CPU_CLASS" == "high" ]]; then
+			if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+				ram_deduplication
+			fi
+		fi
+		ram_vm_optimizations
 	fi
 fi
-ram_vm_optimizations
-if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" || $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
+
+if [[ $OPTIMIZATION_PROFILE == "zram_basic" || $OPTIMIZATION_PROFILE == "zram+swap_basic" || $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" || $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
 	#NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
 	ram_zram_configuration
 fi
