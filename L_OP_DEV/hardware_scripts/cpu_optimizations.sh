@@ -13,6 +13,13 @@ source $SAVED_DE_DATA
 source $SAVED_BOOTLOADER_DATA
 ##################################################################
 
+BASIC_CPU_COOLING_PROFILES=(
+    "cpu_cooling_basic"
+    "cpu+gpu_cooling_basic"
+	"cpu+gpu_cooling+zram_basic"
+	"cpu_cooling+zram_basic"
+)
+
 intel_cpu_auto_power_tuner(){
 	CURRENT_CPU_TDP_INTEL=$(cat /sys/class/powercap/intel-rapl:0/constraint_0_power_limit_uw)
 	CURRENT_CPU_TDP_INTEL_HUMAN_READABLE=$(($CURRENT_CPU_TDP_INTEL/1000000))
@@ -263,7 +270,7 @@ elif [[ "$@" == "intel_cpu_auto_power_tuner" ]]; then
 elif [[ "$@" == "cpu_frequency_optimizations" ]]; then
     cpu_frequency_optimizations
 else
-	if [[ $OPTIMIZATION_PROFILE == "cpu_cooling_basic" ]]; then
+	if [[ " ${BASIC_CPU_COOLING_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* ]]; then
 		if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
 			intel_cpu_auto_power_tuner
 		elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then

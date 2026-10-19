@@ -13,6 +13,13 @@ source $SAVED_DE_DATA
 source $SAVED_BOOTLOADER_DATA
 ##################################################################
 
+BASIC_GPU_COOLING_PROFILES=(
+    "gpu_cooling_basic"
+    "cpu+gpu_cooling_basic"
+    "cpu+gpu_cooling+zram_basic"
+    "gpu_cooling+zram_basic"
+)
+
 gpu_power_optimizations(){
 
 	for GPU_FILE in "$SAVED_GPU_DATA_FOLDER"/card*/$SAVED_GPU_DATA_FILE_NAME; do
@@ -221,7 +228,7 @@ gpu_auto_power_tuner() {
         fi
     done
 }
-if [[ $OPTIMIZATION_PROFILE != "cpu_cooling_basic" ]]; then
+if [[ " ${BASIC_GPU_COOLING_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* ]]; then
     gpu_power_optimizations
 fi
 

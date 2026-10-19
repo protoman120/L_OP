@@ -13,6 +13,14 @@ source $SAVED_DE_DATA
 source $SAVED_BOOTLOADER_DATA
 ##################################################################
 
+BASIC_ZRAM_RAM_PROFILES=(
+    "zram_basic"
+    "zram+swap_basic"
+	"cpu+gpu_cooling+zram_basic"
+	"cpu_cooling+zram_basic"
+	"gpu_cooling+zram_basic"
+)
+
 ram_swappiness(){
 	if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
 		if [[ $RAM_CLASS == "verylow" ]]; then
@@ -894,7 +902,7 @@ if [[ $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
 	fi
 fi
 
-if [[ $OPTIMIZATION_PROFILE == "zram_basic" || $OPTIMIZATION_PROFILE == "zram+swap_basic" || $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" || $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
+if [[ " ${BASIC_ZRAM_RAM_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* || $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" || $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
 	#NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
 	ram_zram_configuration
 fi

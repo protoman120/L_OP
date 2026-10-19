@@ -217,6 +217,8 @@ profile_selection_ui() {
 
     if [[ $INSTALL_SCRIPT == "true" && $BASIC_INSTALL_SCRIPT != "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
         echo "$FILECOUNTER -> Basic profiles"
+    elif [[ $BASIC_INSTALL_SCRIPT == "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
+        echo "$FILECOUNTER -> Regular profiles"
     fi
 
     echo "Select a profile:"
@@ -231,6 +233,13 @@ profile_selection_ui() {
     if [[ $BASIC_INSTALL_SCRIPT != "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
         if (( $PROFILE_SELECTION == $FILECOUNTER )); then
             BASIC_INSTALL_SCRIPT="true"
+            profile_selection_ui
+        else
+            source $SELECTED_PROFILE
+        fi
+    elif [[ $BASIC_INSTALL_SCRIPT == "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
+        if (( $PROFILE_SELECTION == $FILECOUNTER )); then
+            BASIC_INSTALL_SCRIPT="false"
             profile_selection_ui
         else
             source $SELECTED_PROFILE
@@ -265,7 +274,6 @@ uninstall_script(){
 install_script(){
 
 	#PROFILE SELECTION
-    INSTALL_SCRIPT="true"
 	profile_selection_ui
     #profile_selection_simple
 
@@ -382,6 +390,7 @@ script_main_menu(){
                 echo "$SCRIPT_MENU_TITLE_BARS"
                 echo "$SCRIPT_NAME: PROFILE SELECTION"
                 echo "$SCRIPT_MENU_TITLE_BARS"
+                INSTALL_SCRIPT="true"
                 install_script
                 break
                 ;;
@@ -404,7 +413,11 @@ script_main_menu(){
                 echo "$SCRIPT_MENU_TITLE_BARS"
                 echo "$SCRIPT_NAME: CHANGE PROFILE"
                 echo "$SCRIPT_MENU_TITLE_BARS"
+                INSTALL_SCRIPT="true"
                 profile_selection_ui
+                if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" && BASIC_INSTALL_SCRIPT="true" ]]; then
+                    $BOOTLOADER_REMOVE_OPTIMIZATIONS
+                fi
                 profile_save_optimization_goals
                 ask_system_reboot
                 break
