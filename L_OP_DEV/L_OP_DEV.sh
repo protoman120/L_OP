@@ -259,14 +259,22 @@ script_utilities_menu(){
 }
 
 uninstall_script(){
-    rm -r $SCRIPT_SAVED_DATA
-    rm -r $SCRIPT_INSTALLED_DIR
-    $BOOTLOADER_REMOVE_OPTIMIZATIONS
-    $SCRIPT_REMOVE_SERVICES
-    $TMPFS_CACHING_SERVICES_REMOVAL
 
-    if [[ $INSTALLING_SCRIPT != "true" ]]; then
-        ask_system_reboot
+    if [ -e $SCRIPT_INSTALLED_DIR ]; then
+        rm -r $SCRIPT_SAVED_DATA
+        rm -r $SCRIPT_INSTALLED_DIR
+        $BOOTLOADER_REMOVE_OPTIMIZATIONS
+        $SCRIPT_REMOVE_SERVICES
+        $TMPFS_CACHING_SERVICES_REMOVAL
+
+        if [[ $INSTALLING_SCRIPT != "true" ]]; then
+            ask_system_reboot
+        fi
+    else
+        echo "SCRIPT NOT INSTALLED"
+        echo "If you belive this is a mistake, manually delete $SCRIPT_INSTALLED_DIR"
+        echo "Then report the bug"
+        return 0
     fi
 
 }
@@ -407,19 +415,24 @@ script_main_menu(){
 				break
                 ;;
             "Change_Profile")
-                cd /var/lib/L_OP_DEV
-                source ./utility_scripts/script_directories.sh
-                source $SAVED_OPTIMIZATION_GOALS
-                echo "$SCRIPT_MENU_TITLE_BARS"
-                echo "$SCRIPT_NAME: CHANGE PROFILE"
-                echo "$SCRIPT_MENU_TITLE_BARS"
-                INSTALL_SCRIPT="true"
-                profile_selection_ui
-                if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" && BASIC_INSTALL_SCRIPT="true" ]]; then
-                    $BOOTLOADER_REMOVE_OPTIMIZATIONS
+                if [ -e $SCRIPT_INSTALLED_DIR ]; then
+                    cd /var/lib/L_OP_DEV
+                    source ./utility_scripts/script_directories.sh
+                    source $SAVED_OPTIMIZATION_GOALS
+                    echo "$SCRIPT_MENU_TITLE_BARS"
+                    echo "$SCRIPT_NAME: CHANGE PROFILE"
+                    echo "$SCRIPT_MENU_TITLE_BARS"
+                    INSTALL_SCRIPT="true"
+                    profile_selection_ui
+                    if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" && BASIC_INSTALL_SCRIPT="true" ]]; then
+                        $BOOTLOADER_REMOVE_OPTIMIZATIONS
+                    fi
+                    profile_save_optimization_goals
+                    ask_system_reboot
+                else
+                    echo "SCRIPT NOT INSTALLED, CANNOT CHANGE PROFILE, PLEASE INSTALL FIRST"
+                    return 0
                 fi
-                profile_save_optimization_goals
-                ask_system_reboot
                 break
                 ;;
             "Toggle_Automatic_Updates")
