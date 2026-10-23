@@ -902,8 +902,12 @@ if [[ $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
 	fi
 fi
 
+ram_zram_configuration
+
+#DISABLED FOR FUTURE ZRAM/ZSWAP REWORK
+:<<'COMMENT_BLOCK'
 if [[ " ${BASIC_ZRAM_RAM_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* || $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" || $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
 	#NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
 	ram_zram_configuration
 fi
-
+COMMENT_BLOCK

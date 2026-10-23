@@ -33,8 +33,8 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
     GRUB_PREEMPT_MODE="voluntary"
     GRUB_PREEMPT="preempt=${GRUB_PREEMPT_MODE}"
 
-    GRUB_ZSWAP_ALGO="zstd"
-    GRUB_ZSWAP_PERCENT=25
+    GRUB_ZSWAP_ALGO="lz4"
+    GRUB_ZSWAP_PERCENT=0
     GRUB_ZSWAP_ZPOOL=z3fold
     GRUB_ZSWAP_ENABLED=0
     GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT}"
@@ -64,13 +64,16 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         
     GRUB_TRANSPARENT_HUGEPAGES_AMOUNT=0
 
+#ZSWAP DISABLED FOR FUTURE ZRAM/ZSWAP REWORK
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" || "$CPU_CLASS" == "mid" ]]; then
         GRUB_CPU_MAX_CSTATE=0
+:<<'COMMENT_BLOCK'
         if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
             GRUB_ZSWAP_ALGO="lz4hc"
         else
             GRUB_ZSWAP_ALGO="lz4"
         fi
+COMMENT_BLOCK
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="voluntary"
             GRUB_EXTRA_ARGS+=" nohz=off"
@@ -80,11 +83,13 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     elif [[ "$CPU_CLASS" == "high" ]]; then
         GRUB_CPU_MAX_CSTATE=1
+:<<'COMMENT_BLOCK'
         if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
             GRUB_ZSWAP_ALGO="zstd"
         else
             GRUB_ZSWAP_ALGO="lz4hc"
         fi
+COMMENT_BLOCK
         if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
             GRUB_PREEMPT_MODE="full"
             GRUB_EXTRA_ARGS+=" nohz=on"
@@ -94,6 +99,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
 
+:<<'COMMENT_BLOCK'
     if [[ $RAM_CLASS != "verylow" && $RAM_CLASS != "low" && $RAM_CLASS != "mid" && $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
         #IMPORTANT: ZSWAP should only be used when a physical swap partition is present
         #NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
@@ -108,6 +114,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         GRUB_ZSWAP_ENABLED=0
         GRUB_ZSWAP_PERCENT=0
     fi
+COMMENT_BLOCK
 
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -129,6 +136,7 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         fi
     fi
     
+:<<'COMMENT_BLOCK'
     #VARIABLES WHOSE VALUES COULD HAVE BEEN CHANGED FROM BASELINE
     GRUB_PREEMPT="preempt=${GRUB_PREEMPT_MODE}"
     GRUB_ZSWAP="zswap.enabled=${GRUB_ZSWAP_ENABLED} zswap.compressor=${GRUB_ZSWAP_ALGO} zswap.max_pool_percent=${GRUB_ZSWAP_PERCENT} zswap.zpool=${GRUB_ZSWAP_ZPOOL}"
@@ -141,6 +149,24 @@ if [[ $BOOTLOADER_GRUB_INSTALLED == "true" ]];then
         BOOTLOADER_NEW_GRUB_ARGS="${GRUB_BASE_ARGS} ${GRUB_GENERIC_ARGS} ${GRUB_ZRAM} ${GRUB_ZSWAP} ${GRUB_PREEMPT} ${GRUB_CPU_CSTATE} ${GRUB_TRANSPARENT_HUGEPAGES} ${GRUB_INTEL_ARGUMENTS} ${GRUB_AMD_ARGUMENTS} ${GRUB_NVIDIA_ARGUMENTS} ${GRUB_THROUGHPUT_ARGS} ${GRUB_EXTRA_ARGS} ${GRUB_MODULE_BLACKLIST}"
     else
         BOOTLOADER_NEW_GRUB_ARGS="${GRUB_BASE_ARGS} ${GRUB_GENERIC_ARGS} ${GRUB_ZRAM} ${GRUB_ZSWAP} ${GRUB_PREEMPT} ${GRUB_CPU_CSTATE} ${GRUB_TRANSPARENT_HUGEPAGES} ${GRUB_INTEL_ARGUMENTS} ${GRUB_AMD_ARGUMENTS} ${GRUB_NVIDIA_ARGUMENTS} ${GRUB_EXTRA_ARGS} ${GRUB_MODULE_BLACKLIST}"
+    fi
+
+    sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"$BOOTLOADER_NEW_GRUB_ARGS\"|" "$SYSTEM_GRUB_FILE"
+    update-initramfs -u
+    update-grub
+COMMENT_BLOCK
+
+    #VARIABLES WHOSE VALUES COULD HAVE BEEN CHANGED FROM BASELINE
+    GRUB_PREEMPT="preempt=${GRUB_PREEMPT_MODE}"
+    GRUB_CPU_CSTATE="processor.max_cstate=${GRUB_CPU_MAX_CSTATE}"
+    GRUB_TRANSPARENT_HUGEPAGES="hugepages=${GRUB_TRANSPARENT_HUGEPAGES_AMOUNT} transparent_hugepage=${GRUB_TRANSPARENT_HUGEPAGES_MODE}"
+    
+    if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
+        BOOTLOADER_NEW_GRUB_ARGS="${GRUB_BASE_ARGS} ${GRUB_GENERIC_ARGS} ${GRUB_ZRAM} ${GRUB_PREEMPT} ${GRUB_CPU_CSTATE} ${GRUB_TRANSPARENT_HUGEPAGES} ${GRUB_INTEL_ARGUMENTS} ${GRUB_AMD_ARGUMENTS} ${GRUB_NVIDIA_ARGUMENTS} ${GRUB_LATENCY_ARGS} ${GRUB_EXTRA_ARGS} ${GRUB_MODULE_BLACKLIST}"
+    elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
+        BOOTLOADER_NEW_GRUB_ARGS="${GRUB_BASE_ARGS} ${GRUB_GENERIC_ARGS} ${GRUB_ZRAM} ${GRUB_PREEMPT} ${GRUB_CPU_CSTATE} ${GRUB_TRANSPARENT_HUGEPAGES} ${GRUB_INTEL_ARGUMENTS} ${GRUB_AMD_ARGUMENTS} ${GRUB_NVIDIA_ARGUMENTS} ${GRUB_THROUGHPUT_ARGS} ${GRUB_EXTRA_ARGS} ${GRUB_MODULE_BLACKLIST}"
+    else
+        BOOTLOADER_NEW_GRUB_ARGS="${GRUB_BASE_ARGS} ${GRUB_GENERIC_ARGS} ${GRUB_ZRAM} ${GRUB_PREEMPT} ${GRUB_CPU_CSTATE} ${GRUB_TRANSPARENT_HUGEPAGES} ${GRUB_INTEL_ARGUMENTS} ${GRUB_AMD_ARGUMENTS} ${GRUB_NVIDIA_ARGUMENTS} ${GRUB_EXTRA_ARGS} ${GRUB_MODULE_BLACKLIST}"
     fi
 
     sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"$BOOTLOADER_NEW_GRUB_ARGS\"|" "$SYSTEM_GRUB_FILE"
