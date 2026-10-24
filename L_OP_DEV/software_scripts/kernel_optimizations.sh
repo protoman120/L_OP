@@ -30,6 +30,8 @@ kernel_scheduler_optimizations(){
 
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
         echo 0 | tee /proc/sys/kernel/numa_balancing
+    elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
+        echo 1 | tee /proc/sys/kernel/numa_balancing
     fi
 
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
@@ -37,24 +39,6 @@ kernel_scheduler_optimizations(){
     elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
         echo 0 | tee /proc/sys/kernel/sched_autogroup_enabled
     fi
-
-    if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
-	    if [[ "$OPTIMIZATION_PROFILE_USECASE" == "gaming" || "$OPTIMIZATION_PROFILE_USECASE" == "desktop" ]]; then
-		    if [[ "$CPU_CLASS" == "verylow" ]]; then
-                echo 10000 | tee /proc/sys/kernel/sched_rt_runtime_us
-            elif [[ "$CPU_CLASS" == "low" ]]; then
-                echo 20000 | tee /proc/sys/kernel/sched_rt_runtime_us
-            elif [[ $CPU_CLASS == "mid" ]]; then
-                echo 30000 | tee /proc/sys/kernel/sched_rt_runtime_us
-            elif [[ $CPU_CLASS == "high" ]]; then
-                echo 40000 | tee /proc/sys/kernel/sched_rt_runtime_us
-            fi
-	    elif [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-		    echo 80000 | tee /proc/sys/kernel/sched_rt_runtime_us
-    	fi
-    fi
-
-    echo 0 | tee /proc/sys/kernel/sched_child_runs_first
 }
 
 kernel_memory_optimizations(){
@@ -77,7 +61,19 @@ kernel_memory_optimizations(){
         fi
     fi
     
-    echo 7 | tee /sys/kernel/mm/lru_gen/enabled
+    if [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
+        if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+            echo 7 | tee /sys/kernel/mm/lru_gen/enabled
+        else
+            echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+        fi
+    else
+        if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+            echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+        else
+            echo 1 | tee /sys/kernel/mm/lru_gen/enabled
+        fi
+    fi
 }
 
 kernel_usb_optimizations(){
@@ -97,14 +93,16 @@ kernel_timer_optimizations(){
 }
 
 kernel_logging_optimizations(){
-    if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
-	    echo "3 3 3 3" | tee /proc/sys/kernel/printk
-    elif [[ $OPTIMIZATION_PROFILE_USECASE == "desktop" ]]; then
-	    echo "4 4 4 4" | tee /proc/sys/kernel/printk
-    elif [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-	    echo "4 4 4 4" | tee /proc/sys/kernel/printk
+    if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
+        echo "0 0 0 0" | tee /proc/sys/kernel/printk
     else
-	    echo "4 4 4 4" | tee /proc/sys/kernel/printk
+        if [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
+            echo "2 2 2 2" | tee /proc/sys/kernel/printk
+        elif [[ "$CPU_CLASS" == "mid" ]]; then
+            echo "1 1 1 1" | tee /proc/sys/kernel/printk
+        else
+            echo "0 0 0 0" | tee /proc/sys/kernel/printk
+        fi
     fi
 }
 
