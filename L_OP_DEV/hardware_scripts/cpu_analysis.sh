@@ -32,7 +32,6 @@ cpu_save_data(){
         CPU_L1I_CACHE_SIZE=$(printf '%q' "$CPU_L1I_CACHE_SIZE")
         CPU_L1I_CACHE_SIZE_MB=$(printf '%q' "$CPU_L1I_CACHE_SIZE_MB")
         CPU_L1I_CACHE_SIZE_KB=$(printf '%q' "$CPU_L1I_CACHE_SIZE_KB")
-        CPU_CLASS=$(printf '%q' "$CPU_CLASS")
         CURRENT_CPU_TDP_INTEL=$(printf '%q' "$CURRENT_CPU_TDP_INTEL")
         CPU_CLASS=$(printf '%q' "$CPU_CLASS")
 

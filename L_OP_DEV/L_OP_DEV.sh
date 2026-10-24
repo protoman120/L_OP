@@ -2,6 +2,11 @@
 
 #L_OP MAIN SCRIPT
 
+if [[ $EUID -ne 0 ]]; then
+    echo "This script requires root access to function, please restart it with sudo."
+    exit 1
+fi
+
 script_system_hardware_analysis(){
     $CPU_ANALYSIS
 	$GPU_ANALYSIS
@@ -49,7 +54,8 @@ script_system_software_optimizations(){
     fi
 
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
-        $BOOTLOADER_OPTIMIZATIONS
+        #$BOOTLOADER_OPTIMIZATIONS
+        echo ""
     fi
 
 }
@@ -57,7 +63,8 @@ script_system_software_optimizations(){
 script_system_user_software_optimizations(){
 
     if [[ $OPTIMIZATION_DE_ENABLED == "enabled" ]]; then
-        $DE_OPTIMIZATIONS
+        #$DE_OPTIMIZATIONS
+        echo ""
     fi
 
 }
@@ -263,7 +270,9 @@ uninstall_script(){
     if [ -e $SCRIPT_INSTALLED_DIR ]; then
         rm -r $SCRIPT_SAVED_DATA
         rm -r $SCRIPT_INSTALLED_DIR
-        $BOOTLOADER_REMOVE_OPTIMIZATIONS
+        if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
+            $BOOTLOADER_REMOVE_OPTIMIZATIONS
+        fi
         $SCRIPT_REMOVE_SERVICES
         $TMPFS_CACHING_SERVICES_REMOVAL
 
@@ -341,6 +350,15 @@ install_script(){
 
     source $SAVED_CPU_DATA
     source $SAVED_RAM_DATA
+
+    #DISABLES FUNCTIONALITY THAT NEEDS A REWORK
+    if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
+        OPTIMIZATION_BOOTLOADER_ENABLED="disabled_until_reworked"
+    fi
+    if [[ $OPTIMIZATION_DE_ENABLED == "enabled" ]]; then
+        OPTIMIZATION_DE_ENABLED="disabled_until_reworked"
+    fi
+
     #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL AND AUTO UPDATES
     profile_save_optimization_goals
 
@@ -352,7 +370,8 @@ install_script(){
 
     #HAS TO BE APPLIED HERE SO IT'S APPLIED ON REBOOT
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
-        $BOOTLOADER_OPTIMIZATIONS
+        #$BOOTLOADER_OPTIMIZATIONS
+        echo ""
     fi
 
 	ask_system_reboot
@@ -425,7 +444,8 @@ script_main_menu(){
                     INSTALL_SCRIPT="true"
                     profile_selection_ui
                     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" && BASIC_INSTALL_SCRIPT="true" ]]; then
-                        $BOOTLOADER_REMOVE_OPTIMIZATIONS
+                        #$BOOTLOADER_REMOVE_OPTIMIZATIONS
+                        echo ""
                     fi
                     profile_save_optimization_goals
                     ask_system_reboot
@@ -493,10 +513,11 @@ if [[ "$@" == "apply_optimizations" ]]; then
             source $SAVED_SWAP_STORAGE_DATA
             #IF BOOTLOADER ARGS NEED TO BE UPDATED, REBOOT COMPUTER ONCE (IT'S ONLY NEEDED FOR PORTABLE INSTALLS)
             if [[ "$SCANNED_CPU_CLASSIFICATION" != "$CPU_CLASS" || "$SCANNED_RAM_CLASSIFICATION" != "$RAM_CLASS" || "$SCANNED_SYSTEM_SWAP_PARTITION_DETECTED" != "$SYSTEM_SWAP_PARTITION_DETECTED" ]]; then
-                $BOOTLOADER_OPTIMIZATIONS
+                #$BOOTLOADER_OPTIMIZATIONS
+                echo ""
                 #UPDATE OPTIMIZATION GOALS FILE WITH THE NEWLY SCANNED HARDWARE, OR ELSE IT WILL TRIGGER A REBOOT LOOP
-                profile_save_optimization_goals
-                reboot
+                #profile_save_optimization_goals
+                #reboot
             fi
 	    fi
     fi
