@@ -65,11 +65,19 @@ kernel_memory_optimizations(){
         if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
             echo 7 | tee /sys/kernel/mm/lru_gen/enabled
         else
-            echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+            if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
+                echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+            else
+                echo 7 | tee /sys/kernel/mm/lru_gen/enabled
+            fi
         fi
     else
         if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-            echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+            if [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
+                echo 1 | tee /sys/kernel/mm/lru_gen/enabled
+            else
+                echo 3 | tee /sys/kernel/mm/lru_gen/enabled
+            fi
         else
             echo 1 | tee /sys/kernel/mm/lru_gen/enabled
         fi
@@ -96,7 +104,7 @@ kernel_logging_optimizations(){
     if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" ]]; then
         echo "0 0 0 0" | tee /proc/sys/kernel/printk
     else
-        if [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
+        if [[ "$CPU_CLASS" == "high" ]]; then
             echo "2 2 2 2" | tee /proc/sys/kernel/printk
         elif [[ "$CPU_CLASS" == "mid" ]]; then
             echo "1 1 1 1" | tee /proc/sys/kernel/printk
