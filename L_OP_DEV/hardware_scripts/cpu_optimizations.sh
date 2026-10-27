@@ -24,22 +24,42 @@ intel_cpu_auto_power_tuner(){
 	CURRENT_CPU_TDP_INTEL=$(cat /sys/class/powercap/intel-rapl:0/constraint_0_power_limit_uw)
 	CURRENT_CPU_TDP_INTEL_HUMAN_READABLE=$(($CURRENT_CPU_TDP_INTEL/1000000))
 
-	if (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 40 )); then
-		TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/4)) #Limits power usage
-		NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
-		TDP_TO_APPLY=$NEW_TDP
-	elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 20 )); then
-		TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/3)) #Limits power usage
-		NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
-		TDP_TO_APPLY=$NEW_TDP
-	elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE < 10 )); then
-		TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*2)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
-		NEW_TDP=$(($TDP_NEW_VALUE*1000000))
-		TDP_TO_APPLY=$NEW_TDP
+	if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
+		if (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 40 )); then
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/8)) #Limits power usage
+			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
+			TDP_TO_APPLY=$NEW_TDP
+		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 20 )); then
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/6)) #Limits power usage
+			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
+			TDP_TO_APPLY=$NEW_TDP
+		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE < 10 )); then
+			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*2)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
+			NEW_TDP=$(($TDP_NEW_VALUE*1000000))
+			TDP_TO_APPLY=$NEW_TDP
+		else
+			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE)) #Limits power usage
+			NEW_TDP=$(($TDP_NEW_VALUE*1000000))
+			TDP_TO_APPLY=$NEW_TDP
+		fi
 	else
-		TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE)) #Limits power usage
-		NEW_TDP=$(($TDP_NEW_VALUE*1000000))
-		TDP_TO_APPLY=$NEW_TDP
+		if (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 40 )); then
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/4)) #Limits power usage
+			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
+			TDP_TO_APPLY=$NEW_TDP
+		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 20 )); then
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/3)) #Limits power usage
+			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
+			TDP_TO_APPLY=$NEW_TDP
+		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE < 10 )); then
+			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*2)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
+			NEW_TDP=$(($TDP_NEW_VALUE*1000000))
+			TDP_TO_APPLY=$NEW_TDP
+		else
+			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE)) #Limits power usage
+			NEW_TDP=$(($TDP_NEW_VALUE*1000000))
+			TDP_TO_APPLY=$NEW_TDP
+		fi
 	fi
 
 	#INTEL ONLY:
@@ -223,35 +243,67 @@ cpu_performance_optimizations(){
 cpu_frequency_optimizations(){
     #Slightly reduces max freq to lower temperatures, to compensate, min freq in increased
 
-    if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
-	    if [[ $CPU_CLASS == "verylow" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
-	    elif [[ $CPU_CLASS == "low" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
-	    elif [[ $CPU_CLASS == "mid" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 20 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
-	    elif [[ $CPU_CLASS == "high" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 95 / 100 ))
-	    fi
-    else
-	    if [[ $CPU_CLASS == "verylow" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 65 / 100 ))
-	    elif [[ $CPU_CLASS == "low" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 70 / 100 ))
-	    elif [[ $CPU_CLASS == "mid" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
-	    elif [[ $CPU_CLASS == "high" ]]; then
-		    CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-		    CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
-	    fi
-    fi
+	if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
+		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
+			if [[ $CPU_CLASS == "verylow" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+			elif [[ $CPU_CLASS == "low" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 20 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+			elif [[ $CPU_CLASS == "mid" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 95 / 100 ))
+			elif [[ $CPU_CLASS == "high" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 30 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 98 / 100 ))
+			fi
+		else
+			if [[ $CPU_CLASS == "verylow" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
+			elif [[ $CPU_CLASS == "low" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+			elif [[ $CPU_CLASS == "mid" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+			elif [[ $CPU_CLASS == "high" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+			fi
+		fi
+	else
+		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
+			if [[ $CPU_CLASS == "verylow" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+			elif [[ $CPU_CLASS == "low" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+			elif [[ $CPU_CLASS == "mid" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 20 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+			elif [[ $CPU_CLASS == "high" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 95 / 100 ))
+			fi
+		else
+			if [[ $CPU_CLASS == "verylow" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 70 / 100 ))
+			elif [[ $CPU_CLASS == "low" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
+			elif [[ $CPU_CLASS == "mid" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+			elif [[ $CPU_CLASS == "high" ]]; then
+				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
+				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+			fi
+		fi
+	fi
     
     for ((i=0; i<CPU_THREADS; i++)); do
 	CPU_DIR="$CPU_PATH/cpu$i"

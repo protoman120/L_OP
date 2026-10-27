@@ -1221,7 +1221,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $CPU_CLASS == "high" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
