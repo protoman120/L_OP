@@ -58,7 +58,7 @@ gpu_power_optimizations(){
 
 gpu_performance_optimizations() {
 
-    for GPU_FILE in "$SCRIPT_SAVED_GPU_DATA"/card*/$SAVED_GPU_DATA_FILE_NAME; do
+    for GPU_FILE in "$SAVED_GPU_DATA_FOLDER"/card*/$SAVED_GPU_DATA_FILE_NAME; do
 
         source "$GPU_FILE"
 
@@ -158,7 +158,7 @@ gpu_performance_optimizations() {
 
 gpu_auto_power_tuner() {
 
-    for GPU_FILE in "$SCRIPT_SAVED_GPU_DATA"/card*/$SAVED_GPU_DATA_FILE_NAME; do
+    for GPU_FILE in "$SAVED_GPU_DATA_FOLDER"/card*/$SAVED_GPU_DATA_FILE_NAME; do
 
         source "$GPU_FILE"
 
@@ -166,20 +166,23 @@ gpu_auto_power_tuner() {
             command -v nvidia-smi >/dev/null 2>&1 || continue
             nvidia-smi -pm 1
             
-            GPU_POWER_CAP_W=$GPU_POWER_MAX_LIMIT
+            #Value needs to be rounded without decimals to work properly
+            GPU_POWER_CAP_W=${GPU_POWER_MAX_LIMIT%.*}
+            GPU_MIN_POWER_W=${GPU_POWER_MIN_LIMIT%.*}
+            GPU_POWER_W=${GPU_POWER_LIMIT%.*}
             
             if (( GPU_POWER_CAP_W >= 200 )); then
-                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 65 / 100 ))
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 80 / 100 ))
             elif (( GPU_POWER_CAP_W >= 100 )); then
-                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 70 / 100 ))
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 85 / 100 ))
             elif (( GPU_POWER_CAP_W >= 40 )); then
-                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 75 / 100 ))
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 90 / 100 ))
             else
-                GPU_NEW_CAP_W="$GPU_POWER_LIMIT"
+                GPU_NEW_CAP_W="$GPU_POWER_W"
             fi
 
-            if (( GPU_NEW_CAP_W < GPU_POWER_MIN_LIMIT )); then
-                GPU_NEW_CAP_W="$GPU_POWER_MIN_LIMIT"
+            if (( GPU_NEW_CAP_W < GPU_MIN_POWER_W )); then
+                GPU_NEW_CAP_W="$GPU_MIN_POWER_W"
             fi
 
             #pl = power limit
@@ -195,11 +198,11 @@ gpu_auto_power_tuner() {
             for POWER_CAP in "$GPU_PCI_PATH"/hwmon/hwmon*/power1_cap; do
 
                 if (( GPU_POWER_CAP_W > 200 )); then
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 65 / 100 ))
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 80 / 100 ))
                 elif (( GPU_POWER_CAP_W > 100 )); then
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 70 / 100 ))
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 85 / 100 ))
                 else
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 75 / 100 ))
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 90 / 100 ))
                 fi
                 echo $GPU_NEW_CAP | tee "POWER_CAP"
             done
@@ -213,11 +216,11 @@ gpu_auto_power_tuner() {
             for POWER_CAP in "$GPU_PCI_PATH"/hwmon/hwmon*/power1_cap; do
 
                 if (( GPU_POWER_CAP_W > 200 )); then
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 65 / 100 ))
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 80 / 100 ))
                 elif (( GPU_POWER_CAP_W > 100 )); then
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 70 / 100 ))
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 85 / 100 ))
                 else
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 75 / 100 ))
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 90 / 100 ))
                 fi
                 echo "$GPU_NEW_CAP" | tee "$POWER_CAP"
             done
@@ -228,11 +231,12 @@ gpu_auto_power_tuner() {
         fi
     done
 }
-if [[ " ${BASIC_GPU_COOLING_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* ]]; then
-    gpu_power_optimizations
-fi
 
-if [[ "$GPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
+if [[ " ${BASIC_GPU_COOLING_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* ]]; then
+    gpu_performance_optimizations
+    gpu_auto_power_tuner
+elif [[ "$GPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
+    gpu_power_optimizations
     gpu_performance_optimizations
     gpu_auto_power_tuner
 fi

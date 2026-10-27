@@ -509,13 +509,13 @@ io_scheduler_optimizations(){
                     echo 10000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1950000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 97500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1900000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 95000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1850000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 92500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -531,16 +531,16 @@ io_scheduler_optimizations(){
             elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 2250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 112500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 11250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 2200000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 110000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 11000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 2150000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 107500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 2100000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 105000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -558,16 +558,16 @@ io_scheduler_optimizations(){
             if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 1900000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 95000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1850000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 92500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1800000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 90000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 87500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -583,16 +583,16 @@ io_scheduler_optimizations(){
             elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 2150000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 107500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 2100000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 105000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 2050000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 102500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 2000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 100000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -610,16 +610,16 @@ io_scheduler_optimizations(){
             if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 1800000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 90000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 87500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1700000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 85000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1650000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 82500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -635,16 +635,16 @@ io_scheduler_optimizations(){
             elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 2050000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 102500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 2000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 100000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 10000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1950000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 97500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1900000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 95000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -662,16 +662,16 @@ io_scheduler_optimizations(){
             if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 1700000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 85000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1650000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 82500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1600000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 80000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 8000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1550000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 77500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 7750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -687,16 +687,16 @@ io_scheduler_optimizations(){
             elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
                 if [[ $CPU_CLASS == "verylow" ]]; then
                     echo 1950000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 97500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9750000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "low" ]]; then
                     echo 1900000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 95000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "mid" ]]; then
                     echo 1850000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 92500000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9250000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 elif [[ $CPU_CLASS == "high" ]]; then
                     echo 1800000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/read_lat_nsec
-                    echo 90000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
+                    echo 9000000 | tee /sys/block/$STORAGE_DEVICE/queue/iosched/write_lat_nsec
                 fi
                 if [[ $RAM_CLASS == "verylow" ]]; then
                     echo ""
@@ -1207,7 +1207,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $CPU_CLASS == "mid" ]]; then
             	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1296,7 +1296,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $CPU_CLASS == "mid" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1310,7 +1310,7 @@ io_scheduler_optimizations(){
                 fi
             elif [[ $CPU_CLASS == "high" ]]; then
             	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo kyber |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll

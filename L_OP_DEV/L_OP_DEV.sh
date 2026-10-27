@@ -7,36 +7,68 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+SCRIPT_MENU_TITLE_BARS="###################################"
+
 script_system_hardware_analysis(){
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME: CPU ANALYSIS"
+    echo "$SCRIPT_MENU_TITLE_BARS"
     $CPU_ANALYSIS
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME: GPU ANALYSIS"
+    echo "$SCRIPT_MENU_TITLE_BARS"
 	$GPU_ANALYSIS
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME: RAM ANALYSIS"
+    echo "$SCRIPT_MENU_TITLE_BARS"
 	$RAM_ANALYSIS
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME: STORAGE ANALYSIS"
+    echo "$SCRIPT_MENU_TITLE_BARS"
 	$STORAGE_ANALYSIS
 }
 
 script_system_software_analysis(){
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME: OS ANALYSIS"
+    echo "$SCRIPT_MENU_TITLE_BARS"
     $OS_ANALYSIS
 }
 
 script_system_user_software_analysis(){
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME: DE ANALYSIS"
+    echo "$SCRIPT_MENU_TITLE_BARS"
     $DE_ANALYSIS
 }
 
 script_system_hardware_optimizations(){
 
     if [[ $OPTIMIZATION_CPU_ENABLED == "enabled" ]]; then
+        echo "$SCRIPT_MENU_TITLE_BARS"
+        echo "$SCRIPT_NAME: CPU OPTIMIZATIONS"
+        echo "$SCRIPT_MENU_TITLE_BARS"
         $CPU_OPTIMIZATIONS
     fi
 
     if [[ $OPTIMIZATION_GPU_ENABLED == "enabled" ]]; then
+        echo "$SCRIPT_MENU_TITLE_BARS"
+        echo "$SCRIPT_NAME: GPU OPTIMIZATIONS"
+        echo "$SCRIPT_MENU_TITLE_BARS"
         $GPU_OPTIMIZATIONS
     fi
     
     if [[ $OPTIMIZATION_RAM_ENABLED == "enabled" ]]; then
+        echo "$SCRIPT_MENU_TITLE_BARS"
+        echo "$SCRIPT_NAME: RAM OPTIMIZATIONS"
+        echo "$SCRIPT_MENU_TITLE_BARS"
         $RAM_OPTIMIZATIONS
     fi
 
     if [[ $OPTIMIZATION_STORAGE_ENABLED == "enabled" ]]; then
+        echo "$SCRIPT_MENU_TITLE_BARS"
+        echo "$SCRIPT_NAME: STORAGE OPTIMIZATIONS"
+        echo "$SCRIPT_MENU_TITLE_BARS"
         $STORAGE_OPTIMIZATIONS
         $STORAGE_ANALYSIS
     fi
@@ -149,14 +181,18 @@ profile_save_optimization_goals() {
         export SYSTEM_USER=$(printf '%q' "$SYSTEM_USER")
         export SYSTEM_SETUP_USER=$(printf '%q' "$SYSTEM_SETUP_USER")
 
-        SYSTEM_AUTOMATIC_UPDATES=$(printf '%q' "$SYSTEM_AUTOMATIC_UPDATES")
         SYSTEM_PORTABLE_INSTALL=$(printf '%q' "$SYSTEM_PORTABLE_INSTALL")
 
-        #SCANNED HARDWARE (TO USE AS REFERENCE FOR PORTABLE INSTALLS)
+        #SCANNED HARDWARE (USED TO DETECT HARDWARE CHANGES ON PORTABLE INSTALLS):
         
+        #ROOT STORAGE:
         STORAGE_ROOT_DEVICE_TYPE=$(printf '%q' "$STORAGE_ROOT_DEVICE_TYPE")
+        #SWAP:
         SCANNED_SYSTEM_SWAP_PARTITION_DETECTED=$(printf '%q' "$SYSTEM_SWAP_PARTITION_DETECTED")
+        #CPU:
+        SCANNED_CPU_VENDOR_ID=$(printf '%q' "$SCANNED_CPU_VENDOR_ID")
         SCANNED_CPU_CLASSIFICATION=$(printf '%q' "$CPU_CLASS")
+        #RAM:
         SCANNED_RAM_CLASSIFICATION=$(printf '%q' "$RAM_CLASS")
 
         #SELECTED PROFILE:
@@ -331,23 +367,6 @@ install_script(){
         SYSTEM_PORTABLE_INSTALL="false"
     fi
 
-    while true; do
-        read -rp "Do you want to enable automatic updates at boot? (Y/N): " answer
-        case "$answer" in
-            [Yy])
-                SYSTEM_AUTOMATIC_UPDATES="true"
-                break
-                ;;
-            [Nn])
-                SYSTEM_AUTOMATIC_UPDATES="false"
-                break
-                ;;
-            *)
-                echo ""
-                ;;
-        esac
-    done
-
     source $SAVED_CPU_DATA
     source $SAVED_RAM_DATA
 
@@ -359,7 +378,7 @@ install_script(){
         OPTIMIZATION_DE_ENABLED="disabled_until_reworked"
     fi
 
-    #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL AND AUTO UPDATES
+    #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL
     profile_save_optimization_goals
 
     cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
@@ -399,8 +418,6 @@ ask_system_reboot(){
 
 script_main_menu(){
 
-	SCRIPT_MENU_TITLE_BARS="###################################"
-
     echo "$SCRIPT_MENU_TITLE_BARS"
     echo "$SCRIPT_NAME"
     echo "$SCRIPT_MENU_TITLE_BARS"
@@ -408,7 +425,7 @@ script_main_menu(){
     echo ""
     echo "Available Options:"
     PS3='Choose an option: '
-    options=("Install" "Uninstall" "Change_Profile" "Toggle_Automatic_Updates" "Other_Utilties" "Quit")
+    options=("Install" "Uninstall" "Change_Profile" "Profile_Settings" "Other_Utilties" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -455,9 +472,17 @@ script_main_menu(){
                 fi
                 break
                 ;;
-            "Toggle_Automatic_Updates")
-            	echo "NOT IMPLEMENTED YET"
-                #break
+            "Profile_Settings")
+                cd /var/lib/L_OP_DEV
+                source ./utility_scripts/script_directories.sh
+                source $SAVED_OPTIMIZATION_GOALS
+                if [ -e $SCRIPT_INSTALLED_DIR ]; then
+                    script_profile_settings
+                    profile_save_optimization_goals
+                else
+                    echo "SCRIPT NOT INSTALLED, CANNOT CHANGE PROFILE SETTINGS, PLEASE INSTALL FIRST"
+                    return 0
+                fi
                 ;;
             "Other_Utilties")
                 echo "$SCRIPT_MENU_TITLE_BARS"
@@ -475,6 +500,49 @@ script_main_menu(){
     done
 
 }
+
+script_profile_settings(){
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "$SCRIPT_NAME SETTINGS"
+    echo ""
+    echo "Current Settings:"
+    echo "CPU_COOLING: $CPU_COOLING_OPTIMIZATION"
+    echo "GPU_COOLING: $GPU_COOLING_OPTIMIZATION"
+    echo "$SCRIPT_MENU_TITLE_BARS"
+
+    echo ""
+    echo "Available options to toggle:"
+    PS3='Choose an option: '
+    options=("CPU_COOLING" "GPU_COOLING" "Quit")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "CPU_COOLING")
+                if [[ $CPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                    CPU_COOLING_OPTIMIZATION="disabled"
+                else
+                    CPU_COOLING_OPTIMIZATION="enabled"
+                fi
+                script_profile_settings
+                break
+                ;;
+            "GPU_COOLING")
+                if [[ $GPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                    GPU_COOLING_OPTIMIZATION="disabled"
+                else
+                    GPU_COOLING_OPTIMIZATION="enabled"
+                fi
+                script_profile_settings
+				break
+                ;;
+            "Quit")
+                break
+                ;;
+            *) echo "invalid option $REPLY";;
+        esac
+    done
+}
+
 
 script_tmpfs_save_data_setup(){
 
@@ -508,9 +576,10 @@ if [[ "$@" == "apply_optimizations" ]]; then
         script_system_software_analysis
 
         if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
-            source $SAVED_CPU_DATA
-            source $SAVED_RAM_DATA
-            source $SAVED_SWAP_STORAGE_DATA
+            #source $SAVED_CPU_DATA
+            #source $SAVED_RAM_DATA
+            #source $SAVED_SWAP_STORAGE_DATA
+            echo ""
             #IF BOOTLOADER ARGS NEED TO BE UPDATED, REBOOT COMPUTER ONCE (IT'S ONLY NEEDED FOR PORTABLE INSTALLS)
             if [[ "$SCANNED_CPU_CLASSIFICATION" != "$CPU_CLASS" || "$SCANNED_RAM_CLASSIFICATION" != "$RAM_CLASS" || "$SCANNED_SYSTEM_SWAP_PARTITION_DETECTED" != "$SYSTEM_SWAP_PARTITION_DETECTED" ]]; then
                 #$BOOTLOADER_OPTIMIZATIONS
@@ -534,14 +603,10 @@ elif [[ "$@" == "apply_user_optimizations" ]]; then
     source $SAVED_OPTIMIZATION_GOALS
     #############################################################################
 
-    if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
+    #if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
         #REGENERATE ANALYSIS DATA
-        script_system_user_software_analysis
-    fi
-
-    if [[ $SYSTEM_AUTOMATIC_UPDATES == "true" ]]; then
-        $UPDATE_DISTRO
-    fi
+        #script_system_user_software_analysis
+    #fi
 
     script_system_user_software_optimizations
 
