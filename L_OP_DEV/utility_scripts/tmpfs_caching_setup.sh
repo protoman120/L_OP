@@ -44,7 +44,7 @@ TMPFS_FLATPAK_CACHES_ENABLED="false"
 TMPFS_GAMING_CACHES_ENABLED="false"
 TMPFS_SERVER_CACHES_ENABLED="false"
 
-if [[ "$TMPFS_SYSTEM_CACHING" == "enabled" ]]; then
+if [[ "$OPTIMIZATION_TMPFS_CACHING_ENABLED" == "enabled" ]]; then
     if [[ $RAM_CLASS == "verylow" ]]; then
         if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
             TMPFS_SYSTEM_CACHES_ENABLED="true"

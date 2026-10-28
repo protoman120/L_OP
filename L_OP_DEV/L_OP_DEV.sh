@@ -230,8 +230,6 @@ profile_save_optimization_goals() {
         #SOFTWARE OPTIMIZATIONS:
         OPTIMIZATION_OS_ENABLED=$(printf '%q' "$OPTIMIZATION_OS_ENABLED")
         OPTIMIZATION_TMPFS_CACHING_ENABLED=$(printf '%q' "$OPTIMIZATION_TMPFS_CACHING_ENABLED")
-        TMPFS_SYSTEM_CACHING=$(printf '%q' "$TMPFS_SYSTEM_CACHING")
-        TMPFS_GAMING_CACHING=$(printf '%q' "$TMPFS_GAMING_CACHING")
         OPTIMIZATION_DE_ENABLED=$(printf '%q' "$OPTIMIZATION_DE_ENABLED")
         OPTIMIZATION_BOOTLOADER_ENABLED=$(printf '%q' "$OPTIMIZATION_BOOTLOADER_ENABLED")
 EOF
@@ -272,6 +270,9 @@ profile_selection_ui() {
 	    read PROFILE_SELECTION
 	done
     SELECTED_PROFILE="${FILENAME[$PROFILE_SELECTION]}"
+    echo "$SCRIPT_MENU_TITLE_BARS"
+    echo "SELECTED OPTION: $SELECTED_PROFILE"
+    echo "$SCRIPT_MENU_TITLE_BARS"
 
     if [[ $BASIC_INSTALL_SCRIPT != "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
         if (( $PROFILE_SELECTION == $FILECOUNTER )); then
@@ -483,6 +484,7 @@ script_main_menu(){
                     echo "SCRIPT NOT INSTALLED, CANNOT CHANGE PROFILE SETTINGS, PLEASE INSTALL FIRST"
                     return 0
                 fi
+                break
                 ;;
             "Other_Utilties")
                 echo "$SCRIPT_MENU_TITLE_BARS"
@@ -490,7 +492,7 @@ script_main_menu(){
                 echo "$SCRIPT_MENU_TITLE_BARS"
                 SCRIPT_UTILITIES_SETUP="true"
                 profile_selection_ui
-                #break
+                break
                 ;;
             "Quit")
                 break
@@ -508,12 +510,12 @@ script_profile_settings(){
     echo "Current Settings:"
     echo "CPU_COOLING: $CPU_COOLING_OPTIMIZATION"
     echo "GPU_COOLING: $GPU_COOLING_OPTIMIZATION"
+    echo "TMPFS_CACHING: $OPTIMIZATION_TMPFS_CACHING_ENABLED"
     echo "$SCRIPT_MENU_TITLE_BARS"
-
     echo ""
     echo "Available options to toggle:"
     PS3='Choose an option: '
-    options=("CPU_COOLING" "GPU_COOLING" "Quit")
+    options=("CPU_COOLING" "GPU_COOLING" "TMPFS_CACHING" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -531,6 +533,15 @@ script_profile_settings(){
                     GPU_COOLING_OPTIMIZATION="disabled"
                 else
                     GPU_COOLING_OPTIMIZATION="enabled"
+                fi
+                script_profile_settings
+				break
+                ;;
+            "TMPFS_CACHING")
+                if [[ $OPTIMIZATION_TMPFS_CACHING_ENABLED == "enabled" ]]; then
+                    OPTIMIZATION_TMPFS_CACHING_ENABLED="disabled"
+                else
+                    OPTIMIZATION_TMPFS_CACHING_ENABLED="enabled"
                 fi
                 script_profile_settings
 				break
