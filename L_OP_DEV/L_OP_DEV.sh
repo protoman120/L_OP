@@ -77,12 +77,19 @@ script_system_hardware_optimizations(){
 
 script_system_software_optimizations(){
     
+    echo "Starting software optimizations:"
+    echo "TMPFS: $OPTIMIZATION_TMPFS_CACHING_ENABLED"
+
     if [[ $OPTIMIZATION_OS_ENABLED == "enabled" ]]; then
         $KERNEL_OPTIMIZATIONS
     fi
     
     if [[ $OPTIMIZATION_NETWORK_ENABLED == "enabled" ]]; then
         $NETWORK_OPTIMIZATIONS
+    fi
+
+    if [[ $OPTIMIZATION_TMPFS_CACHING_ENABLED == "enabled" ]]; then
+        $TMPFS_CACHING_SETUP
     fi
 
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
