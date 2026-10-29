@@ -34,7 +34,7 @@ intel_cpu_auto_power_tuner(){
 			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
 			TDP_TO_APPLY=$NEW_TDP
 		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE < 10 )); then
-			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*3)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
+			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*2)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
 			NEW_TDP=$(($TDP_NEW_VALUE*1000000))
 			TDP_TO_APPLY=$NEW_TDP
 		else
