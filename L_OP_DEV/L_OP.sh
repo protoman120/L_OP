@@ -3,11 +3,49 @@
 #L_OP MAIN SCRIPT
 
 if [[ $EUID -ne 0 ]]; then
-    echo "This script requires root access to function, please restart it with sudo."
+    echo "Root access required, please retry with sudo."
     exit 1
 fi
 
 SCRIPT_MENU_TITLE_BARS="###################################"
+
+script_check_folder_name(){
+    if [[ $SCRIPT_DEV_BRANCH == "DEV" ]]; then
+        if [[ $SCRIPT_MAIN_FOLDER_NAME != $SCRIPT_NAME ]]; then
+            cd $SCRIPT_MAIN_FOLDER
+            cd ..
+            mv ./$SCRIPT_MAIN_FOLDER_NAME ./$SCRIPT_NAME
+            cd ./$SCRIPT_NAME
+            #Updates current directory
+            source ./utility_scripts/script_directories.sh
+        fi
+    else
+        if [[ $SCRIPT_MAIN_FOLDER_NAME != $SCRIPT_NAME_RELEASE ]]; then
+            cd $SCRIPT_MAIN_FOLDER
+            cd ..
+            mv ./$SCRIPT_MAIN_FOLDER_NAME ./$SCRIPT_NAME_RELEASE
+            cd ./$SCRIPT_NAME_RELEASE
+            #Updates current directory
+            source ./utility_scripts/script_directories.sh
+        fi
+    fi
+}
+
+script_check_install_dir(){
+    if [[ $SCRIPT_DEV_BRANCH == "DEV" ]]; then
+        SCRIPT_INSTALL_DIR=$SCRIPT_INSTALLED_DIR
+        TESTING_MODE="true"
+    else
+        SCRIPT_INSTALL_DIR=$SCRIPT_INSTALLED_DIR_RELEASE
+        TESTING_MODE="false"
+    fi
+}
+
+script_clear_screen(){
+    if [[ "$TESTING_MODE" == "false" ]]; then
+        clear
+    fi
+}
 
 script_system_hardware_analysis(){
     echo "$SCRIPT_MENU_TITLE_BARS"
@@ -170,14 +208,6 @@ pc_info(){
 		echo "	- DISTRIBUTION: $SYSTEM_CURRENT_DISTRO_VERSION"
 	fi
 	echo "	- KERNEL VERSION: $SYSTEM_KERNEL_VERSION"
-    
-    if [[ "$TESTING_MODE" == "true" ]]; then
-         echo ""
-         echo "${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}"
-         echo "WARNING: TESTING MODE ENABLED, OPTIMIZATIONS SELECTED WILL NOT BE APPLIED"
-         echo "PC ANALYSIS DATA WILL BE SAVED ON /home/${SYSTEM_USER}"
-         echo "${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}${MENU_SPACING}"
-    fi
 }
 
 profile_save_optimization_goals() {
@@ -278,12 +308,13 @@ profile_selection_ui() {
 	done
     SELECTED_PROFILE="${FILENAME[$PROFILE_SELECTION]}"
     echo "$SCRIPT_MENU_TITLE_BARS"
-    echo "SELECTED OPTION: $SELECTED_PROFILE"
+    echo "SELECTED OPTION: $(basename "$SELECTED_PROFILE")"
     echo "$SCRIPT_MENU_TITLE_BARS"
 
     if [[ $BASIC_INSTALL_SCRIPT != "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
         if (( $PROFILE_SELECTION == $FILECOUNTER )); then
             BASIC_INSTALL_SCRIPT="true"
+            script_clear_screen
             profile_selection_ui
         else
             source $SELECTED_PROFILE
@@ -291,6 +322,7 @@ profile_selection_ui() {
     elif [[ $BASIC_INSTALL_SCRIPT == "true" && $SCRIPT_UTILITIES_SETUP != "true" ]]; then
         if (( $PROFILE_SELECTION == $FILECOUNTER )); then
             BASIC_INSTALL_SCRIPT="false"
+            script_clear_screen
             profile_selection_ui
         else
             source $SELECTED_PROFILE
@@ -311,34 +343,27 @@ script_utilities_menu(){
 
 uninstall_script(){
 
-    if [ -e $SCRIPT_INSTALLED_DIR ]; then
-        rm -r $SCRIPT_SAVED_DATA
-        rm -r $SCRIPT_INSTALLED_DIR
-        if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
-            $BOOTLOADER_REMOVE_OPTIMIZATIONS
-        fi
-        $SCRIPT_REMOVE_SERVICES
-        $TMPFS_CACHING_SERVICES_REMOVAL
+    if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
+        $BOOTLOADER_REMOVE_OPTIMIZATIONS
+    fi
+    $SCRIPT_REMOVE_SERVICES
+    $TMPFS_CACHING_SERVICES_REMOVAL
+    $SCRIPT_TERMINAL_COMMANDS_REMOVAL
+    rm -r $SCRIPT_SAVED_DATA
+    rm -r $SCRIPT_INSTALL_DIR
 
-        if [[ $INSTALLING_SCRIPT != "true" ]]; then
-            ask_system_reboot
-        fi
-    else
-        echo "SCRIPT NOT INSTALLED"
-        echo "If you belive this is a mistake, manually delete $SCRIPT_INSTALLED_DIR"
-        echo "Then report the bug"
-        return 0
+    if [[ $INSTALLING_SCRIPT != "true" ]]; then
+        ask_system_reboot
     fi
 
 }
 
 install_script(){
-
 	#PROFILE SELECTION
 	profile_selection_ui
     #profile_selection_simple
 
-    if [ -e $SCRIPT_INSTALLED_DIR ]; then
+    if [ -e $SCRIPT_INSTALL_DIR ]; then
         echo "L_OP ALREADY INSTALLED, UNINSTALL FIRST, THEN REINSTALL"
         return 0
     fi
@@ -394,6 +419,7 @@ install_script(){
     #SERVICES SETUP
     $SCRIPT_SETUP_SERVICES
     $TMPFS_CACHING_SERVICES_SETUP
+    $SCRIPT_TERMINAL_COMMANDS_SETUP
 
     #HAS TO BE APPLIED HERE SO IT'S APPLIED ON REBOOT
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
@@ -425,7 +451,7 @@ ask_system_reboot(){
 }
 
 script_main_menu(){
-
+    script_clear_screen
     echo "$SCRIPT_MENU_TITLE_BARS"
     echo "$SCRIPT_NAME"
     echo "$SCRIPT_MENU_TITLE_BARS"
@@ -438,16 +464,22 @@ script_main_menu(){
     do
         case $opt in
             "Install")
-                INSTALLING_SCRIPT="true"
-                echo "$SCRIPT_MENU_TITLE_BARS"
-                echo "$SCRIPT_NAME: PROFILE SELECTION"
-                echo "$SCRIPT_MENU_TITLE_BARS"
-                INSTALL_SCRIPT="true"
-                install_script
+                if [[ -e $SCRIPT_INSTALL_DIR || -e $SCRIPT_L_OP_SERVICE || -e $SCRIPT_L_OP_USER_SERVICE ]]; then
+                    echo "L_OP ALREADY INSTALLED, UNINSTALL FIRST BEFORE REINSTALLING"
+                else
+                    script_clear_screen
+                    INSTALLING_SCRIPT="true"
+                    echo "$SCRIPT_MENU_TITLE_BARS"
+                    echo "$SCRIPT_NAME: PROFILE SELECTION"
+                    echo "$SCRIPT_MENU_TITLE_BARS"
+                    INSTALL_SCRIPT="true"
+                    install_script
+                fi
                 break
                 ;;
             "Uninstall")
-                if [ -e $SCRIPT_INSTALLED_DIR ]; then
+                if [[ -e $SCRIPT_INSTALL_DIR || -e $SCRIPT_L_OP_SERVICE || -e $SCRIPT_L_OP_USER_SERVICE ]]; then
+                    script_clear_screen
                     echo "$SCRIPT_MENU_TITLE_BARS"
                     echo "$SCRIPT_NAME: UNINSTALLING"
                     echo "$SCRIPT_MENU_TITLE_BARS"
@@ -455,14 +487,16 @@ script_main_menu(){
                     echo "L_OP UNINSTALLED"
                 else
                     echo "L_OP NOT INSTALLED"
+                    return 0
                 fi
 				break
                 ;;
             "Change_Profile")
-                if [ -e $SCRIPT_INSTALLED_DIR ]; then
-                    cd /var/lib/L_OP_DEV
+                if [[ -e $SCRIPT_INSTALL_DIR && -e $SCRIPT_L_OP_SERVICE && -e $SCRIPT_L_OP_USER_SERVICE ]]; then
+                    cd $SCRIPT_INSTALL_DIR
                     source ./utility_scripts/script_directories.sh
                     source $SAVED_OPTIMIZATION_GOALS
+                    script_clear_screen
                     echo "$SCRIPT_MENU_TITLE_BARS"
                     echo "$SCRIPT_NAME: CHANGE PROFILE"
                     echo "$SCRIPT_MENU_TITLE_BARS"
@@ -475,25 +509,28 @@ script_main_menu(){
                     profile_save_optimization_goals
                     ask_system_reboot
                 else
-                    echo "SCRIPT NOT INSTALLED, CANNOT CHANGE PROFILE, PLEASE INSTALL FIRST"
+                    echo "L_OP NOT INSTALLED, CANNOT CHANGE PROFILE, PLEASE INSTALL FIRST"
                     return 0
                 fi
                 break
                 ;;
             "Profile_Settings")
-                cd /var/lib/L_OP_DEV
+                cd $SCRIPT_INSTALL_DIR
                 source ./utility_scripts/script_directories.sh
                 source $SAVED_OPTIMIZATION_GOALS
-                if [ -e $SCRIPT_INSTALLED_DIR ]; then
+                script_clear_screen
+                if [[ -e $SCRIPT_INSTALL_DIR && -e $SCRIPT_L_OP_SERVICE && -e $SCRIPT_L_OP_USER_SERVICE ]]; then
                     script_profile_settings
                     profile_save_optimization_goals
+                    ask_system_reboot
                 else
-                    echo "SCRIPT NOT INSTALLED, CANNOT CHANGE PROFILE SETTINGS, PLEASE INSTALL FIRST"
+                    echo "L_OP NOT INSTALLED, CANNOT CHANGE PROFILE SETTINGS, PLEASE INSTALL FIRST"
                     return 0
                 fi
                 break
                 ;;
             "Other_Utilties")
+                script_clear_screen
                 echo "$SCRIPT_MENU_TITLE_BARS"
                 echo "$SCRIPT_NAME: UTILITY SELECTION"
                 echo "$SCRIPT_MENU_TITLE_BARS"
@@ -511,6 +548,7 @@ script_main_menu(){
 }
 
 script_profile_settings(){
+    script_clear_screen
     echo "$SCRIPT_MENU_TITLE_BARS"
     echo "$SCRIPT_NAME SETTINGS"
     echo ""
@@ -580,7 +618,6 @@ if [[ "$@" == "apply_optimizations" ]]; then
 
     #############################################################################
     #IMPORTANT: SCRIPT DIRS SETUP (OPTIMIZATIONS - MAIN/TMFPS SCRIPT ONLY)
-    cd /var/lib/L_OP_DEV
     source ./utility_scripts/script_directories.sh
     source $SAVED_OPTIMIZATION_GOALS
     #############################################################################
@@ -616,7 +653,6 @@ elif [[ "$@" == "apply_user_optimizations" ]]; then
 
     #############################################################################
     #IMPORTANT: SCRIPT DIRS SETUP (OPTIMIZATIONS - MAIN/TMFPS SCRIPT ONLY)
-    cd /var/lib/L_OP_DEV
     source ./utility_scripts/script_directories.sh
     source $SAVED_OPTIMIZATION_GOALS
     #############################################################################
@@ -635,6 +671,8 @@ else
     source ./utility_scripts/script_directories.sh
     ##################################################################
 
+    script_check_folder_name
+    script_check_install_dir
     chmod -R +x "$SCRIPT_MAIN_FOLDER"
 
     if [[ -e $SCRIPT_MAIN_FOLDER ]]; then

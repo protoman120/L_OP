@@ -5,6 +5,14 @@
 source ./utility_scripts/script_directories.sh
 ##################################################################
 
+if [[ $SCRIPT_DEV_BRANCH == "DEV" ]]; then
+    L_OP_DIR=$SCRIPT_INSTALLED_DIR
+	L_OP_NAME=$SCRIPT_NAME
+else
+    L_OP_DIR=$SCRIPT_INSTALLED_DIR_RELEASE
+	L_OP_NAME=$SCRIPT_NAME_RELEASE
+fi
+
 tmpfs_caching_setup_systemd_service(){ 
 	tee $SYSTEM_SYSTEMD_SERVICES/$SCRIPT_TMPFS_CAHING_SETUP_SERVICE_NAME > /dev/null <<EOF
 	[Unit]
@@ -14,7 +22,8 @@ tmpfs_caching_setup_systemd_service(){
 
 	[Service]
 	Type=oneshot
-	ExecStart=$TMPFS_CACHING_SETUP
+	WorkingDirectory=$L_OP_DIR
+	ExecStart=$L_OP_DIR/utility_scripts/$TMPFS_CACHING_SETUP_NAME
 
 	[Install]
 	WantedBy=multi-user.target

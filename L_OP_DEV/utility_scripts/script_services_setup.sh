@@ -5,15 +5,24 @@
 source ./utility_scripts/script_directories.sh
 ##################################################################
 
+if [[ $SCRIPT_DEV_BRANCH == "DEV" ]]; then
+    L_OP_DIR=$SCRIPT_INSTALLED_DIR
+	L_OP_NAME=$SCRIPT_NAME
+else
+    L_OP_DIR=$SCRIPT_INSTALLED_DIR_RELEASE
+	L_OP_NAME=$SCRIPT_NAME_RELEASE
+fi
+
 script_create_systemd_service(){
-	tee $SYSTEM_SYSTEMD_SERVICES/$SCRIPT_SERVICE_NAME > /dev/null <<EOF
+	tee $SCRIPT_L_OP_SERVICE > /dev/null <<EOF
 	[Unit]
 	Description=Applies L_OP Optimizations 
 	After=systemd-modules-load.service
 
 	[Service]
 	Type=oneshot
-	ExecStart=$SCRIPT_INSTALLED_DIR/$SCRIPT_NAME.sh apply_optimizations
+	WorkingDirectory=$L_OP_DIR
+	ExecStart=$L_OP_DIR/$SCRIPT_NAME_BASE.sh apply_optimizations
 	RemainAfterExit=true
 
 	[Install]
@@ -23,14 +32,15 @@ EOF
 }
 
 script_create_user_systemd_service(){
-	tee $SYSTEM_SYSTEMD_SERVICES/$SCRIPT_SERVICE_NAME_USER > /dev/null <<EOF
+	tee $SCRIPT_L_OP_USER_SERVICE > /dev/null <<EOF
 	[Unit]
 	Description=Applies L_OP Optimizations (After User Login)
 	After=graphical-session.target
 
 	[Service]
 	Type=oneshot
-	ExecStart=$SCRIPT_INSTALLED_DIR/$SCRIPT_NAME.sh apply_user_optimizations
+	WorkingDirectory=$L_OP_DIR
+	ExecStart=$L_OP_DIR/$SCRIPT_NAME_BASE.sh apply_user_optimizations
 	RemainAfterExit=true
 
 	[Install]

@@ -26,15 +26,15 @@ intel_cpu_auto_power_tuner(){
 
 	if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
 		if (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 40 )); then
-			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/8)) #Limits power usage
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/4)) #Limits power usage
 			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
 			TDP_TO_APPLY=$NEW_TDP
 		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 20 )); then
-			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/6)) #Limits power usage
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/5)) #Limits power usage
 			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
 			TDP_TO_APPLY=$NEW_TDP
 		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE < 10 )); then
-			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*2)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
+			TDP_NEW_VALUE=$(($CURRENT_CPU_TDP_INTEL_HUMAN_READABLE*3)) #Low-powered CPUs need to boost beyond TDP to keep up usable performance, without intervention from the script, it could boost even higher on it's own.
 			NEW_TDP=$(($TDP_NEW_VALUE*1000000))
 			TDP_TO_APPLY=$NEW_TDP
 		else
@@ -44,11 +44,11 @@ intel_cpu_auto_power_tuner(){
 		fi
 	else
 		if (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 40 )); then
-			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/4)) #Limits power usage
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/3)) #Limits power usage
 			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
 			TDP_TO_APPLY=$NEW_TDP
 		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 20 )); then
-			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/3)) #Limits power usage
+			TDP_DECREASE_VALUE=$(($CURRENT_CPU_TDP_INTEL/4)) #Limits power usage
 			NEW_TDP=$(($CURRENT_CPU_TDP_INTEL-$TDP_DECREASE_VALUE))
 			TDP_TO_APPLY=$NEW_TDP
 		elif (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE < 10 )); then
