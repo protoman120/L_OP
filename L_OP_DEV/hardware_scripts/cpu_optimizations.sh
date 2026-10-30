@@ -307,9 +307,9 @@ cpu_frequency_optimizations(){
     
 	if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
 		CPU_MIN_PERF_RED=$(( CPU_MAX_FREQ * 5 / 100 ))
-		CPU_MIN_PERF=$(( CPU_MAX_FREQ - CPU_MIN_PERF_RED ))
+		CPU_MIN_PERF=$(( CPU_MIN_PERF - CPU_MIN_PERF_RED ))
 		CPU_MAX_PERF_RED=$(( CPU_MAX_FREQ * 10 / 100 ))
-		CPU_MAX_PERF=$(( CPU_MAX_FREQ - CPU_MAX_PERF_RED ))
+		CPU_MAX_PERF=$(( CPU_MAX_PERF - CPU_MAX_PERF_RED ))
 	fi
 
     for ((i=0; i<CPU_THREADS; i++)); do
