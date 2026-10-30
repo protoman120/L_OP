@@ -187,11 +187,11 @@ gpu_auto_power_tuner() {
             GPU_POWER_W=${GPU_POWER_LIMIT%.*}
             
             if (( GPU_POWER_CAP_W >= 200 )); then
-                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 80 / 100 ))
-            elif (( GPU_POWER_CAP_W >= 100 )); then
                 GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 85 / 100 ))
-            elif (( GPU_POWER_CAP_W >= 40 )); then
+            elif (( GPU_POWER_CAP_W >= 100 )); then
                 GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 90 / 100 ))
+            elif (( GPU_POWER_CAP_W >= 40 )); then
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 95 / 100 ))
             else
                 GPU_NEW_CAP_W="$GPU_POWER_W"
             fi
