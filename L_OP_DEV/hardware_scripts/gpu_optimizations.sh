@@ -39,7 +39,15 @@ gpu_power_optimizations(){
 		
 		if [[ "$GPU_VENDOR" == "amd" ]]; then
 		    if [[ "$GPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
-		        echo auto | tee "$GPU_PCI_PATH/power_dpm_force_performance_level"
+                if [[ $OPTIMIZATION_PROFILE == "AI_Self_Hosting" ]]; then
+                    echo high | tee "$GPU_PCI_PATH/power_dpm_force_performance_level"
+                else
+                    if [[ "$GPU_TYPE" == "igpu" ]]; then
+                        echo low | tee "$GPU_PCI_PATH/power_dpm_force_performance_level"
+                    else
+		                echo auto | tee "$GPU_PCI_PATH/power_dpm_force_performance_level"
+                    fi
+                fi
 		    elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
 		        echo high | tee "$GPU_PCI_PATH/power_dpm_force_performance_level"
 		    else
@@ -51,6 +59,11 @@ gpu_power_optimizations(){
 	        if [[ "$GPU_DRIVER" == "i915" ]]; then
 		    	echo 1 | tee "/sys/module/i915/parameters/enable_fbc"
 		    	echo 0 | tee "/sys/module/i915/parameters/enable_psr"
+                if [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    echo 0 | tee "/sys/module/i915/parameters/d3cold_allowed"
+                else
+                    echo 1 | tee "/sys/module/i915/parameters/d3cold_allowed"
+                fi
 	        fi
 		fi
 	done
@@ -120,15 +133,17 @@ gpu_performance_optimizations() {
         fi
 
         if [[ "$GPU_VENDOR" == "amd" ]]; then
-		    if [[ "$GPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
-		        echo ""
-		    elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
-		        echo ""
-		    elif [[ -n "$GPU_POWER_MIN_LIMIT" ]] && (( GPU_NEW_CAP < GPU_POWER_MIN_LIMIT )); then
-                GPU_NEW_CAP_W="$GPU_POWER_MIN_LIMIT"
-            else
-		        echo ""
-		    fi
+            if [[ "$GPU_TYPE" == "dgpu" ]]; then
+                if [[ "$GPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                    echo ""
+                elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
+                    echo ""
+                else
+                    echo ""
+                fi
+            elif [[ "$GPU_TYPE" == "igpu" ]]; then
+                echo ""
+            fi
         fi
 
         if [[ "$GPU_CLASS" == "arc" ]]; then
@@ -198,11 +213,11 @@ gpu_auto_power_tuner() {
             for POWER_CAP in "$GPU_PCI_PATH"/hwmon/hwmon*/power1_cap; do
 
                 if (( GPU_POWER_CAP_W > 200 )); then
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 80 / 100 ))
-                elif (( GPU_POWER_CAP_W > 100 )); then
                     GPU_NEW_CAP=$(( GPU_POWER_CAP * 85 / 100 ))
-                else
+                elif (( GPU_POWER_CAP_W > 100 )); then
                     GPU_NEW_CAP=$(( GPU_POWER_CAP * 90 / 100 ))
+                else
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 95 / 100 ))
                 fi
                 echo $GPU_NEW_CAP | tee "POWER_CAP"
             done
@@ -216,11 +231,11 @@ gpu_auto_power_tuner() {
             for POWER_CAP in "$GPU_PCI_PATH"/hwmon/hwmon*/power1_cap; do
 
                 if (( GPU_POWER_CAP_W > 200 )); then
-                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 80 / 100 ))
-                elif (( GPU_POWER_CAP_W > 100 )); then
                     GPU_NEW_CAP=$(( GPU_POWER_CAP * 85 / 100 ))
-                else
+                elif (( GPU_POWER_CAP_W > 100 )); then
                     GPU_NEW_CAP=$(( GPU_POWER_CAP * 90 / 100 ))
+                else
+                    GPU_NEW_CAP=$(( GPU_POWER_CAP * 95 / 100 ))
                 fi
                 echo "$GPU_NEW_CAP" | tee "$POWER_CAP"
             done

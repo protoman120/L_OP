@@ -3,6 +3,7 @@
 ##################################################################
 #IMPORTANT: SCRIPT DIRS SETUP
 source ./utility_scripts/script_directories.sh
+source $SAVED_CPU_DATA
 ##################################################################
 
 if [[ -e $SAVED_GPU_DATA ]]; then
@@ -114,12 +115,11 @@ for CARD in /sys/class/drm/card*; do
                 GPU_TYPE="igpu"
                 GPU_CLASS="apu"
             fi
-        fi
-
-        if [[ "$GPU_TYPE" == "unknown" ]]; then
+        elif [[ "$GPU_TYPE" == "unknown" ]]; then
             GPU_TYPE="dgpu"
             GPU_CLASS="radeon"
         fi
+
     elif [[ "$GPU_VENDOR" == "intel" ]]; then
 
         if grep -qi "arc" <<< "$GPU_DEVICE_LINE"; then
