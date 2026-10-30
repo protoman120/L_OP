@@ -269,6 +269,10 @@ profile_save_optimization_goals() {
         OPTIMIZATION_TMPFS_CACHING_ENABLED=$(printf '%q' "$OPTIMIZATION_TMPFS_CACHING_ENABLED")
         OPTIMIZATION_DE_ENABLED=$(printf '%q' "$OPTIMIZATION_DE_ENABLED")
         OPTIMIZATION_BOOTLOADER_ENABLED=$(printf '%q' "$OPTIMIZATION_BOOTLOADER_ENABLED")
+
+        #USER_SETTINGS:
+        ADDITIONAL_CPU_COOLING=$(printf '%q' "$ADDITIONAL_CPU_COOLING")
+        ADDITIONAL_GPU_COOLING=$(printf '%q' "$ADDITIONAL_GPU_COOLING")
 EOF
 
 }
@@ -359,6 +363,11 @@ uninstall_script(){
 }
 
 install_script(){
+
+    #USER SETTINGS VARIABLES SETUP
+    ADDITIONAL_CPU_COOLING="disabled"
+    ADDITIONAL_GPU_COOLING="disabled"
+
 	#PROFILE SELECTION
 	profile_selection_ui
     #profile_selection_simple
@@ -555,12 +564,14 @@ script_profile_settings(){
     echo "Current Settings:"
     echo "CPU_COOLING: $CPU_COOLING_OPTIMIZATION"
     echo "GPU_COOLING: $GPU_COOLING_OPTIMIZATION"
+    echo "ADDITIONAL_CPU_COOLING: $ADDITIONAL_CPU_COOLING"
+    echo "ADDITIONAL_GPU_COOLING: $ADDITIONAL_GPU_COOLING"
     echo "TMPFS_CACHING: $OPTIMIZATION_TMPFS_CACHING_ENABLED"
     echo "$SCRIPT_MENU_TITLE_BARS"
     echo ""
     echo "Available options to toggle:"
     PS3='Choose an option: '
-    options=("CPU_COOLING" "GPU_COOLING" "TMPFS_CACHING" "Quit")
+    options=("CPU_COOLING" "GPU_COOLING" "ADDITIONAL_CPU_COOLING" "ADDITIONAL_GPU_COOLING" "TMPFS_CACHING" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -574,10 +585,28 @@ script_profile_settings(){
                 break
                 ;;
             "GPU_COOLING")
-                if [[ $GPU_COOLING_OPTIMIZATION == "enabled" ]]; then
-                    GPU_COOLING_OPTIMIZATION="disabled"
+                if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+                    ADDITIONAL_CPU_COOLING="disabled"
                 else
-                    GPU_COOLING_OPTIMIZATION="enabled"
+                    ADDITIONAL_CPU_COOLING="enabled"
+                fi
+                script_profile_settings
+				break
+                ;;
+            "ADDITIONAL_CPU_COOLING")
+                if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+                    ADDITIONAL_CPU_COOLING="disabled"
+                else
+                    ADDITIONAL_CPU_COOLING="enabled"
+                fi
+                script_profile_settings
+                break
+                ;;
+            "ADDITIONAL_GPU_COOLING")
+                if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
+                    ADDITIONAL_GPU_COOLING="disabled"
+                else
+                    ADDITIONAL_GPU_COOLING="enabled"
                 fi
                 script_profile_settings
 				break

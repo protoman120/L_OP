@@ -305,6 +305,13 @@ cpu_frequency_optimizations(){
 		fi
 	fi
     
+	if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+		CPU_MIN_PERF_RED=$(( CPU_MAX_FREQ * 5 / 100 ))
+		CPU_MIN_PERF=$(( CPU_MAX_FREQ - CPU_MIN_PERF_RED ))
+		CPU_MAX_PERF_RED=$(( CPU_MAX_FREQ * 10 / 100 ))
+		CPU_MAX_PERF=$(( CPU_MAX_FREQ - CPU_MAX_PERF_RED ))
+	fi
+
     for ((i=0; i<CPU_THREADS; i++)); do
 	CPU_DIR="$CPU_PATH/cpu$i"
     	echo $CPU_MAX_PERF | tee $CPU_DIR/cpufreq/scaling_max_freq

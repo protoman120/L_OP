@@ -127,6 +127,16 @@ gpu_performance_optimizations() {
                         GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 85 / 100 ))
                     fi
                 fi
+
+                if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
+                    GPU_NVIDIA_NEW_MIN_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 5 / 100 ))
+                    GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_NVIDIA_NEW_MIN_GPU_CLOCK - GPU_NVIDIA_NEW_MIN_GPU_CLOCK_RED ))
+                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 10 / 100 ))
+                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_NVIDIA_NEW_MAX_GPU_CLOCK - GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED ))
+                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED=$(( GPU_MAX_MEMORY_CLOCK * 10 / 100 ))
+                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_NVIDIA_NEW_GPU_MEM_CLOCK - GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED ))
+                fi
+
                 nvidia-smi --lock-gpu-clocks=$GPU_NVIDIA_NEW_MIN_GPU_CLOCK,$GPU_NVIDIA_NEW_MAX_GPU_CLOCK
                 nvidia-smi --lock-memory-clocks=$GPU_NVIDIA_NEW_GPU_MEM_CLOCK
             fi
@@ -194,6 +204,11 @@ gpu_auto_power_tuner() {
                 GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W * 95 / 100 ))
             else
                 GPU_NEW_CAP_W="$GPU_POWER_W"
+            fi
+
+            if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
+                GPU_NEW_CAP_W_RED=$(( GPU_POWER_CAP_W * 10 / 100 ))
+                GPU_NEW_CAP_W=$(( GPU_POWER_CAP_W - GPU_NEW_CAP_W_RED ))
             fi
 
             if (( GPU_NEW_CAP_W < GPU_MIN_POWER_W )); then
