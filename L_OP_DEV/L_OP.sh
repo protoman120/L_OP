@@ -578,6 +578,7 @@ script_profile_settings(){
             "CPU_COOLING")
                 if [[ $CPU_COOLING_OPTIMIZATION == "enabled" ]]; then
                     CPU_COOLING_OPTIMIZATION="disabled"
+                    ADDITIONAL_CPU_COOLING="disabled"
                 else
                     CPU_COOLING_OPTIMIZATION="enabled"
                 fi
@@ -585,10 +586,11 @@ script_profile_settings(){
                 break
                 ;;
             "GPU_COOLING")
-                if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
-                    ADDITIONAL_CPU_COOLING="disabled"
+                if [[ $GPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                    GPU_COOLING_OPTIMIZATION="disabled"
+                    ADDITIONAL_GPU_COOLING="disabled"
                 else
-                    ADDITIONAL_CPU_COOLING="enabled"
+                    GPU_COOLING_OPTIMIZATION="enabled"
                 fi
                 script_profile_settings
 				break
@@ -597,7 +599,26 @@ script_profile_settings(){
                 if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
                     ADDITIONAL_CPU_COOLING="disabled"
                 else
-                    ADDITIONAL_CPU_COOLING="enabled"
+                    if [[ $CPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                        while true; do
+                            read -rp "WARNING: Enabling this will significantly reduce CPU performance, proceed? (y/n): " answer
+                            case "$answer" in
+                                [Yy])
+                                    ADDITIONAL_CPU_COOLING="enabled"
+                                    break
+                                    ;;
+                                [Nn])
+                                    ADDITIONAL_CPU_COOLING="disabled"
+                                    break
+                                    ;;
+                                *)
+                                    echo ""
+                                    ;;
+                            esac
+                        done
+                    else
+                        echo "CPU Cooling Optimizations must be enabled to enable this setting"
+                    fi
                 fi
                 script_profile_settings
                 break
@@ -606,7 +627,26 @@ script_profile_settings(){
                 if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
                     ADDITIONAL_GPU_COOLING="disabled"
                 else
-                    ADDITIONAL_GPU_COOLING="enabled"
+                    if [[ $GPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                        while true; do
+                            read -rp "WARNING: Enabling this will significantly reduce GPU performance, proceed? (y/n): " answer
+                            case "$answer" in
+                                [Yy])
+                                    ADDITIONAL_GPU_COOLING="enabled"
+                                    break
+                                    ;;
+                                [Nn])
+                                    ADDITIONAL_GPU_COOLING="disabled"
+                                    break
+                                    ;;
+                                *)
+                                    echo ""
+                                    ;;
+                            esac
+                        done
+                    else
+                        echo "GPU Cooling Optimizations must be enabled to enable this setting"
+                    fi
                 fi
                 script_profile_settings
 				break

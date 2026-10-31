@@ -131,9 +131,9 @@ gpu_performance_optimizations() {
                 if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
                     GPU_NVIDIA_NEW_MIN_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 10 / 100 ))
                     GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_NVIDIA_NEW_MIN_GPU_CLOCK - GPU_NVIDIA_NEW_MIN_GPU_CLOCK_RED ))
-                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 15 / 100 ))
+                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
                     GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_NVIDIA_NEW_MAX_GPU_CLOCK - GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED ))
-                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED=$(( GPU_MAX_MEMORY_CLOCK * 15 / 100 ))
+                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED=$(( GPU_MAX_MEMORY_CLOCK * 25 / 100 ))
                     GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_NVIDIA_NEW_GPU_MEM_CLOCK - GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED ))
                 fi
 
@@ -220,6 +220,10 @@ gpu_auto_power_tuner() {
         fi
 
         if [[ "$GPU_CLASS" == "radeon" ]]; then
+
+            if [[ -w "$GPU_PCI_PATH/power_dpm_force_performance_level" ]]; then
+                echo balanced | tee "$GPU_PCI_PATH/power_dpm_force_performance_level"
+            fi
 
             for POWER_CAP in "$GPU_PCI_PATH"/hwmon/hwmon*/power1_cap; do
 
