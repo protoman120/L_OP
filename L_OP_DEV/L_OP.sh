@@ -273,6 +273,8 @@ profile_save_optimization_goals() {
         #USER_SETTINGS:
         ADDITIONAL_CPU_COOLING=$(printf '%q' "$ADDITIONAL_CPU_COOLING")
         ADDITIONAL_GPU_COOLING=$(printf '%q' "$ADDITIONAL_GPU_COOLING")
+        EXTREME_CPU_COOLING=$(printf '%q' "$EXTREME_CPU_COOLING")
+        EXTREME_GPU_COOLING=$(printf '%q' "$EXTREME_GPU_COOLING")
 EOF
 
 }
@@ -367,6 +369,8 @@ install_script(){
     #USER SETTINGS VARIABLES SETUP
     ADDITIONAL_CPU_COOLING="disabled"
     ADDITIONAL_GPU_COOLING="disabled"
+    EXTREME_CPU_COOLING="disabled"
+    EXTREME_GPU_COOLING="disabled"
 
 	#PROFILE SELECTION
 	profile_selection_ui
@@ -565,13 +569,15 @@ script_profile_settings(){
     echo "CPU_COOLING: $CPU_COOLING_OPTIMIZATION"
     echo "GPU_COOLING: $GPU_COOLING_OPTIMIZATION"
     echo "ADDITIONAL_CPU_COOLING: $ADDITIONAL_CPU_COOLING"
+    echo "EXTREME_CPU_COOLING: $EXTREME_CPU_COOLING"
     echo "ADDITIONAL_GPU_COOLING: $ADDITIONAL_GPU_COOLING"
+    echo "EXTREME_GPU_COOLING: $EXTREME_GPU_COOLING"
     echo "TMPFS_CACHING: $OPTIMIZATION_TMPFS_CACHING_ENABLED"
     echo "$SCRIPT_MENU_TITLE_BARS"
     echo ""
     echo "Available options to toggle:"
     PS3='Choose an option: '
-    options=("CPU_COOLING" "GPU_COOLING" "ADDITIONAL_CPU_COOLING" "ADDITIONAL_GPU_COOLING" "TMPFS_CACHING" "Quit")
+    options=("CPU_COOLING" "GPU_COOLING" "ADDITIONAL_CPU_COOLING" "EXTREME_CPU_COOLING" "ADDITIONAL_GPU_COOLING" "EXTREME_GPU_COOLING" "TMPFS_CACHING" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
@@ -605,10 +611,40 @@ script_profile_settings(){
                             case "$answer" in
                                 [Yy])
                                     ADDITIONAL_CPU_COOLING="enabled"
+                                    EXTREME_CPU_COOLING="disabled"
                                     break
                                     ;;
                                 [Nn])
                                     ADDITIONAL_CPU_COOLING="disabled"
+                                    break
+                                    ;;
+                                *)
+                                    echo ""
+                                    ;;
+                            esac
+                        done
+                    else
+                        echo "CPU Cooling Optimizations must be enabled to enable this setting"
+                    fi
+                fi
+                script_profile_settings
+                break
+                ;;
+            "EXTREME_CPU_COOLING")
+                if [[ $EXTREME_CPU_COOLING == "enabled" ]]; then
+                    EXTREME_CPU_COOLING="disabled"
+                else
+                    if [[ $CPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                        while true; do
+                            read -rp "WARNING: Enabling this WILL LOWER CPU PERFORMANCE A LOT, proceed? (y/n): " answer
+                            case "$answer" in
+                                [Yy])
+                                    EXTREME_CPU_COOLING="enabled"
+                                    ADDITIONAL_CPU_COOLING="disabled"
+                                    break
+                                    ;;
+                                [Nn])
+                                    EXTREME_CPU_COOLING="disabled"
                                     break
                                     ;;
                                 *)
@@ -633,10 +669,40 @@ script_profile_settings(){
                             case "$answer" in
                                 [Yy])
                                     ADDITIONAL_GPU_COOLING="enabled"
+                                    EXTREME_GPU_COOLING="disabled"
                                     break
                                     ;;
                                 [Nn])
                                     ADDITIONAL_GPU_COOLING="disabled"
+                                    break
+                                    ;;
+                                *)
+                                    echo ""
+                                    ;;
+                            esac
+                        done
+                    else
+                        echo "GPU Cooling Optimizations must be enabled to enable this setting"
+                    fi
+                fi
+                script_profile_settings
+				break
+                ;;
+            "EXTREME_GPU_COOLING")
+                if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
+                    EXTREME_GPU_COOLING="disabled"
+                else
+                    if [[ $GPU_COOLING_OPTIMIZATION == "enabled" ]]; then
+                        while true; do
+                            read -rp "WARNING: Enabling this WILL LOWER GPU PERFORMANCE A LOT, proceed? (y/n): " answer
+                            case "$answer" in
+                                [Yy])
+                                    EXTREME_GPU_COOLING="enabled"
+                                    ADDITIONAL_GPU_COOLING="disabled"
+                                    break
+                                    ;;
+                                [Nn])
+                                    EXTREME_GPU_COOLING="disabled"
                                     break
                                     ;;
                                 *)
@@ -667,7 +733,6 @@ script_profile_settings(){
         esac
     done
 }
-
 
 script_tmpfs_save_data_setup(){
 

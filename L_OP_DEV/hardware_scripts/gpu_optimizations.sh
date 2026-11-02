@@ -82,60 +82,79 @@ gpu_performance_optimizations() {
                 
                 #Value needs to be rounded without decimals to work properly
                 GPU_POWER_CAP_W=${GPU_POWER_MAX_LIMIT%.*}
+
+                #BASE VALUES
+                GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=100
+                GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=100
+                #USED ONLY IF ENABLED ADDITIONAL/EXTREME GPU COOLING SETTINGS
+                GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE_REDUCTION=0
+                GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE_REDUCTION=0
+                GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE_REDUCTION=0
                 if [[ "$GPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
                     if [[ $OPTIMIZATION_PROFILE == "AI_Self_Hosting" ]]; then
                         if (( GPU_POWER_CAP_W >= 200 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 0 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 40 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 95 / 100 ))
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=40
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=95
                         elif (( GPU_POWER_CAP_W >= 100 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 0 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 45 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 96 / 100 ))
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=45
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=96
                         elif (( GPU_POWER_CAP_W >= 40 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 0 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 50 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 98 / 100 ))
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=50
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=98
                         fi
                     else
                         if (( GPU_POWER_CAP_W >= 200 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 15 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 80 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 80 / 100 ))
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=15
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=80
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=80
                         elif (( GPU_POWER_CAP_W >= 100 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 20 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 85 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 85 / 100 ))
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=85
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=85
                         elif (( GPU_POWER_CAP_W >= 40 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 90 / 100 ))
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 90 / 100 ))
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=90
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=90
                         fi
                     fi
                 elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
                     if (( GPU_POWER_CAP_W >= 200 )); then
-                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 15 / 100 ))
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 75 / 100 ))
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 75 / 100 ))
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=15
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=75
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=75
                     elif (( GPU_POWER_CAP_W >= 100 )); then
-                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 20 / 100 ))
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 80 / 100 ))
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 80 / 100 ))
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=20
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=80
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=80
                     elif (( GPU_POWER_CAP_W >= 40 )); then
-                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * 85 / 100 ))
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * 85 / 100 ))
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=25
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=85
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=85
                     fi
                 fi
 
-                if [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
-                    GPU_NVIDIA_NEW_MIN_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 10 / 100 ))
-                    GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_NVIDIA_NEW_MIN_GPU_CLOCK - GPU_NVIDIA_NEW_MIN_GPU_CLOCK_RED ))
-                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED=$(( GPU_MAX_GRAPHICS_CLOCK * 25 / 100 ))
-                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_NVIDIA_NEW_MAX_GPU_CLOCK - GPU_NVIDIA_NEW_MAX_GPU_CLOCK_RED ))
-                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED=$(( GPU_MAX_MEMORY_CLOCK * 25 / 100 ))
-                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_NVIDIA_NEW_GPU_MEM_CLOCK - GPU_NVIDIA_NEW_GPU_MEM_CLOCK_RED ))
+                if [[ $EXTREME_GPU_COOLING == "enabled" || $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
+                    if [[ $EXTREME_GPU_COOLING == "enabled" ]]; then
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE_REDUCTION=10
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE_REDUCTION=20
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE_REDUCTION=20
+                    elif [[ $ADDITIONAL_GPU_COOLING == "enabled" ]]; then
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE_REDUCTION=5
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE_REDUCTION=10
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE_REDUCTION=10
+                    fi
+                    GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=$(( GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE - GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE_REDUCTION ))
+                    GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=$(( GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE - GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE_REDUCTION ))
+                    GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=$(( GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE - GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE_REDUCTION ))
                 fi
+
+                GPU_NVIDIA_NEW_MIN_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE / 100 ))
+                GPU_NVIDIA_NEW_MAX_GPU_CLOCK=$(( GPU_MAX_GRAPHICS_CLOCK * GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE / 100 ))
+                GPU_NVIDIA_NEW_GPU_MEM_CLOCK=$(( GPU_MAX_MEMORY_CLOCK * GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE / 100 ))
 
                 nvidia-smi --lock-gpu-clocks=$GPU_NVIDIA_NEW_MIN_GPU_CLOCK,$GPU_NVIDIA_NEW_MAX_GPU_CLOCK
                 nvidia-smi --lock-memory-clocks=$GPU_NVIDIA_NEW_GPU_MEM_CLOCK

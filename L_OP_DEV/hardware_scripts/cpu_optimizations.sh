@@ -243,77 +243,104 @@ cpu_performance_optimizations(){
 cpu_frequency_optimizations(){
     #Slightly reduces max freq to lower temperatures, to compensate, min freq in increased
 
+	#BASE VALUES
+	CPU_MIN_PERF_PERCENTAGE=1
+	CPU_MAX_PERF_PERCENTAGE=100
+	#USED ONLY IF ENABLED ADDITIONAL/EXTREME CPU COOLING SETTINGS
+	CPU_MIN_PERF_PERCENTAGE_REDUCTION=0
+	CPU_MAX_PERF_PERCENTAGE_REDUCTION=0
+
 	if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
 		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
 			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=15
+				CPU_MAX_PERF_PERCENTAGE=85
 			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 20 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=20
+				CPU_MAX_PERF_PERCENTAGE=90
 			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 95 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=25
+				CPU_MAX_PERF_PERCENTAGE=95
 			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 30 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 98 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=30
+				CPU_MAX_PERF_PERCENTAGE=98
 			fi
 		else
 			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=10
+				CPU_MAX_PERF_PERCENTAGE=75
 			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=10
+				CPU_MAX_PERF_PERCENTAGE=80
 			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=15
+				CPU_MAX_PERF_PERCENTAGE=85
 			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=15
+				CPU_MAX_PERF_PERCENTAGE=90
 			fi
+		fi
+
+		if [[ $EXTREME_CPU_COOLING == "enabled" || $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+			if [[ $EXTREME_CPU_COOLING == "enabled" ]]; then
+				CPU_MIN_PERF_PERCENTAGE_REDUCTION=10
+				CPU_MAX_PERF_PERCENTAGE_REDUCTION=20
+			elif [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+				CPU_MIN_PERF_PERCENTAGE_REDUCTION=5
+				CPU_MAX_PERF_PERCENTAGE_REDUCTION=10
+			fi
+			CPU_MIN_PERF_PERCENTAGE=$(( CPU_MIN_PERF_PERCENTAGE - CPU_MIN_PERF_PERCENTAGE_REDUCTION ))
+			CPU_MAX_PERF_PERCENTAGE=$(( CPU_MAX_PERF_PERCENTAGE - CPU_MAX_PERF_PERCENTAGE_REDUCTION ))
 		fi
 	else
 		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
 			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=10
+				CPU_MAX_PERF_PERCENTAGE=80
 			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 15 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=15
+				CPU_MAX_PERF_PERCENTAGE=85
 			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 20 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 90 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=20
+				CPU_MAX_PERF_PERCENTAGE=90
 			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 25 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 95 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=25
+				CPU_MAX_PERF_PERCENTAGE=95
 			fi
 		else
 			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 70 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=5
+				CPU_MAX_PERF_PERCENTAGE=70
 			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 5 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 75 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=5
+				CPU_MAX_PERF_PERCENTAGE=75
 			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 80 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=10
+				CPU_MAX_PERF_PERCENTAGE=80
 			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF=$(( CPU_MAX_FREQ * 10 / 100 ))
-				CPU_MAX_PERF=$(( CPU_MAX_FREQ * 85 / 100 ))
+				CPU_MIN_PERF_PERCENTAGE=10
+				CPU_MAX_PERF_PERCENTAGE=85
 			fi
 		fi
-	fi
-    
-	if [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
-		CPU_MIN_PERF_RED=$(( CPU_MAX_FREQ * 10 / 100 ))
-		CPU_MIN_PERF=$(( CPU_MIN_PERF - CPU_MIN_PERF_RED ))
-		CPU_MAX_PERF_RED=$(( CPU_MAX_FREQ * 25 / 100 ))
-		CPU_MAX_PERF=$(( CPU_MAX_PERF - CPU_MAX_PERF_RED ))
+		
+		if [[ $EXTREME_CPU_COOLING == "enabled" || $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+			if [[ $EXTREME_CPU_COOLING == "enabled" ]]; then
+				CPU_MIN_PERF_PERCENTAGE_REDUCTION=10
+				CPU_MAX_PERF_PERCENTAGE_REDUCTION=30
+			elif [[ $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
+				CPU_MIN_PERF_PERCENTAGE_REDUCTION=5
+				CPU_MAX_PERF_PERCENTAGE_REDUCTION=15
+			fi
+			CPU_MIN_PERF_PERCENTAGE=$(( CPU_MIN_PERF_PERCENTAGE - CPU_MIN_PERF_PERCENTAGE_REDUCTION ))
+			CPU_MAX_PERF_PERCENTAGE=$(( CPU_MAX_PERF_PERCENTAGE - CPU_MAX_PERF_PERCENTAGE_REDUCTION ))
+		fi
 	fi
 
+	CPU_MIN_PERF=$(( CPU_MAX_FREQ * CPU_MIN_PERF_PERCENTAGE / 100 ))
+	CPU_MAX_PERF=$(( CPU_MAX_FREQ * CPU_MAX_PERF_PERCENTAGE / 100 ))
+
     for ((i=0; i<CPU_THREADS; i++)); do
-	CPU_DIR="$CPU_PATH/cpu$i"
+		CPU_DIR="$CPU_PATH/cpu$i"
     	echo $CPU_MAX_PERF | tee $CPU_DIR/cpufreq/scaling_max_freq
     	echo $CPU_MIN_PERF | tee $CPU_DIR/cpufreq/scaling_min_freq
     done
