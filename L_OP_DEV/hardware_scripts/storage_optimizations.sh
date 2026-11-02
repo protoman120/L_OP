@@ -1014,7 +1014,11 @@ io_scheduler_optimizations(){
 
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
 		        if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    if [[ $CPU_CLASS == "low" ]]; then
+                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    else
+                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    fi
 		            echo 2 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
 		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1107,7 +1111,11 @@ io_scheduler_optimizations(){
         
             if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
             	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+		            if [[ $CPU_CLASS == "low" ]]; then
+                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    else
+                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                    fi
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1207,11 +1215,7 @@ io_scheduler_optimizations(){
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
 		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    if [[ $CPU_CLASS == "low" ]]; then
-                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    else
-                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    fi
+                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1300,11 +1304,7 @@ io_scheduler_optimizations(){
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
                 elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    if [[ $CPU_CLASS == "low" ]]; then
-                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    else
-                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    fi
+                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                     echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                     echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                     echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
