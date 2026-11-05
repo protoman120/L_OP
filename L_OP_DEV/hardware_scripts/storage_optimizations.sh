@@ -996,687 +996,696 @@ io_scheduler_optimizations(){
 
 }
 
-    for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); do
-        
-        STORAGE_DEVICE_PATH="/dev/$STORAGE_DEVICE"
+for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); do
+    
+    STORAGE_DEVICE_PATH="/dev/$STORAGE_DEVICE"
 
-        SAVED_STORAGE_DEVICE_DATA_FOLDER=$SAVED_STORAGE_DATA_FOLDER/$STORAGE_DEVICE
-        SAVED_STORAGE_PARTITIONS_DATA_FOLDER=$SAVED_STORAGE_DEVICE_DATA_FOLDER/partitions
-        
-        SAVED_STORAGE_DEVICE_DATA_FILE=$SAVED_STORAGE_DEVICE_DATA_FOLDER/$SAVED_STORAGE_DEVICE_DATA_FILE_NAME
+    SAVED_STORAGE_DEVICE_DATA_FOLDER=$SAVED_STORAGE_DATA_FOLDER/$STORAGE_DEVICE
+    
+    SAVED_STORAGE_DEVICE_DATA_FILE=$SAVED_STORAGE_DEVICE_DATA_FOLDER/$SAVED_STORAGE_DEVICE_DATA_FILE_NAME
 
-        for CURRENT_STORAGE_FILE in "$SAVED_STORAGE_DEVICE_DATA_FILE"; do
+    source "$SAVED_STORAGE_DEVICE_DATA_FILE"
 
-            source "$CURRENT_STORAGE_FILE"
+    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iostats
+    if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
 
-            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/iostats
-        if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
-
-            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-		        if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    if [[ $CPU_CLASS == "low" ]]; then
-                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    else
-                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    fi
-		            echo 2 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-		        elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    if [[ $CPU_CLASS == "low" ]]; then
-                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    else
-                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    fi
-			        echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay			
-		        fi
-            elif [[ $CPU_CLASS == "mid" ]]; then
-                if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "low" ]]; then
                     echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            elif [[ $CPU_CLASS == "high" ]]; then
-            	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinitySTORAGE_OPTI
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            fi
-
-            #OPTIMIZED FOR SLOW STORAGE (HDD ONLY)
-            if [[ $RAM_CLASS == "verylow" ]]; then
-            	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "low" ]]; then
-            	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "mid" ]]; then
-            	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "high" ]]; then
-            	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "veryhigh" ]]; then
-            	if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            fi
-
-        elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
-        
-            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            if [[ $CPU_CLASS == "low" ]]; then
-                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    else
-                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    fi
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-		            if [[ $CPU_CLASS == "low" ]]; then
-                        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    else
-                        echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    fi
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            elif [[ $CPU_CLASS == "mid" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-	            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-	            fi
-            elif [[ $CPU_CLASS == "high" ]]; then
-            	if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            fi
-
-            #OPTIMIZED FOR SLOW STORAGE (USB ONLY)
-            if [[ $RAM_CLASS == "verylow" ]]; then
-                if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "low" ]]; then
-                if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "mid" ]]; then
-                if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "high" ]]; then
-                if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            fi
-
-        elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
-
-            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            elif [[ $CPU_CLASS == "mid" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-			        echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-			        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-			        echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-			        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-			        echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            elif [[ $CPU_CLASS == "high" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-		        elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-		        fi
-            fi
-
-            #OPTIMIZED FOR FAST STORAGE (SSD ONLY)
-            if [[ $RAM_CLASS == "verylow" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "low" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "mid" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "high" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "veryhigh" ]]; then
-            	if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 64)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            fi
-        
-        elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
-
-            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            elif [[ $CPU_CLASS == "mid" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                    echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-	        	    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-	 		        echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-	        	    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            elif [[ $CPU_CLASS == "high" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-		            echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-		            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-		            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-                    echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                    echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
-                    echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
-                fi
-            fi
-
-            #OPTIMIZED FOR FAST STORAGE (NVME ONLY)
-            if [[ $RAM_CLASS == "verylow" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "low" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "mid" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "high" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 64)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            elif [[ $RAM_CLASS == "veryhigh" ]]; then
-            	if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
-                	echo $(($READ_AHEAD_MB * 64)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                	echo $(($READ_AHEAD_MB * 128)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-                	echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-                fi
-            fi
-        fi
-        #SWAP DEVICE CONFIG:
-        if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
-            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" || $CPU_CLASS == "mid" ]]; then
-                echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-            else
-                echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
-                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
-                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
-            fi
-            echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
-            echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
-        fi
-        io_scheduler_optimizations
-        for STORAGE_PARTITION in $(lsblk -ln -o NAME,TYPE | awk '$2=="part"{print $1}'); do
-
-            STORAGE_PARTITION_PATH="/dev/$STORAGE_PARTITION"
-            STORAGE_PARTITION_PARENT_DEVICE=$(lsblk -no PKNAME "/dev/$STORAGE_PARTITION")
-            STORAGE_PARTITION_FILE=$SAVED_STORAGE_DEVICE_DATA_FOLDER/partitions/$STORAGE_PARTITION/$SAVED_STORAGE_PARTITION_DATA_FILE_NAME
-
-            for CURRENT_STORAGE_PARTITION_FILE in "$STORAGE_PARTITION_FILE"; do
-                source "$CURRENT_STORAGE_PARTITION_FILE"
-
-                if [[ $STORAGE_PARTITION_MOUNTPOINT == "/" ]]; then
-
-                    if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
-                        STORAGE_REQUIRED_ARGS="defaults,subvol=@"
-                    elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
-                        STORAGE_REQUIRED_ARGS="defaults,subvol=@"
-                    fi
-
-                elif [[ $STORAGE_PARTITION_MOUNTPOINT == "/home" ]]; then
-
-                    if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
-                        STORAGE_REQUIRED_ARGS="defaults,subvol=@home"
-                    elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
-                        STORAGE_REQUIRED_ARGS="defaults,subvol=@home"
-                    fi
-
                 else
+                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                fi
+                echo 2 |  tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "low" ]]; then
+                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                else
+                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                fi
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay			
+            fi
+        elif [[ $CPU_CLASS == "mid" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "high" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinitySTORAGE_OPTI
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        fi
 
-                    if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
-                        STORAGE_REQUIRED_ARGS="nosuid,nodev,nofail,x-gvfs-show"
-                    elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
-                        STORAGE_REQUIRED_ARGS="nosuid,nodev,nofail,x-gvfs-show"
-                    elif [[ $STORAGE_PARTITION_FILESYSTEM == "swap" ]]; then
-                        swapoff $STORAGE_PARTITION_PATH
-                        swapon -p 250 $STORAGE_PARTITION_PATH
+        #OPTIMIZED FOR SLOW STORAGE (HDD ONLY)
+        if [[ $RAM_CLASS == "verylow" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "low" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "mid" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "high" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "veryhigh" ]]; then
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        fi
+
+    elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
+    
+        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                if [[ $CPU_CLASS == "low" ]]; then
+                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                else
+                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                fi
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                if [[ $CPU_CLASS == "low" ]]; then
+                    echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                else
+                    echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                fi
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "mid" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "high" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/front_merges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        fi
+
+        #OPTIMIZED FOR SLOW STORAGE (USB ONLY)
+        if [[ $RAM_CLASS == "verylow" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "low" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 1)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "mid" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "high" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "veryhigh" ]]; then
+            if [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        fi
+
+    elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+
+        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "mid" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "high" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        fi
+
+        #OPTIMIZED FOR FAST STORAGE (SSD ONLY)
+        if [[ $RAM_CLASS == "verylow" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "low" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "mid" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "high" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "veryhigh" ]]; then
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$SSD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 64)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        fi
+    
+    elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
+
+        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "mid" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo none |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        elif [[ $CPU_CLASS == "high" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo none | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+                echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
+                echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
+            fi
+        fi
+
+        #OPTIMIZED FOR FAST STORAGE (NVME ONLY)
+        if [[ $RAM_CLASS == "verylow" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 4)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "low" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 4 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 8)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "mid" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 16)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "high" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 32)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 16 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 64)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        elif [[ $RAM_CLASS == "veryhigh" ]]; then
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "latency" ]]; then
+                echo $(($READ_AHEAD_MB * 64)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 32 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            elif [[ "$NVME_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
+                echo $(($READ_AHEAD_MB * 128)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+                echo 64 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+            fi
+        fi
+    fi
+    #SWAP DEVICE CONFIG:
+    if [[ "$STORAGE_SWAP_DEVICE" == "$STORAGE_DEVICE" && "$STORAGE_SWAP_DEVICE" != "$STORAGE_ROOT_DEVICE" ]]; then
+        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" || $CPU_CLASS == "mid" ]]; then
+            echo mq-deadline |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+        else
+            echo bfq |  tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+            echo 1 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
+            echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
+        fi
+        echo $(($READ_AHEAD_MB / 2)) | tee /sys/block/$STORAGE_DEVICE/queue/read_ahead_kb
+        echo 8 | tee /sys/block/$STORAGE_DEVICE/queue/nr_requests
+    fi
+
+    io_scheduler_optimizations
+    
+    for STORAGE_PARTITION in "$SAVED_STORAGE_DEVICE_DATA_FOLDER/partitions/$STORAGE_DEVICE"*; do
+
+        STORAGE_PARTITION_PATH="/dev/$STORAGE_PARTITION"
+        STORAGE_PARTITION_FILE=$STORAGE_PARTITION/$SAVED_STORAGE_PARTITION_DATA_FILE_NAME
+
+        source "$STORAGE_PARTITION_FILE"
+
+        if [[ $STORAGE_PARTITION_MOUNTPOINT == "/" ]]; then
+
+            if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
+                STORAGE_REQUIRED_ARGS="defaults,subvol=@"
+            elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
+                STORAGE_REQUIRED_ARGS="defaults,subvol=@"
+            fi
+
+        elif [[ $STORAGE_PARTITION_MOUNTPOINT == "/home" ]]; then
+
+            if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
+                STORAGE_REQUIRED_ARGS="defaults,subvol=@home"
+            elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
+                STORAGE_REQUIRED_ARGS="defaults,subvol=@home"
+            fi
+
+        else
+
+            if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
+                STORAGE_REQUIRED_ARGS="nosuid,nodev,nofail,x-gvfs-show"
+            elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
+                STORAGE_REQUIRED_ARGS="nosuid,nodev,nofail,x-gvfs-show"
+            elif [[ $STORAGE_PARTITION_FILESYSTEM == "swap" ]]; then
+                swapoff $STORAGE_PARTITION_PATH
+                swapon -p 250 $STORAGE_PARTITION_PATH
+            fi
+
+        fi
+
+        if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
+
+            if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
+                if [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:1,space_cache=v2"
+                else
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:1,space_cache=v2"
+                    elif [[ $CPU_CLASS == "low" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
+                    elif [[ $CPU_CLASS == "mid" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
+                    elif [[ $CPU_CLASS == "high" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:5,space_cache=v2"
                     fi
-
                 fi
 
-                if [[ $STORAGE_PARTITION_FILESYSTEM == "btrfs" ]]; then
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=80"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
+                fi
 
-                    if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
+                STORAGE_MOUNT_ARGS_CHANGED="true"
 
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=lzo,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:5,space_cache=v2"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=80"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
-                        fi
-
-                        STORAGE_MOUNT_ARGS_CHANGED="true"
-
-                    elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,ssd,space_cache=v2"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,ssd,space_cache=v2"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=10"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=50"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        fi
-
-                        STORAGE_MOUNT_ARGS_CHANGED="true"
-
-                    elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        fi
-
-                        STORAGE_MOUNT_ARGS_CHANGED="true"
-
-                    elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
-                        fi
-
-                        STORAGE_MOUNT_ARGS_CHANGED="true"
-
-                    fi
-
-                elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
-
-                    if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                           STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
-                        fi
-
-                    elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                           STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
-                        fi
-
-                    elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                           STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
-                        fi
-
-                       if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
-                        fi
-
-                    elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
-
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                           STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
-                        fi
-
-                        if [[ $RAM_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                        elif [[ $RAM_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
-                        elif [[ $RAM_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
-                        elif [[ $RAM_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
-                        elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
-                        fi
-
+            elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
+                if [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
+                else
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
+                    elif [[ $CPU_CLASS == "low" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
+                    elif [[ $CPU_CLASS == "mid" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,ssd,space_cache=v2"
+                    elif [[ $CPU_CLASS == "high" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,ssd,space_cache=v2"
                     fi
                 fi
 
-                if [[ "$STORAGE_MOUNT_ARGS_CHANGED" == "true" ]]; then
-                    STORAGE_NEW_MOUNT_ARGS="${STORAGE_REQUIRED_ARGS},${STORAGE_PARTITION_MOUNT_ARGS_CPU},${STORAGE_PARTITION_MOUNT_ARGS_RAM}"
-                    mount -o remount,"$STORAGE_NEW_MOUNT_ARGS" "$STORAGE_PARTITION_MOUNTPOINT"
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=10"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=50"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
                 fi
 
-                if [[ "$STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
-                
-                    STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+                STORAGE_MOUNT_ARGS_CHANGED="true"
 
-                    if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
-                        HDD_STORAGE_OPTIMIZATION_GOAL="latency"
+            elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+
+                if [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
+                else
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
+                    elif [[ $CPU_CLASS == "low" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
+                    elif [[ $CPU_CLASS == "mid" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
+                    elif [[ $CPU_CLASS == "high" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
                     fi
-
-                    if [[ "$HDD_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
-                        USB_STORAGE_OPTIMIZATION_GOAL="latency"
-                    fi
-                    
-                    if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
-                        SSD_STORAGE_OPTIMIZATION_GOAL="latency"
-                    fi
-
-                    if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
-                        NVME_STORAGE_OPTIMIZATION_GOAL="latency"
-                    fi
-
-                    HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                    USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                    SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-                    NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
-
                 fi
-            done
-        done
+
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                fi
+
+                STORAGE_MOUNT_ARGS_CHANGED="true"
+
+            elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
+
+                if [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
+                else
+                    if [[ $CPU_CLASS == "verylow" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2"
+                    elif [[ $CPU_CLASS == "low" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2"
+                    elif [[ $CPU_CLASS == "mid" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
+                    elif [[ $CPU_CLASS == "high" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
+                    fi
+                fi
+
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
+                fi
+
+                STORAGE_MOUNT_ARGS_CHANGED="true"
+
+            fi
+
+        elif [[ $STORAGE_PARTITION_FILESYSTEM == "ext4" ]]; then
+
+            if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
+
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
+                fi
+
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
+                fi
+
+            elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
+
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                fi
+
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
+                fi
+
+            elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
+                fi
+
+            if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
+                fi
+
+            elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
+
+                if [[ $CPU_CLASS == "verylow" ]]; then
+                STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime,data=writeback"
+                elif [[ $CPU_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
+                elif [[ $CPU_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="noatime"
+                fi
+
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=90"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=120"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=150"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=180"
+                fi
+
+            fi
+        fi
+
+        if [[ "$STORAGE_MOUNT_ARGS_CHANGED" == "true" ]]; then
+            STORAGE_NEW_MOUNT_ARGS="${STORAGE_REQUIRED_ARGS},${STORAGE_PARTITION_MOUNT_ARGS_CPU},${STORAGE_PARTITION_MOUNT_ARGS_RAM}"
+            mount -o remount,"$STORAGE_NEW_MOUNT_ARGS" "$STORAGE_PARTITION_MOUNTPOINT"
+        fi
+
+        if [[ "$STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+        
+            STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+            if [[ "$HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                HDD_STORAGE_OPTIMIZATION_GOAL="latency"
+            fi
+
+            if [[ "$HDD_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                USB_STORAGE_OPTIMIZATION_GOAL="latency"
+            fi
+            
+            if [[ "$SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                SSD_STORAGE_OPTIMIZATION_GOAL="latency"
+            fi
+
+            if [[ "$NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP" == "true" ]]; then
+                NVME_STORAGE_OPTIMIZATION_GOAL="latency"
+            fi
+
+            HDD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+            USB_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+            SSD_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+            NVME_STORAGE_OPTIMIZATION_GOAL_CHANGED_SWAP="false"
+
+        fi
     done
 done
