@@ -16,15 +16,15 @@ kernel_scheduler_optimizations(){
     #PREEMPT MODE:
     if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
 		if [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
-			echo full | sudo tee /sys/kernel/debug/sched/preempt
+			echo full | tee /sys/kernel/debug/sched/preempt
 		else
-			echo voluntary | sudo tee /sys/kernel/debug/sched/preempt
+			echo voluntary | tee /sys/kernel/debug/sched/preempt
 		fi
 	elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
 		if [[ "$CPU_CLASS" == "mid" || "$CPU_CLASS" == "high" ]]; then
-			echo none | sudo tee /sys/kernel/debug/sched/preempt
+			echo none | tee /sys/kernel/debug/sched/preempt
 		else
-			echo voluntary | sudo tee /sys/kernel/debug/sched/preempt
+			echo voluntary | tee /sys/kernel/debug/sched/preempt
 		fi
 	fi
 
@@ -45,19 +45,19 @@ kernel_memory_optimizations(){
     #TRANSPARENT HUGEPAGES:
     if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-            echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
-            echo never | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
+            echo never | tee /sys/kernel/mm/transparent_hugepage/enabled
+            echo never | tee /sys/kernel/mm/transparent_hugepage/defrag
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
-            echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
+            echo madvise | tee /sys/kernel/mm/transparent_hugepage/enabled
+            echo madvise | tee /sys/kernel/mm/transparent_hugepage/defrag
         fi
     elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
         if [[ "$RAM_OPTIMIZATION_GOAL" == "latency" ]]; then
-            echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
-            echo never | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
+            echo never | tee /sys/kernel/mm/transparent_hugepage/enabled
+            echo never | tee /sys/kernel/mm/transparent_hugepage/defrag
         elif [[ "$RAM_OPTIMIZATION_GOAL" == "throughput" ]]; then
-            echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
-            echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
+            echo always | tee /sys/kernel/mm/transparent_hugepage/enabled
+            echo always | tee /sys/kernel/mm/transparent_hugepage/defrag
         fi
     fi
     
@@ -82,6 +82,10 @@ kernel_memory_optimizations(){
             echo 1 | tee /sys/kernel/mm/lru_gen/enabled
         fi
     fi
+}
+
+kernel_pcie_optimizations(){
+    echo performance | tee /sys/module/pcie_aspm/parameters/policy
 }
 
 kernel_usb_optimizations(){
@@ -140,6 +144,7 @@ kernel_debug_optimizations(){
 
 kernel_scheduler_optimizations
 kernel_memory_optimizations
+kernel_pcie_optimizations
 kernel_usb_optimizations
 kernel_bluetooth_optimizations
 kernel_timer_optimizations
