@@ -1053,7 +1053,7 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
             elif [[ "$HDD_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
@@ -1151,7 +1151,7 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll_delay
             elif [[ "$USB_STORAGE_OPTIMIZATION_GOAL" == "throughput" ]]; then
-                echo bfq | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
+                echo mq-deadline | tee /sys/block/$STORAGE_DEVICE/queue/scheduler
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/nomerges
                 echo 2 | tee /sys/block/$STORAGE_DEVICE/queue/rq_affinity
                 echo 0 | tee /sys/block/$STORAGE_DEVICE/queue/io_poll
