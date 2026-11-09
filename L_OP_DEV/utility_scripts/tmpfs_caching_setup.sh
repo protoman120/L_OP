@@ -37,98 +37,41 @@ fi
 
 #VARIABLE INITIALIZATION:
 TMPFS_SYSTEM_CACHES_ENABLED="false"
+TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="false"
 TMPFS_FLATPAK_CACHES_ENABLED="false"
 TMPFS_GAMING_CACHES_ENABLED="false"
 TMPFS_SERVER_CACHES_ENABLED="false"
 
 if [[ $RAM_CLASS == "verylow" ]]; then
+
     TMPFS_SYSTEM_CACHES_ENABLED="false"
+    TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="false"
     TMPFS_FLATPAK_CACHES_ENABLED="false"
     TMPFS_GAMING_CACHES_ENABLED="false"
     TMPFS_SERVER_CACHES_ENABLED="false"
-elif [[ $RAM_CLASS == "low" ]]; then
-    if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
-        
-        if [[ $CPU_CLASS == "verylow" ]]; then
-            TMPFS_SYSTEM_CACHES_ENABLED="false"
-        else
-            TMPFS_SYSTEM_CACHES_ENABLED="true"
-        fi
 
-        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-            TMPFS_FLATPAK_CACHES_ENABLED="false"
-        else
-            TMPFS_FLATPAK_CACHES_ENABLED="true"
-        fi
+elif [[ $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
 
-        TMPFS_GAMING_CACHES_ENABLED="false"
-        TMPFS_SERVER_CACHES_ENABLED="false"
-
+    if [[ $CPU_CLASS == "verylow" ]]; then
+        TMPFS_SYSTEM_CACHES_ENABLED="false"
     else
-
-        if [[ $CPU_CLASS == "verylow" ]]; then
-            TMPFS_SYSTEM_CACHES_ENABLED="false"
-        else
-            TMPFS_SYSTEM_CACHES_ENABLED="true"
-        fi
-
-        TMPFS_FLATPAK_CACHES_ENABLED="false"
-        TMPFS_GAMING_CACHES_ENABLED="false"
-        TMPFS_SERVER_CACHES_ENABLED="false"
-
+        TMPFS_SYSTEM_CACHES_ENABLED="true"
     fi
-elif [[ $RAM_CLASS == "mid" ]]; then
-    if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
-        
-        if [[ $CPU_CLASS == "verylow" ]]; then
-            TMPFS_SYSTEM_CACHES_ENABLED="false"
-        else
-            TMPFS_SYSTEM_CACHES_ENABLED="true"
-        fi
 
-        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-            TMPFS_FLATPAK_CACHES_ENABLED="false"
-        else
-            TMPFS_FLATPAK_CACHES_ENABLED="true"
-        fi
+    TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="false"
+    TMPFS_FLATPAK_CACHES_ENABLED="false"
+    TMPFS_GAMING_CACHES_ENABLED="false"
+    TMPFS_SERVER_CACHES_ENABLED="false"
 
-        TMPFS_GAMING_CACHES_ENABLED="false"
-
-        if [[ $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-            if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-                TMPFS_SERVER_CACHES_ENABLED="false"
-            else
-                TMPFS_SERVER_CACHES_ENABLED="true"
-            fi
-        else
-            TMPFS_SERVER_CACHES_ENABLED="false"
-        fi
-
-    else
-
-        if [[ $CPU_CLASS == "verylow" ]]; then
-            TMPFS_SYSTEM_CACHES_ENABLED="false"
-        else
-            TMPFS_SYSTEM_CACHES_ENABLED="true"
-        fi
-
-        if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
-            TMPFS_FLATPAK_CACHES_ENABLED="false"
-        else
-            TMPFS_FLATPAK_CACHES_ENABLED="true"
-        fi
-
-        TMPFS_GAMING_CACHES_ENABLED="false"
-        TMPFS_SERVER_CACHES_ENABLED="false"
-
-    fi
 elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
     if [[ "$STORAGE_ROOT_DEVICE_TYPE" == "hdd" || "$STORAGE_ROOT_DEVICE_TYPE" == "usb" ]]; then
         
         if [[ $CPU_CLASS == "verylow" ]]; then
             TMPFS_SYSTEM_CACHES_ENABLED="false"
+            TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="false"
         else
             TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="true"
         fi
 
         if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
@@ -157,8 +100,10 @@ elif [[ $RAM_CLASS == "high" || $RAM_CLASS == "veryhigh" ]]; then
 
         if [[ $CPU_CLASS == "verylow" ]]; then
             TMPFS_SYSTEM_CACHES_ENABLED="false"
+            TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="false"
         else
             TMPFS_SYSTEM_CACHES_ENABLED="true"
+            TMPFS_EXTRA_SYSTEM_CACHES_ENABLED="true"
         fi
 
         if [[ $CPU_CLASS == "verylow" || $CPU_CLASS == "low" ]]; then
@@ -197,6 +142,13 @@ if [[ "$TMPFS_SYSTEM_CACHES_ENABLED" == "true" ]]; then
         "/var/lib/systemd/coredump"
         "/var/crash"
         
+        "/home/$SYSTEM_USER/.cache"
+    )
+fi
+
+if [[ "$TMPFS_EXTRA_SYSTEM_CACHES_ENABLED" == "true" ]]; then
+
+    OTHER_CACHE_DIRS+=(
         "/var/cache/debconf"
         "/var/cache/ldconfig"
         "/var/cache/man"
@@ -204,11 +156,7 @@ if [[ "$TMPFS_SYSTEM_CACHES_ENABLED" == "true" ]]; then
         "/var/cache/PackageKit"
         "/var/lib/snapd/cache"
         "/var/cache/debconf"
-        
-        "/home/$SYSTEM_USER/.cache"
-    )
 
-    OTHER_CACHE_DIRS+=(
         "/home/$SYSTEM_USER/.config/*/cache"
         "/home/$SYSTEM_USER/.config/*/cache*"
         "/home/$SYSTEM_USER/.config/*/*cache"
