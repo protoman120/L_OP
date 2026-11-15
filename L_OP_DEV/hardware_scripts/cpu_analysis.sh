@@ -42,6 +42,7 @@ cpu_save_data(){
         CPU_CLASS=$(printf '%q' "$CPU_CLASS")
         #INTEL ONLY:
         CURRENT_CPU_TDP_INTEL=$(printf '%q' "$CURRENT_CPU_TDP_INTEL")
+        CURRENT_CPU_TDP_INTEL_HUMAN_READABLE=$(printf '%q' "$CURRENT_CPU_TDP_INTEL_HUMAN_READABLE")
 
 EOF
 }
@@ -92,7 +93,9 @@ cpu_full_scan(){
 
     if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
         CURRENT_CPU_TDP_INTEL=$(cat /sys/class/powercap/intel-rapl:0/constraint_0_power_limit_uw)
-        CURRENT_CPU_TDP_INTEL_HUMAN_READABLE=$(($CURRENT_CPU_TDP_INTEL/1000000))
+        if [[ "$CURRENT_CPU_TDP_INTEL" != "" ]]; then
+            CURRENT_CPU_TDP_INTEL_HUMAN_READABLE=$(($CURRENT_CPU_TDP_INTEL / 1000000))
+        fi
     fi
 }
 

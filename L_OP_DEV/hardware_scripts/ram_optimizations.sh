@@ -824,22 +824,47 @@ ram_vm_optimizations(){
 ram_zram_configuration(){
 
 	#DEFAULT VALUES
-	ZRAM_ALGO="lz4hc"
-	ZRAM_AMOUNT="2G"
+	ZRAM_ALGO="zstd"
+	ZRAM_PERCENTAGE=100
+	ZRAM_AMOUNT="1G"
 	ZRAM_PRIORITY=500
+
+	if [[ $ZSWAP_ACTIVE == "true" ]]; then
+		if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+			ZRAM_PERCENTAGE=25
+		elif [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			ZRAM_PERCENTAGE="75"
+		else
+			ZRAM_PERCENTAGE=50
+		fi
+	else
+		ZRAM_PERCENTAGE=100
+	fi
 
     if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
 		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
             	ZRAM_ALGO="zstd"
 			else
-				ZRAM_ALGO="lz4hc"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="zstd"
+				else
+					ZRAM_ALGO="lz4hc"
+				fi
 			fi
 		else
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-            	ZRAM_ALGO="lz4hc"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="zstd"
+				else
+					ZRAM_ALGO="lz4hc"
+				fi
 			else
-				ZRAM_ALGO="lz4"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="lz4hc"
+				else
+					ZRAM_ALGO="lz4"
+				fi
 			fi
 		fi
 	elif [[ "$CPU_CLASS" == "mid" ]]; then
@@ -849,13 +874,25 @@ ram_zram_configuration(){
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
             	ZRAM_ALGO="zstd"
 			else
-				ZRAM_ALGO="lz4hc"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="zstd"
+				else
+					ZRAM_ALGO="lz4hc"
+				fi
 			fi
         else
             if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-                ZRAM_ALGO="lz4hc"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="zstd"
+				else
+					ZRAM_ALGO="lz4hc"
+				fi
             else
-				ZRAM_ALGO="lz4"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="lz4hc"
+				else
+					ZRAM_ALGO="lz4"
+				fi
             fi
         fi
 	elif [[ "$CPU_CLASS" == "high" ]]; then
@@ -865,27 +902,192 @@ ram_zram_configuration(){
 			if [[ $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
                 ZRAM_ALGO="zstd"
             else
-				ZRAM_ALGO="lz4hc"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="zstd"
+				else
+					ZRAM_ALGO="lz4hc"
+				fi
             fi
         else
             if [[ $STORAGE_DEVICE_TYPE == "ssd" || $STORAGE_ROOT_DEVICE_TYPE == "hdd" || $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
-                ZRAM_ALGO="lz4hc"
+                if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="zstd"
+				else
+					ZRAM_ALGO="lz4hc"
+				fi
             else
-				ZRAM_ALGO="lz4"
+				if [[ $ZSWAP_ACTIVE == "true" ]]; then
+            		ZRAM_ALGO="lz4hc"
+				else
+					ZRAM_ALGO="lz4"
+				fi
             fi
         fi
 	fi
 
-	TEMP_ZRAM_AMOUNT=$RAM_GB_PHYSICAL
-	ZRAM_AMOUNT=$(($TEMP_ZRAM_AMOUNT + 1))
+	TEMP_ZRAM_AMOUNT=$(( $RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
+	ZRAM_AMOUNT=$(( $TEMP_ZRAM_AMOUNT + 1 ))
 	
 	modprobe zram
-	echo ${ZRAM_ALGO} > /sys/block/zram0/comp_algorithm
-	echo "${ZRAM_AMOUNT}G" > /sys/block/zram0/disksize
+	echo ${ZRAM_ALGO} | tee /sys/block/zram0/comp_algorithm
+	echo "${ZRAM_AMOUNT}G" | tee /sys/block/zram0/disksize
 	mkswap /dev/zram0
 	swapon -p ${ZRAM_PRIORITY} /dev/zram0
 
+}
 
+ram_zswap_configuration(){
+
+	#IMPORTANT: ZSWAP REQUIRES ANOTHER SWAP DEVICE TO WORK (CAN BE ENABLED AFTER THIS)
+	#ZSWAP DOES NOT CREATE A SWAP DEVICE
+
+	#DEFAULT VALUES
+	ZSWAP_ALGO="zstd"
+	ZSWAP_MAX_POOL_PERCENT="50"
+	ZSWAP_ACCEPT_THRESHOLD_PERCENT="90"
+
+	if [[ $ZRAM_ACTIVE == "true" ]]; then
+		if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
+			ZSWAP_MAX_POOL_PERCENT="75"
+		elif [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			ZSWAP_MAX_POOL_PERCENT="25"
+		else
+			ZSWAP_MAX_POOL_PERCENT="50"
+		fi
+	else
+		ZSWAP_MAX_POOL_PERCENT="100"
+	fi
+
+	if [[ $RAM_CLASS == "verylow" ]]; then
+		if [[ $ZRAM_ACTIVE == "true" ]]; then
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="60"
+		else
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="65"
+		fi
+	elif [[ $RAM_CLASS == "low" ]]; then
+		if [[ $ZRAM_ACTIVE == "true" ]]; then
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="70"
+		else
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="75"
+		fi
+	elif [[ $RAM_CLASS == "mid" ]]; then
+		if [[ $ZRAM_ACTIVE == "true" ]]; then
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="80"
+		else
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="85"
+		fi
+	elif [[ $RAM_CLASS == "high" ]]; then
+		if [[ $ZRAM_ACTIVE == "true" ]]; then
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="90"
+		else
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="95"
+		fi
+	elif [[ $RAM_CLASS == "veryhigh" ]]; then
+		if [[ $ZRAM_ACTIVE == "true" ]]; then
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="95"
+		else
+			ZSWAP_ACCEPT_THRESHOLD_PERCENT="98"
+		fi
+	fi
+
+	if [[ "$CPU_CLASS" == "verylow" || "$CPU_CLASS" == "low" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			if [[ $STORAGE_SWAP_DEVICE_TYPE == "hdd" || $STORAGE_SWAP_DEVICE_TYPE == "usb" ]]; then
+				if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4hc"
+				else
+					ZSWAP_ALGO="zstd"
+				fi
+			else
+				if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4"
+				else
+					ZSWAP_ALGO="lz4hc"
+				fi
+			fi
+		else
+			if [[ $STORAGE_SWAP_DEVICE_TYPE == "hdd" || $STORAGE_SWAP_DEVICE_TYPE == "usb" ]]; then
+				if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4"
+				else
+					ZSWAP_ALGO="lz4hc"
+				fi
+			else
+				ZSWAP_ALGO="lz4"
+			fi
+		fi
+	elif [[ "$CPU_CLASS" == "mid" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" ]]; then
+			if [[ $ZRAM_ACTIVE == "true" ]]; then
+				ZSWAP_ALGO="lz4hc"
+			else
+				ZSWAP_ALGO="zstd"
+			fi
+		elif [[ $RAM_CLASS == "mid" ]]; then
+			if [[ $STORAGE_SWAP_DEVICE_TYPE == "hdd" || $STORAGE_SWAP_DEVICE_TYPE == "usb" ]]; then
+            	if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4hc"
+				else
+					ZSWAP_ALGO="zstd"
+				fi
+			else
+				if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4"
+				else
+					ZSWAP_ALGO="lz4hc"
+				fi
+			fi
+        else
+            if [[ $STORAGE_SWAP_DEVICE_TYPE == "hdd" || $STORAGE_SWAP_DEVICE_TYPE == "usb" ]]; then
+                if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4"
+				else
+					ZSWAP_ALGO="lz4hc"
+				fi
+            else
+				ZSWAP_ALGO="lz4"
+            fi
+        fi
+	elif [[ "$CPU_CLASS" == "high" ]]; then
+		if [[ $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" ]]; then
+			if [[ $ZRAM_ACTIVE == "true" ]]; then
+				ZSWAP_ALGO="lz4hc"
+			else
+				ZSWAP_ALGO="zstd"
+			fi
+		elif [[ $RAM_CLASS == "high" ]]; then
+			if [[ $STORAGE_SWAP_DEVICE_TYPE == "hdd" || $STORAGE_SWAP_DEVICE_TYPE == "usb" ]]; then
+                if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4hc"
+				else
+					ZSWAP_ALGO="zstd"
+				fi
+            else
+				if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4"
+				else
+					ZSWAP_ALGO="lz4hc"
+				fi
+            fi
+        else
+            if [[ $STORAGE_SWAP_DEVICE_TYPE == "ssd" || $STORAGE_SWAP_DEVICE_TYPE == "hdd" || $STORAGE_SWAP_DEVICE_TYPE == "usb" ]]; then
+                if [[ $ZRAM_ACTIVE == "true" ]]; then
+            		ZSWAP_ALGO="lz4"
+				else
+					ZSWAP_ALGO="lz4hc"
+				fi
+            else
+				ZSWAP_ALGO="lz4"
+            fi
+        fi
+	fi
+
+	modprobe zswap
+	echo 1 | tee /sys/module/zswap/parameters/enabled
+	echo Y | tee /sys/module/zswap/parameters/shrinker_enabled
+	echo ${ZSWAP_ALGO} | tee /sys/module/zswap/parameters/compressor
+	echo ${ZSWAP_MAX_POOL_PERCENT} | tee /sys/module/zswap/parameters/max_pool_percent
+	echo ${ZSWAP_ACCEPT_THRESHOLD_PERCENT} | tee /sys/module/zswap/parameters/accept_threshold_percent
 }
 
 if [[ $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
@@ -902,12 +1104,23 @@ if [[ $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
 	fi
 fi
 
-ram_zram_configuration
+ZSWAP_ACTIVE="false"
+ZRAM_ACTIVE="false"
 
-#DISABLED FOR FUTURE ZRAM/ZSWAP REWORK
-:<<'COMMENT_BLOCK'
-if [[ " ${BASIC_ZRAM_RAM_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* || $RAM_CLASS == "verylow" || $RAM_CLASS == "low" || $RAM_CLASS == "mid" || $SYSTEM_SWAP_PARTITION_DETECTED != "true" ]]; then
-	#NOTE: It's not reccomended to have both ZSWAP and ZRAM active at once
+if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" && $OPTIMIZATION_PROFILE_USECASE == "server" && $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
+	ZSWAP_ACTIVE="true"
+	ram_zswap_configuration
+elif [[ $OPTIMIZATION_PROFILE_USECASE == "server" && $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
+	ZSWAP_ACTIVE="true"
+	ZRAM_ACTIVE="true"
+	ram_zswap_configuration
+	ram_zram_configuration
+elif [[ $RAM_CLASS != "verylow" && $RAM_CLASS != "low" && $OPTIMIZATION_PROFILE_USECASE != "gaming" && $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
+	ZSWAP_ACTIVE="true"
+	ZRAM_ACTIVE="true"
+	ram_zswap_configuration
+	ram_zram_configuration
+else
+	ZRAM_ACTIVE="true"
 	ram_zram_configuration
 fi
-COMMENT_BLOCK

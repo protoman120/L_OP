@@ -271,6 +271,7 @@ profile_save_optimization_goals() {
         OPTIMIZATION_BOOTLOADER_ENABLED=$(printf '%q' "$OPTIMIZATION_BOOTLOADER_ENABLED")
 
         #USER_SETTINGS:
+        CPU_MULTITHREADING_SETTING=$(printf '%q' "$CPU_MULTITHREADING_SETTING")
         ADDITIONAL_CPU_COOLING=$(printf '%q' "$ADDITIONAL_CPU_COOLING")
         ADDITIONAL_GPU_COOLING=$(printf '%q' "$ADDITIONAL_GPU_COOLING")
         EXTREME_CPU_COOLING=$(printf '%q' "$EXTREME_CPU_COOLING")
@@ -416,6 +417,13 @@ install_script(){
     source $SAVED_CPU_DATA
     source $SAVED_RAM_DATA
 
+    #HARDWARE-BASED USER SETTINGS VARIABLES SETUP
+    if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
+        CPU_MULTITHREADING_SETTING="disabled"
+    else
+        CPU_MULTITHREADING_SETTING="enabled"
+    fi
+
     #DISABLES FUNCTIONALITY THAT NEEDS A REWORK
     if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
         OPTIMIZATION_BOOTLOADER_ENABLED="disabled_until_reworked"
@@ -424,7 +432,29 @@ install_script(){
         OPTIMIZATION_DE_ENABLED="disabled_until_reworked"
     fi
 
-    #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL
+    CHANGE_PROFILE_SETTINGS="false"
+    while true; do
+        read -rp "Want to modify profile settings? (Y/N): " answer
+        case "$answer" in
+            [Yy])
+                CHANGE_PROFILE_SETTINGS="true"
+                break
+                ;;
+            [Nn])
+                CHANGE_PROFILE_SETTINGS="false"
+                break
+                ;;
+            *)
+                echo ""
+                ;;
+        esac
+    done
+
+    if [[ $CHANGE_PROFILE_SETTINGS == "true" ]]; then
+        script_profile_settings
+    fi
+
+    #THIS IS HERE BECOUSE THIS FILE INCLUDES THE SELECTION FOR PORTABLE INSTALL AND PROFILE SETTINGS
     profile_save_optimization_goals
 
     cp -r $SCRIPT_MAIN_FOLDER $SCRIPT_INSTALL_DIR
@@ -566,6 +596,8 @@ script_profile_settings(){
     echo "$SCRIPT_NAME SETTINGS"
     echo ""
     echo "Current Settings:"
+    echo "SCAN_HARDWARE_ON_BOOT : $SYSTEM_PORTABLE_INSTALL"
+    echo "CPU_MULTITHREADING : $CPU_MULTITHREADING_SETTING"
     echo "CPU_COOLING: $CPU_COOLING_OPTIMIZATION"
     echo "GPU_COOLING: $GPU_COOLING_OPTIMIZATION"
     echo "ADDITIONAL_CPU_COOLING: $ADDITIONAL_CPU_COOLING"
@@ -577,10 +609,28 @@ script_profile_settings(){
     echo ""
     echo "Available options to toggle:"
     PS3='Choose an option: '
-    options=("CPU_COOLING" "GPU_COOLING" "ADDITIONAL_CPU_COOLING" "EXTREME_CPU_COOLING" "ADDITIONAL_GPU_COOLING" "EXTREME_GPU_COOLING" "TMPFS_CACHING" "Quit")
+    options=("SCAN_HARDWARE_ON_BOOT" "CPU_MULTITHREADING" "CPU_COOLING" "GPU_COOLING" "ADDITIONAL_CPU_COOLING" "EXTREME_CPU_COOLING" "ADDITIONAL_GPU_COOLING" "EXTREME_GPU_COOLING" "TMPFS_CACHING" "Quit")
     select opt in "${options[@]}"
     do
         case $opt in
+            "SCAN_HARDWARE_ON_BOOT")
+                if [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
+                    SYSTEM_PORTABLE_INSTALL="false"
+                else
+                    SYSTEM_PORTABLE_INSTALL="true"
+                fi
+                script_profile_settings
+                break
+                ;;
+            "CPU_MULTITHREADING")
+                if [[ $CPU_MULTITHREADING_SETTING == "enabled" ]]; then
+                    CPU_MULTITHREADING_SETTING="disabled"
+                else
+                    CPU_MULTITHREADING_SETTING="enabled"
+                fi
+                script_profile_settings
+                break
+                ;;
             "CPU_COOLING")
                 if [[ $CPU_COOLING_OPTIMIZATION == "enabled" ]]; then
                     CPU_COOLING_OPTIMIZATION="disabled"

@@ -20,9 +20,30 @@ BASIC_CPU_COOLING_PROFILES=(
 	"cpu_cooling+zram_basic"
 )
 
+cpu_multithreading_optimizations(){
+
+	if [[ $CPU_MULTITHREADING_SETTING == "enabled" && $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
+		echo on | sudo tee /sys/devices/system/cpu/smt/control
+	elif [[ $CPU_MULTITHREADING_SETTING == "disabled" && $CPU_MULTITHREADING_ACTIVE == "true" ]]; then
+		echo off | sudo tee /sys/devices/system/cpu/smt/control
+	fi
+ 
+	#CHECKS IF MULTITHREADING SETTING IS APPLIED CORRECTLY:
+	CPU_MULTITHREADING_APPLIED=$(cat /sys/devices/system/cpu/smt/control)
+
+	if [[ $CPU_MULTITHREADING_SETTING == "enabled" && $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
+		if [[ $CPU_MULTITHREADING_APPLIED == "on" || $CPU_MULTITHREADING_APPLIED == "1" ]]; then
+			CPU_MULTITHREADING_ACTIVE="true"
+		fi
+	elif [[ $CPU_MULTITHREADING_SETTING == "disabled" && $CPU_MULTITHREADING_ACTIVE == "true" ]]; then
+		if [[ $CPU_MULTITHREADING_APPLIED == "off" || $CPU_MULTITHREADING_APPLIED == "0" ]]; then
+			CPU_MULTITHREADING_ACTIVE="false"
+		fi
+	fi
+
+}
+
 intel_cpu_auto_power_tuner(){
-	CURRENT_CPU_TDP_INTEL=$(cat /sys/class/powercap/intel-rapl:0/constraint_0_power_limit_uw)
-	CURRENT_CPU_TDP_INTEL_HUMAN_READABLE=$(($CURRENT_CPU_TDP_INTEL/1000000))
 
 	if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
 		if (( $CURRENT_CPU_TDP_INTEL_HUMAN_READABLE > 40 )); then
@@ -356,6 +377,7 @@ elif [[ "$@" == "intel_cpu_auto_power_tuner" ]]; then
 elif [[ "$@" == "cpu_frequency_optimizations" ]]; then
     cpu_frequency_optimizations
 else
+	cpu_multithreading_optimizations
 	if [[ " ${BASIC_CPU_COOLING_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* ]]; then
 		if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
 			intel_cpu_auto_power_tuner
@@ -368,7 +390,9 @@ else
 		cpu_scheduler_optimizations
 		if [[ "$CPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
 			if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
-				intel_cpu_auto_power_tuner
+				if [[ "$CURRENT_CPU_TDP_INTEL" != "" ]]; then
+					intel_cpu_auto_power_tuner
+				fi
 			elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
 				#amd_cpu_power_tuner
 				echo ""
