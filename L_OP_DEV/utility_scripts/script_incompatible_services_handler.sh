@@ -20,12 +20,12 @@ elif [[ "$@" == "disable" ]]; then
         systemctl enable zramswap.service
     fi
 
-    if systemctl cat power-profiles-daemon.service &>/dev/null; then
-        systemctl enable power-profiles-daemon.service
-    fi
-
     if systemctl cat tuned.service &>/dev/null; then
         systemctl enable tuned.service
+    else
+        if systemctl cat power-profiles-daemon.service &>/dev/null; then
+            systemctl enable power-profiles-daemon.service
+        fi
     fi
 
 fi

@@ -927,8 +927,7 @@ ram_zram_configuration(){
         fi
 	fi
 
-	TEMP_ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
-	ZRAM_AMOUNT=$(( TEMP_ZRAM_AMOUNT + 1 ))
+	ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
 
 	if [[ -e $ZRAM_BLOCK_DEVICE_DIR ]] || [[ -e $ZRAM_DEVICE_DIR ]]; then
 		swapoff $ZRAM_DEVICE_DIR
