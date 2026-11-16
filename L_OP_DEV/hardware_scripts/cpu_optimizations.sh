@@ -99,6 +99,7 @@ intel_cpu_auto_power_tuner(){
             export TDP_APPLIED_CORRECTLY="false"
         fi
     done
+
 }
 
 cpu_scheduler_optimizations(){
@@ -109,6 +110,7 @@ cpu_scheduler_optimizations(){
 	if [[ "$CPU_OPTIMIZATION_GOAL" == "latency" ]]; then
         #NOTE: LOWERING "base_slice_ns" FURTHER WILL RESULT IN SERIOUS STUTTERING IN GAMING WORKLOADS
 		if [[ $CPU_CLASS == "verylow" ]]; then
+
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
                 echo 40000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 400000 | tee /sys/kernel/debug/sched/migration_cost_ns
@@ -125,7 +127,9 @@ cpu_scheduler_optimizations(){
 				echo 4 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 1 | tee /sys/kernel/debug/sched/nr_migrate
     		fi
+
 		elif [[ $CPU_CLASS == "low" ]]; then
+
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
                 echo 30000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 300000 | tee /sys/kernel/debug/sched/migration_cost_ns
@@ -142,7 +146,9 @@ cpu_scheduler_optimizations(){
 				echo 8 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 3 | tee /sys/kernel/debug/sched/nr_migrate
 			fi
+
 		elif [[ $CPU_CLASS == "mid" ]]; then
+
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
                 echo 20000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 200000 | tee /sys/kernel/debug/sched/migration_cost_ns
@@ -159,7 +165,9 @@ cpu_scheduler_optimizations(){
 				echo 16 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 4 | tee /sys/kernel/debug/sched/nr_migrate
 			fi
+
 		elif [[ $CPU_CLASS == "high" ]]; then
+
 			if [[ $OPTIMIZATION_PROFILE_USECASE == "gaming" ]]; then
 				echo 10000 | tee /sys/kernel/debug/sched/base_slice_ns
 				echo 1000000 | tee /sys/kernel/debug/sched/migration_cost_ns
@@ -176,8 +184,10 @@ cpu_scheduler_optimizations(){
 				echo 32 | tee /proc/sys/kernel/sched_numa_migrate
 				echo 5 | tee /sys/kernel/debug/sched/nr_migrate
 			fi
+
 		fi
 	elif [[ "$CPU_OPTIMIZATION_GOAL" == "throughput" ]]; then
+	
 		if [[ $CPU_CLASS == "verylow" ]]; then
 			echo 200000 |  tee /sys/kernel/debug/sched/base_slice_ns
 			echo 20000000 |  tee /sys/kernel/debug/sched/migration_cost_ns
@@ -199,6 +209,7 @@ cpu_scheduler_optimizations(){
             echo 128 |  tee /proc/sys/kernel/sched_numa_migrate
             echo 25 |  tee /sys/kernel/debug/sched/nr_migrate
 		fi
+
 	fi
 }
 
@@ -216,31 +227,11 @@ cpu_performance_optimizations(){
         echo "disabled" | tee "$CPU_DIR/power/async"
 	fi
 
-	if [[ $CPU_CLASS == "verylow" ]]; then
-		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
-			CPU_GOVERNOR="performance"
-			CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
-		else
-			CPU_GOVERNOR="ondemand"
-			CPU_ENERGY_PERFORMANCE_PREFERENCE="balance_performance"
-		fi
-	elif [[ $CPU_CLASS == "low" ]]; then
-		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
-			CPU_GOVERNOR="performance"
-			CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
-		else
-			CPU_GOVERNOR="performance"
-			CPU_ENERGY_PERFORMANCE_PREFERENCE="balance_performance"
-		fi
-	elif [[ $CPU_CLASS == "mid" ]]; then
-		CPU_GOVERNOR="performance"
-		CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
-	elif [[ $CPU_CLASS == "high" ]]; then
-		CPU_GOVERNOR="performance"
-		CPU_ENERGY_PERFORMANCE_PREFERENCE="performance" 
-	fi
+	CPU_GOVERNOR="performance"
+	CPU_ENERGY_PERFORMANCE_PREFERENCE="performance"
 
 	for ((i=0; i<CPU_THREADS; i++)); do
+
 	    CPU_DIR="$CPU_PATH/cpu$i"
 
 	    if [[ $CPU_CLASS == "verylow" ]]; then
@@ -257,6 +248,7 @@ cpu_performance_optimizations(){
 
 	    echo "$CPU_GOVERNOR" | tee "$CPU_DIR/cpufreq/scaling_governor"
 	    echo "$CPU_ENERGY_PERFORMANCE_PREFERENCE" | tee "$CPU_DIR/cpufreq/energy_performance_preference"
+	
 	done
 	
 }
@@ -272,34 +264,19 @@ cpu_frequency_optimizations(){
 	CPU_MAX_PERF_PERCENTAGE_REDUCTION=0
 
 	if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
-		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
-			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=15
-				CPU_MAX_PERF_PERCENTAGE=85
-			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=20
-				CPU_MAX_PERF_PERCENTAGE=90
-			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=25
-				CPU_MAX_PERF_PERCENTAGE=95
-			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=30
-				CPU_MAX_PERF_PERCENTAGE=98
-			fi
-		else
-			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=10
-				CPU_MAX_PERF_PERCENTAGE=75
-			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=10
-				CPU_MAX_PERF_PERCENTAGE=80
-			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=15
-				CPU_MAX_PERF_PERCENTAGE=85
-			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=15
-				CPU_MAX_PERF_PERCENTAGE=90
-			fi
+
+		if [[ $CPU_CLASS == "verylow" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=15
+			CPU_MAX_PERF_PERCENTAGE=85
+		elif [[ $CPU_CLASS == "low" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=20
+			CPU_MAX_PERF_PERCENTAGE=90
+		elif [[ $CPU_CLASS == "mid" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=25
+			CPU_MAX_PERF_PERCENTAGE=95
+		elif [[ $CPU_CLASS == "high" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=30
+			CPU_MAX_PERF_PERCENTAGE=98
 		fi
 
 		if [[ $EXTREME_CPU_COOLING == "enabled" || $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
@@ -313,37 +290,23 @@ cpu_frequency_optimizations(){
 			CPU_MIN_PERF_PERCENTAGE=$(( CPU_MIN_PERF_PERCENTAGE - CPU_MIN_PERF_PERCENTAGE_REDUCTION ))
 			CPU_MAX_PERF_PERCENTAGE=$(( CPU_MAX_PERF_PERCENTAGE - CPU_MAX_PERF_PERCENTAGE_REDUCTION ))
 		fi
+
 	else
-		if [[ $TDP_APPLIED_CORRECTLY == "true" ]]; then
-			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=10
-				CPU_MAX_PERF_PERCENTAGE=80
-			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=15
-				CPU_MAX_PERF_PERCENTAGE=85
-			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=20
-				CPU_MAX_PERF_PERCENTAGE=90
-			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=25
-				CPU_MAX_PERF_PERCENTAGE=95
-			fi
-		else
-			if [[ $CPU_CLASS == "verylow" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=5
-				CPU_MAX_PERF_PERCENTAGE=70
-			elif [[ $CPU_CLASS == "low" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=5
-				CPU_MAX_PERF_PERCENTAGE=75
-			elif [[ $CPU_CLASS == "mid" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=10
-				CPU_MAX_PERF_PERCENTAGE=80
-			elif [[ $CPU_CLASS == "high" ]]; then
-				CPU_MIN_PERF_PERCENTAGE=10
-				CPU_MAX_PERF_PERCENTAGE=85
-			fi
+
+		if [[ $CPU_CLASS == "verylow" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=10
+			CPU_MAX_PERF_PERCENTAGE=80
+		elif [[ $CPU_CLASS == "low" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=15
+			CPU_MAX_PERF_PERCENTAGE=85
+		elif [[ $CPU_CLASS == "mid" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=20
+			CPU_MAX_PERF_PERCENTAGE=90
+		elif [[ $CPU_CLASS == "high" ]]; then
+			CPU_MIN_PERF_PERCENTAGE=25
+			CPU_MAX_PERF_PERCENTAGE=95
 		fi
-		
+
 		if [[ $EXTREME_CPU_COOLING == "enabled" || $ADDITIONAL_CPU_COOLING == "enabled" ]]; then
 			if [[ $EXTREME_CPU_COOLING == "enabled" ]]; then
 				CPU_MIN_PERF_PERCENTAGE_REDUCTION=10
@@ -355,6 +318,7 @@ cpu_frequency_optimizations(){
 			CPU_MIN_PERF_PERCENTAGE=$(( CPU_MIN_PERF_PERCENTAGE - CPU_MIN_PERF_PERCENTAGE_REDUCTION ))
 			CPU_MAX_PERF_PERCENTAGE=$(( CPU_MAX_PERF_PERCENTAGE - CPU_MAX_PERF_PERCENTAGE_REDUCTION ))
 		fi
+
 	fi
 
 	CPU_MIN_PERF=$(( CPU_MAX_FREQ * CPU_MIN_PERF_PERCENTAGE / 100 ))
@@ -379,24 +343,10 @@ elif [[ "$@" == "cpu_frequency_optimizations" ]]; then
 else
 	cpu_multithreading_optimizations
 	if [[ " ${BASIC_CPU_COOLING_PROFILES[*]} " == *" $OPTIMIZATION_PROFILE "* ]]; then
-		if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
-			intel_cpu_auto_power_tuner
-		elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
-			#amd_cpu_power_tuner
-			echo ""
-		fi
 		cpu_frequency_optimizations
 	else
 		cpu_scheduler_optimizations
 		if [[ "$CPU_COOLING_OPTIMIZATION" == "enabled" ]]; then
-			if [[ "$CPU_VENDOR_ID" == "GenuineIntel" ]]; then
-				if [[ "$CURRENT_CPU_TDP_INTEL" != "" ]]; then
-					intel_cpu_auto_power_tuner
-				fi
-			elif [[ "$CPU_VENDOR_ID" == "AuthenticAMD" ]]; then
-				#amd_cpu_power_tuner
-				echo ""
-			fi
 			cpu_frequency_optimizations
 		fi
 		cpu_performance_optimizations
