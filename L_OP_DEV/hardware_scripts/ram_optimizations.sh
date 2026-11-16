@@ -828,8 +828,6 @@ ram_zram_configuration(){
 	ZRAM_PERCENTAGE=100
 	ZRAM_AMOUNT="1G"
 	ZRAM_PRIORITY=500
-	ZRAM_BLOCK_DEVICE_DIR=/sys/block/zram0
-	ZRAM_DEVICE_DIR=/dev/zram0
 
 	if [[ $ZSWAP_ACTIVE == "true" ]]; then
 		if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
@@ -928,18 +926,12 @@ ram_zram_configuration(){
 	fi
 
 	ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
-
-	if [[ -e $ZRAM_BLOCK_DEVICE_DIR ]] || [[ -e $ZRAM_DEVICE_DIR ]]; then
-		swapoff $ZRAM_DEVICE_DIR
-		echo 1 | tee $ZRAM_BLOCK_DEVICE_DIR/reset
-		modprobe -r zram
-	fi
 	
 	modprobe zram
-	echo ${ZRAM_ALGO} | tee /sys/block/zram0/comp_algorithm
-	echo "${ZRAM_AMOUNT}G" | tee /sys/block/zram0/disksize
-	mkswap /dev/zram0
-	swapon -p ${ZRAM_PRIORITY} /dev/zram0
+	echo ${ZRAM_ALGO} | tee $SYSTEM_ZRAM_BLOCK_DEVICE_DIR/comp_algorithm
+	echo "${ZRAM_AMOUNT}G" | tee $SYSTEM_ZRAM_BLOCK_DEVICE_DIR/disksize
+	mkswap $SYSTEM_ZRAM_DEVICE_DIR
+	swapon -p ${ZRAM_PRIORITY} $SYSTEM_ZRAM_DEVICE_DIR
 
 }
 
@@ -1095,6 +1087,7 @@ ram_zswap_configuration(){
 	echo ${ZSWAP_ALGO} | tee /sys/module/zswap/parameters/compressor
 	echo ${ZSWAP_MAX_POOL_PERCENT} | tee /sys/module/zswap/parameters/max_pool_percent
 	echo ${ZSWAP_ACCEPT_THRESHOLD_PERCENT} | tee /sys/module/zswap/parameters/accept_threshold_percent
+
 }
 
 if [[ $OPTIMIZATION_PROFILE != "zram_basic" ]]; then
@@ -1130,4 +1123,12 @@ elif [[ $RAM_CLASS != "verylow" && $RAM_CLASS != "low" && $OPTIMIZATION_PROFILE_
 else
 	ZRAM_ACTIVE="true"
 	ram_zram_configuration
+fi
+
+if [[ -e $SYSTEM_DEFAULT_SWAPFILE ]]; then
+	swapoff $SYSTEM_DEFAULT_SWAPFILE
+fi
+
+if [[ -e $SYSTEM_DEFAULT_SWAPFILE_2 ]]; then
+	swapoff $SYSTEM_DEFAULT_SWAPFILE_2
 fi
