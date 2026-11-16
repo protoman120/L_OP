@@ -95,45 +95,45 @@ gpu_performance_optimizations() {
                     if [[ $OPTIMIZATION_PROFILE == "AI_Self_Hosting" ]]; then
                         if (( GPU_POWER_CAP_W >= 200 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=40
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=50
                             GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=95
                         elif (( GPU_POWER_CAP_W >= 100 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=45
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=55
                             GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=96
                         elif (( GPU_POWER_CAP_W >= 40 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=50
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=60
                             GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=98
                         fi
                     else
                         if (( GPU_POWER_CAP_W >= 200 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=15
-                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=80
-                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=80
-                        elif (( GPU_POWER_CAP_W >= 100 )); then
-                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
                             GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=85
                             GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=85
-                        elif (( GPU_POWER_CAP_W >= 40 )); then
+                        elif (( GPU_POWER_CAP_W >= 100 )); then
                             GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
                             GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=90
                             GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=90
+                        elif (( GPU_POWER_CAP_W >= 40 )); then
+                            GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=1
+                            GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=95
+                            GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=95
                         fi
                     fi
                 elif [[ "$GPU_OPTIMIZATION_GOAL" == "latency" ]]; then
                     if (( GPU_POWER_CAP_W >= 200 )); then
                         GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=15
-                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=75
-                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=75
-                    elif (( GPU_POWER_CAP_W >= 100 )); then
-                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=20
                         GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=80
                         GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=80
-                    elif (( GPU_POWER_CAP_W >= 40 )); then
-                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=25
+                    elif (( GPU_POWER_CAP_W >= 100 )); then
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=20
                         GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=85
                         GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=85
+                    elif (( GPU_POWER_CAP_W >= 40 )); then
+                        GPU_NVIDIA_NEW_MIN_GPU_CLOCK_PERCENTAGE=25
+                        GPU_NVIDIA_NEW_MAX_GPU_CLOCK_PERCENTAGE=90
+                        GPU_NVIDIA_NEW_GPU_MEM_CLOCK_PERCENTAGE=90
                     fi
                 fi
 
