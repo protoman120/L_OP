@@ -828,6 +828,8 @@ ram_zram_configuration(){
 	ZRAM_PERCENTAGE=100
 	ZRAM_AMOUNT="1G"
 	ZRAM_PRIORITY=500
+	ZRAM_BLOCK_DEVICE_DIR=/sys/block/zram0
+	ZRAM_DEVICE_DIR=/dev/zram0
 
 	if [[ $ZSWAP_ACTIVE == "true" ]]; then
 		if [[ $SYSTEM_SWAP_PARTITION_DETECTED == "true" ]]; then
@@ -925,8 +927,14 @@ ram_zram_configuration(){
         fi
 	fi
 
-	TEMP_ZRAM_AMOUNT=$(( $RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
-	ZRAM_AMOUNT=$(( $TEMP_ZRAM_AMOUNT + 1 ))
+	TEMP_ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
+	ZRAM_AMOUNT=$(( TEMP_ZRAM_AMOUNT + 1 ))
+
+	if [[ -e $ZRAM_BLOCK_DEVICE_DIR ]] || [[ -e $ZRAM_DEVICE_DIR ]]; then
+		swapoff $ZRAM_DEVICE_DIR
+		echo 1 | tee $ZRAM_BLOCK_DEVICE_DIR/reset
+		modprobe -r zram
+	fi
 	
 	modprobe zram
 	echo ${ZRAM_ALGO} | tee /sys/block/zram0/comp_algorithm
