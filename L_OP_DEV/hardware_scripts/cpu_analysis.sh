@@ -3,9 +3,8 @@
 ##################################################################
 #IMPORTANT: SCRIPT DIRS SETUP
 source ./utility_scripts/script_directories.sh
-if [ -e $SAVED_OPTIMIZATION_GOALS ]; then
-    source $SAVED_OPTIMIZATION_GOALS
-fi
+source $SAVED_OPTIMIZATION_GOALS
+source $SAVED_OS_DATA
 ##################################################################
 
 cpu_save_data(){
@@ -100,17 +99,32 @@ cpu_full_scan(){
 }
 
 cpu_classification(){
-    if (( CPU_MAX_FREQ <= 300000 || CPU_CORES <= 2 )); then #VERY LOW CPU CLASS, MAX OF 3GHZ OR LOWER OR 4 CORES OR LESS
-        CPU_CLASS="verylow"
-    elif (( CPU_MAX_FREQ <= 3500000 || CPU_CORES <= 4 )); then #LOW CPU CLASS, MAX 3.5GHZ OR 4 CORES
-        CPU_CLASS="low"
-    elif (( CPU_MAX_FREQ <= 4000000 || CPU_CORES <= 6 )); then #MEDIUM CPU CLASS, MAX 4GHZ OR 6 CORES
-        CPU_CLASS="mid"
-    elif (( CPU_MAX_FREQ >= 4000000 || CPU_CORES >= 6 )); then #HIGH CPU CLASS, AT LEAST 4.5GHZ OR MORE THAN 6 CORES
-        CPU_CLASS="high"
+    if [[ $SYSTEM_VM == "true" ]]; then
+        if (( CPU_CORES <= 2 )); then
+            CPU_CLASS="verylow"
+        elif (( CPU_CORES <= 4 )); then
+            CPU_CLASS="low"
+        elif (( CPU_CORES <= 6 )); then
+            CPU_CLASS="mid"
+        elif (( CPU_CORES >= 6 )); then
+            CPU_CLASS="high"
+        else
+            echo "CPU_CLASS NOT SELECTED CORRECLY, APPLYING AUTO, MID-RANGE, PLEASE NOTIFY OF THIS ISSUE"
+            CPU_CLASS="mid"
+        fi
     else
-        echo "CPU_CLASS NOT SELECTED CORRECLY, APPLYING AUTO, MID-RANGE, PLEASE NOTIFY OF THIS ISSUE"
-        CPU_CLASS="mid"
+        if (( CPU_MAX_FREQ <= 300000 || CPU_CORES <= 2 )); then #VERY LOW CPU CLASS, MAX OF 3GHZ OR LOWER OR 4 CORES OR LESS
+            CPU_CLASS="verylow"
+        elif (( CPU_MAX_FREQ <= 3500000 || CPU_CORES <= 4 )); then #LOW CPU CLASS, MAX 3.5GHZ OR 4 CORES
+            CPU_CLASS="low"
+        elif (( CPU_MAX_FREQ <= 4000000 || CPU_CORES <= 6 )); then #MEDIUM CPU CLASS, MAX 4GHZ OR 6 CORES
+            CPU_CLASS="mid"
+        elif (( CPU_MAX_FREQ >= 4000000 || CPU_CORES >= 6 )); then #HIGH CPU CLASS, AT LEAST 4.5GHZ OR MORE THAN 6 CORES
+            CPU_CLASS="high"
+        else
+            echo "CPU_CLASS NOT SELECTED CORRECLY, APPLYING AUTO, MID-RANGE, PLEASE NOTIFY OF THIS ISSUE"
+            CPU_CLASS="mid"
+        fi
     fi
 }
 

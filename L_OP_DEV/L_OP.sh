@@ -389,12 +389,33 @@ install_script(){
         mkdir -p "$SCRIPT_SAVED_DATA"
     fi
 
-	script_system_hardware_analysis
     script_system_software_analysis
     script_system_user_software_analysis
+	script_system_hardware_analysis
 
     source $SAVED_ROOT_STORAGE_DATA
-    if [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
+    source $SAVED_OS_DATA
+
+    if [[ $SYSTEM_VM == "true" ]]; then
+        while true; do
+            read -rp "Virtualized environment detected, is this a VM/Container? (Y/N): " answer
+            case "$answer" in
+                [Yy])
+                    SYSTEM_PORTABLE_INSTALL="true"
+                    CPU_COOLING_OPTIMIZATION="disabled"
+                    GPU_COOLING_OPTIMIZATION="disabled"
+                    break
+                    ;;
+                [Nn])
+                    SYSTEM_PORTABLE_INSTALL="false"
+                    break
+                    ;;
+                *)
+                    echo ""
+                    ;;
+            esac
+        done
+    elif [[ $STORAGE_ROOT_DEVICE_TYPE == "usb" ]]; then
         while true; do
             read -rp "USB device detected as root storage, is this a portable install? (Y/N): " answer
             case "$answer" in
@@ -415,12 +436,16 @@ install_script(){
         SYSTEM_PORTABLE_INSTALL="false"
     fi
 
+    
+
     source $SAVED_CPU_DATA
     source $SAVED_RAM_DATA
 
     #HARDWARE-BASED USER SETTINGS VARIABLES SETUP
     if [[ $CPU_MULTITHREADING_ACTIVE == "false" ]]; then
         CPU_MULTITHREADING_SETTING="disabled"
+    elif [[ $SYSTEM_VM == "true" ]]; then
+        CPU_MULTITHREADING_SETTING="enabled"
     else
         CPU_MULTITHREADING_SETTING="enabled"
     fi
@@ -813,8 +838,8 @@ if [[ "$@" == "apply_optimizations" ]]; then
         script_tmpfs_save_data_setup
 
         #REGENERATE ANALYSIS DATA
-        script_system_hardware_analysis
         script_system_software_analysis
+        script_system_hardware_analysis
 
         if [[ $OPTIMIZATION_BOOTLOADER_ENABLED == "enabled" ]]; then
             #source $SAVED_CPU_DATA
