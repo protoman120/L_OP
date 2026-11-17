@@ -925,8 +925,12 @@ ram_zram_configuration(){
         fi
 	fi
 
-	ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
-	
+	if [[ $ZRAM_PERCENTAGE == "100" ]]; then
+		ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL + 1 ))
+	else
+		ZRAM_AMOUNT=$(( RAM_GB_PHYSICAL * ZRAM_PERCENTAGE / 100 ))
+	fi
+
 	modprobe zram
 	echo ${ZRAM_ALGO} | tee $SYSTEM_ZRAM_BLOCK_DEVICE_DIR/comp_algorithm
 	echo "${ZRAM_AMOUNT}G" | tee $SYSTEM_ZRAM_BLOCK_DEVICE_DIR/disksize
