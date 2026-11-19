@@ -1503,7 +1503,7 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
                     else
                         STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
                     fi
-                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
+                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
                     STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2,ssd"
                 else
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
