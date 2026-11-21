@@ -1438,44 +1438,44 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
             if [[ "$STORAGE_DEVICE_TYPE" == "hdd" ]]; then
                 if [[ $SYSTEM_VM == "true" && $SYSTEM_PORTABLE_INSTALL == "true" && $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:4,space_cache=v2"
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:5,space_cache=v2"
                     elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:4,space_cache=v2"
                     else
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:2,space_cache=v2"
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
                     fi
                 elif [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:1,space_cache=v2"
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:2,space_cache=v2"
                 else
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:6,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
+                        elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:9,space_cache=v2"
-                        elif [[ $CPU_CLASS == "high" ]]; then
+                        elif [[ $CPU_CLASS == "mid" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:12,space_cache=v2"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:15,space_cache=v2"
                         fi
                     elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:2,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:4,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
+                        elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:6,space_cache=v2"
-                        elif [[ $CPU_CLASS == "high" ]]; then
+                        elif [[ $CPU_CLASS == "mid" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:8,space_cache=v2"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:10,space_cache=v2"
                         fi
                     else
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:1,space_cache=v2"
-                        elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:2,space_cache=v2"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
+                        elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:3,space_cache=v2"
-                        elif [[ $CPU_CLASS == "high" ]]; then
+                        elif [[ $CPU_CLASS == "mid" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:4,space_cache=v2"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,lazytime,noatime,relatime,compress=zstd:5,space_cache=v2"
                         fi
                     fi
                 fi
@@ -1497,13 +1497,74 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
             elif [[ "$STORAGE_DEVICE_TYPE" == "usb" ]]; then
                 if [[ $SYSTEM_VM == "true" && $SYSTEM_PORTABLE_INSTALL == "true" && $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
+                    elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
+                    else
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
+                    fi
+                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
+                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd,space_cache=v2,ssd"
+                else
+                    if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
+                        if [[ $CPU_CLASS == "verylow" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:6,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "low" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:9,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "mid" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:12,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:15,space_cache=v2,ssd"
+                        fi
+                    elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
+                        if [[ $CPU_CLASS == "verylow" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "low" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:6,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "mid" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:8,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:10,space_cache=v2,ssd"
+                        fi
+                    else
+                        if [[ $CPU_CLASS == "verylow" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "low" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "mid" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:5,space_cache=v2,ssd"
+                        fi
+                    fi
+                fi
+
+                if [[ $RAM_CLASS == "verylow" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=10"
+                elif [[ $RAM_CLASS == "low" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
+                elif [[ $RAM_CLASS == "mid" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
+                elif [[ $RAM_CLASS == "high" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=50"
+                elif [[ $RAM_CLASS == "veryhigh" ]]; then
+                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
+                fi
+
+                STORAGE_MOUNT_ARGS_CHANGED="true"
+
+            elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
+                if [[ $SYSTEM_VM == "true" && $SYSTEM_PORTABLE_INSTALL == "true" && $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
+                    if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
                         STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
                     elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
                         STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
                     else
                         STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
                     fi
-                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" ]]; then
+                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
                     STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2,ssd"
                 else
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
@@ -1540,65 +1601,6 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
                 fi
 
                 if [[ $RAM_CLASS == "verylow" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=10"
-                elif [[ $RAM_CLASS == "low" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
-                elif [[ $RAM_CLASS == "mid" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
-                elif [[ $RAM_CLASS == "high" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=50"
-                elif [[ $RAM_CLASS == "veryhigh" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=60"
-                fi
-
-                STORAGE_MOUNT_ARGS_CHANGED="true"
-
-            elif [[ "$STORAGE_DEVICE_TYPE" == "ssd" ]]; then
-                if [[ $SYSTEM_VM == "true" && $SYSTEM_PORTABLE_INSTALL == "true" && $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
-                    if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
-                    elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                    else
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
-                    fi
-                elif [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2,ssd"
-                else
-                    if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:6,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:8,space_cache=v2,ssd"
-                        fi
-                    elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
-                        fi
-                    else
-                        if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "low" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                        fi
-                    fi
-                fi
-
-                if [[ $RAM_CLASS == "verylow" ]]; then
                     STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=15"
                 elif [[ $RAM_CLASS == "low" ]]; then
                     STORAGE_PARTITION_MOUNT_ARGS_RAM="commit=30"
@@ -1615,14 +1617,14 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
             elif [[ "$STORAGE_DEVICE_TYPE" == "nvme" ]]; then
                 if [[ $SYSTEM_VM == "true" && $SYSTEM_PORTABLE_INSTALL == "true" && $OPTIMIZATION_PROFILE_USECASE == "server" ]]; then
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
-                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
-                    elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
                         STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                    else
+                    elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
                         STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
+                    else
+                        STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2,ssd"
                     fi
                 elif [[ $SYSTEM_PORTABLE_INSTALL == "true" && "$STORAGE_DEVICE" == "$STORAGE_ROOT_DEVICE" ]]; then
-                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2,ssd"
+                    STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lz4,space_cache=v2,ssd"
                 else
                     if [[ $OPTIMIZATION_PROFILE == "nas" ]]; then
                         if [[ $CPU_CLASS == "verylow" ]]; then
@@ -1632,7 +1634,7 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
                         elif [[ $CPU_CLASS == "mid" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:6,space_cache=v2,ssd"
                         elif [[ $CPU_CLASS == "high" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:8,space_cache=v2,ssd"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:9,space_cache=v2,ssd"
                         fi
                     elif [[ $OPTIMIZATION_PROFILE == "nextcloud_self_hosting" ]]; then
                         if [[ $CPU_CLASS == "verylow" ]]; then
@@ -1640,13 +1642,13 @@ for STORAGE_DEVICE in $(lsblk -d -n -o NAME,TYPE | awk '$2=="disk"{print $1}'); 
                         elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:2,space_cache=v2,ssd"
                         elif [[ $CPU_CLASS == "mid" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:3,space_cache=v2,ssd"
-                        elif [[ $CPU_CLASS == "high" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:4,space_cache=v2,ssd"
+                        elif [[ $CPU_CLASS == "high" ]]; then
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:6,space_cache=v2,ssd"
                         fi
                     else
                         if [[ $CPU_CLASS == "verylow" ]]; then
-                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lzo,space_cache=v2,ssd"
+                            STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=lz4,space_cache=v2,ssd"
                         elif [[ $CPU_CLASS == "low" ]]; then
                             STORAGE_PARTITION_MOUNT_ARGS_CPU="nodatacow,noatime,lazytime,compress=zstd:1,space_cache=v2,ssd"
                         elif [[ $CPU_CLASS == "mid" ]]; then
